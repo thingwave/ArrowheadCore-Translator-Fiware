@@ -21,7 +21,8 @@ public class CAResource {
     if (!systemName.matches("[A-Za-z0-9]+")) {
       throw new BadPayloadException("System name can only contain alphanumerical characters!");
     }
-    return CAService.generateX509Certificate(systemName).orElseThrow(() -> new ArrowheadException("Certificate generation failed."));
+    return CAService.generateX509Certificate(systemName).orElseThrow(
+        () -> new ArrowheadException("Certificate generation failed" + "."));
   }
 
 }

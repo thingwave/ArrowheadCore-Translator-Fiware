@@ -40,7 +40,7 @@ public class ArrowheadService {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @NotBlank
   @Size(max = 255, message = "Service serviceDefinition must be 255 character at max")
@@ -80,11 +80,11 @@ public class ArrowheadService {
     this.serviceMetadata = service.getServiceMetadata();
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

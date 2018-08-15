@@ -33,6 +33,7 @@ import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
@@ -43,7 +44,7 @@ public class EventFilter {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @NotBlank
   @Column(name = "event_type")
@@ -80,8 +81,9 @@ public class EventFilter {
 
   //TODO provide a REST interface to easily switch this
   @Column(name = "match_metadata")
+  @ColumnDefault("false")
   @Type(type = "yes_no")
-  private boolean matchMetadata;
+  private Boolean matchMetadata;
 
   public EventFilter() {
   }
@@ -98,11 +100,11 @@ public class EventFilter {
     this.matchMetadata = matchMetadata;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -162,11 +164,11 @@ public class EventFilter {
     this.notifyUri = notifyUri;
   }
 
-  public boolean isMatchMetadata() {
+  public Boolean isMatchMetadata() {
     return matchMetadata;
   }
 
-  public void setMatchMetadata(boolean matchMetadata) {
+  public void setMatchMetadata(Boolean matchMetadata) {
     this.matchMetadata = matchMetadata;
   }
 

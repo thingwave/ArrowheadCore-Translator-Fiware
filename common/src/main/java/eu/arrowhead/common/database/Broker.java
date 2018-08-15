@@ -28,7 +28,7 @@ public class Broker {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @NotBlank
   @Column(name = "broker_name")
@@ -41,11 +41,11 @@ public class Broker {
 
   @Min(value = 1, message = "Port can not be less than 1")
   @Max(value = 65535, message = "Port can not be greater than 65535")
-  private int port;
+  private Integer port;
 
   @Column(name = "is_secure")
   @Type(type = "yes_no")
-  private boolean secure;
+  private Boolean secure = false;
 
   @Column(name = "authentication_info")
   @Size(max = 2047, message = "Authentication information must be 2047 character at max")
@@ -62,7 +62,7 @@ public class Broker {
     this.authenticationInfo = authenticationInfo;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -82,19 +82,19 @@ public class Broker {
     this.address = address;
   }
 
-  public int getPort() {
+  public Integer getPort() {
     return port;
   }
 
-  public void setPort(int port) {
+  public void setPort(Integer port) {
     this.port = port;
   }
 
-  public boolean isSecure() {
+  public Boolean isSecure() {
     return secure;
   }
 
-  public void setSecure(boolean secure) {
+  public void setSecure(Boolean secure) {
     this.secure = secure;
   }
 
@@ -117,24 +117,24 @@ public class Broker {
 
     Broker broker = (Broker) o;
 
-    if (port != broker.port) {
-      return false;
-    }
-    if (secure != broker.secure) {
-      return false;
-    }
     if (brokerName != null ? !brokerName.equals(broker.brokerName) : broker.brokerName != null) {
       return false;
     }
-    return address != null ? address.equals(broker.address) : broker.address == null;
+    if (address != null ? !address.equals(broker.address) : broker.address != null) {
+      return false;
+    }
+    if (port != null ? !port.equals(broker.port) : broker.port != null) {
+      return false;
+    }
+    return secure != null ? secure.equals(broker.secure) : broker.secure == null;
   }
 
   @Override
   public int hashCode() {
     int result = brokerName != null ? brokerName.hashCode() : 0;
     result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + port;
-    result = 31 * result + (secure ? 1 : 0);
+    result = 31 * result + (port != null ? port.hashCode() : 0);
+    result = 31 * result + (secure != null ? secure.hashCode() : 0);
     return result;
   }
 

@@ -82,7 +82,7 @@ public class ServiceRegistryApi {
   @GET
   @Path("systemId/{systemId}")
   public List<ServiceRegistryEntry> getAllByProvider(@PathParam("systemId") long systemId) {
-    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).orElseThrow(() -> {
+    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).<DataNotFoundException>orElseThrow(() -> {
       log.info("getAllByProvider throws DataNotFoundException");
       throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadSystem in the database.");
     });

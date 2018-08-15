@@ -53,7 +53,7 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @Valid
   @NotNull
@@ -83,11 +83,11 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
   private ArrowheadCloud providerCloud;
 
   @Size(min = 1, message = "Priority can not be less than 1")
-  private int priority;
+  private Integer priority;
 
   @Column(name = "is_default")
   @Type(type = "yes_no")
-  private boolean defaultEntry;
+  private Boolean defaultEntry = false;
 
   private String name;
 
@@ -135,11 +135,11 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
     this.serviceURI = serviceURI;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -183,11 +183,11 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
     this.priority = priority;
   }
 
-  public boolean isDefaultEntry() {
+  public Boolean isDefaultEntry() {
     return defaultEntry;
   }
 
-  public void setDefaultEntry(boolean defaultEntry) {
+  public void setDefaultEntry(Boolean defaultEntry) {
     this.defaultEntry = defaultEntry;
   }
 
@@ -252,12 +252,6 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
 
     OrchestrationStore that = (OrchestrationStore) o;
 
-    if (priority != that.priority) {
-      return false;
-    }
-    if (defaultEntry != that.defaultEntry) {
-      return false;
-    }
     if (!service.equals(that.service)) {
       return false;
     }
@@ -267,7 +261,13 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
     if (!providerSystem.equals(that.providerSystem)) {
       return false;
     }
-    return providerCloud != null ? providerCloud.equals(that.providerCloud) : that.providerCloud == null;
+    if (providerCloud != null ? !providerCloud.equals(that.providerCloud) : that.providerCloud != null) {
+      return false;
+    }
+    if (priority != null ? !priority.equals(that.priority) : that.priority != null) {
+      return false;
+    }
+    return defaultEntry != null ? defaultEntry.equals(that.defaultEntry) : that.defaultEntry == null;
   }
 
   @Override
@@ -276,8 +276,8 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
     result = 31 * result + consumer.hashCode();
     result = 31 * result + providerSystem.hashCode();
     result = 31 * result + (providerCloud != null ? providerCloud.hashCode() : 0);
-    result = 31 * result + priority;
-    result = 31 * result + (defaultEntry ? 1 : 0);
+    result = 31 * result + (priority != null ? priority.hashCode() : 0);
+    result = 31 * result + (defaultEntry != null ? defaultEntry.hashCode() : 0);
     return result;
   }
 

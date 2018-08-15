@@ -35,7 +35,7 @@ public class ServiceRegistryEntry {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @Valid
   @NotNull(message = "Provided ArrowheadService cannot be null")
@@ -56,13 +56,13 @@ public class ServiceRegistryEntry {
   private String serviceUri;
 
   @Type(type = "yes_no")
-  private boolean udp;
+  private Boolean udp = false;
 
   @Column(name = "end_of_validity")
   @FutureOrPresent(message = "End of validity date cannot be in the past")
   private LocalDateTime endOfValidity;
 
-  private int version = 1;
+  private Integer version = 1;
 
   public ServiceRegistryEntry() {
   }
@@ -84,11 +84,11 @@ public class ServiceRegistryEntry {
     this.version = version;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -116,11 +116,11 @@ public class ServiceRegistryEntry {
     this.serviceUri = serviceUri;
   }
 
-  public boolean isUdp() {
+  public Boolean isUdp() {
     return udp;
   }
 
-  public void setUdp(boolean udp) {
+  public void setUdp(Boolean udp) {
     this.udp = udp;
   }
 
@@ -132,11 +132,11 @@ public class ServiceRegistryEntry {
     this.endOfValidity = endOfValidity;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
@@ -151,16 +151,16 @@ public class ServiceRegistryEntry {
 
     ServiceRegistryEntry that = (ServiceRegistryEntry) o;
 
-    if (version != that.version) {
-      return false;
-    }
     if (!providedService.equals(that.providedService)) {
       return false;
     }
     if (!provider.equals(that.provider)) {
       return false;
     }
-    return serviceUri != null ? serviceUri.equals(that.serviceUri) : that.serviceUri == null;
+    if (serviceUri != null ? !serviceUri.equals(that.serviceUri) : that.serviceUri != null) {
+      return false;
+    }
+    return version != null ? version.equals(that.version) : that.version == null;
   }
 
   @Override
@@ -168,7 +168,7 @@ public class ServiceRegistryEntry {
     int result = providedService.hashCode();
     result = 31 * result + provider.hashCode();
     result = 31 * result + (serviceUri != null ? serviceUri.hashCode() : 0);
-    result = 31 * result + version;
+    result = 31 * result + (version != null ? version.hashCode() : 0);
     return result;
   }
 

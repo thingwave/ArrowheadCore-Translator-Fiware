@@ -29,7 +29,7 @@ public class ArrowheadCloud {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private long id;
+  private Long id;
 
   @NotBlank
   @Size(max = 255, message = "Cloud operator must be 255 character at max")
@@ -60,7 +60,7 @@ public class ArrowheadCloud {
 
   @Column(name = "is_secure")
   @Type(type = "yes_no")
-  private Boolean secure;
+  private Boolean secure = false;
 
   public ArrowheadCloud() {
   }
@@ -76,11 +76,11 @@ public class ArrowheadCloud {
     this.secure = secure;
   }
 
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -151,12 +151,6 @@ public class ArrowheadCloud {
 
     ArrowheadCloud that = (ArrowheadCloud) o;
 
-    if (port != that.port) {
-      return false;
-    }
-    if (secure != that.secure) {
-      return false;
-    }
     if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
       return false;
     }
@@ -166,7 +160,13 @@ public class ArrowheadCloud {
     if (address != null ? !address.equals(that.address) : that.address != null) {
       return false;
     }
-    return gatekeeperServiceURI != null ? gatekeeperServiceURI.equals(that.gatekeeperServiceURI) : that.gatekeeperServiceURI == null;
+    if (port != null ? !port.equals(that.port) : that.port != null) {
+      return false;
+    }
+    if (gatekeeperServiceURI != null ? !gatekeeperServiceURI.equals(that.gatekeeperServiceURI) : that.gatekeeperServiceURI != null) {
+      return false;
+    }
+    return secure != null ? secure.equals(that.secure) : that.secure == null;
   }
 
   @Override
@@ -174,9 +174,9 @@ public class ArrowheadCloud {
     int result = operator != null ? operator.hashCode() : 0;
     result = 31 * result + (cloudName != null ? cloudName.hashCode() : 0);
     result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + port;
+    result = 31 * result + (port != null ? port.hashCode() : 0);
     result = 31 * result + (gatekeeperServiceURI != null ? gatekeeperServiceURI.hashCode() : 0);
-    result = 31 * result + (secure ? 1 : 0);
+    result = 31 * result + (secure != null ? secure.hashCode() : 0);
     return result;
   }
 

@@ -80,7 +80,9 @@ public class ServiceRegistryResource {
     if (savedEntry == null) {
       savedEntry = dm.save(entry);
     } else {
-      throw new DuplicateEntryException("There is already a Service Registry entry with this provider and providedService.");
+      throw new DuplicateEntryException(
+          "There is already a Service Registry entry with this provider(" + provider.getSystemName() + ") and " + "providedService(" + service
+              .getServiceDefinition() + ").");
     }
 
     log.info("New " + entry.toString() + " is saved.");

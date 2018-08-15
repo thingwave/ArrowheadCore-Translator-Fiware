@@ -88,7 +88,7 @@ public class AuthorizationApi {
   @GET
   @Path("intracloud/systemId/{systemId}/services")
   public Set<ArrowheadService> getSystemServices(@PathParam("systemId") long systemId, @QueryParam("provider_side") boolean providerSide) {
-    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).orElseThrow(() -> {
+    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).<DataNotFoundException>orElseThrow(() -> {
       log.info("getSystemServices throws DataNotFoundException.");
       throw new DataNotFoundException("ArrowheadSystem not found with id:" + systemId);
     });
@@ -115,7 +115,7 @@ public class AuthorizationApi {
   @GET
   @Path("intracloud/systemId/{systemId}")
   public List<IntraCloudAuthorization> getSystemAuthRights(@PathParam("systemId") long systemId) {
-    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).orElseThrow(() -> {
+    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).<DataNotFoundException>orElseThrow(() -> {
       log.info("getSystemAuthRights throws DataNotFoundException.");
       throw new DataNotFoundException("ArrowheadSystem not found with id:" + systemId);
     });
@@ -235,7 +235,7 @@ public class AuthorizationApi {
   @DELETE
   @Path("intracloud/systemId/{systemId}")
   public Response deleteSystemRelations(@PathParam("systemId") long systemId, @QueryParam("provider_side") boolean providerSide) {
-    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).orElseThrow(() -> {
+    ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).<DataNotFoundException>orElseThrow(() -> {
       log.info("deleteSystemRelations throws DNF.");
       throw new DataNotFoundException("ArrowheadSystem not found with id: " + systemId);
     });
