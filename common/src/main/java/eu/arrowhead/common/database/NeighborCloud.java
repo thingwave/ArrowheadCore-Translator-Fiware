@@ -83,7 +83,7 @@ public class NeighborCloud implements Serializable {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("NeighborCloud{");
-    sb.append("cloud=").append(cloud);
+    sb.append(" cloud = ").append(cloud);
     sb.append('}');
     return sb.toString();
   }

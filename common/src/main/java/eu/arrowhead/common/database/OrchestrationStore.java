@@ -284,10 +284,10 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("OrchestrationStore{");
-    sb.append("service=").append(service);
-    sb.append(", consumer=").append(consumer);
-    sb.append(", priority=").append(priority);
-    sb.append(", defaultEntry=").append(defaultEntry);
+    sb.append(" service = ").append(service);
+    sb.append(", consumer = ").append(consumer);
+    sb.append(", priority = ").append(priority);
+    sb.append(", defaultEntry = ").append(defaultEntry);
     sb.append('}');
     return sb.toString();
   }

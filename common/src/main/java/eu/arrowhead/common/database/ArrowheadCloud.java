@@ -183,12 +183,12 @@ public class ArrowheadCloud {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ArrowheadCloud{");
-    sb.append("operator='").append(operator).append('\'');
-    sb.append(", cloudName='").append(cloudName).append('\'');
-    sb.append(", address='").append(address).append('\'');
-    sb.append(", port=").append(port);
-    sb.append(", gatekeeperServiceURI='").append(gatekeeperServiceURI).append('\'');
-    sb.append(", secure=").append(secure);
+    sb.append(" operator = ").append(operator);
+    sb.append(", cloudName = ").append(cloudName);
+    sb.append(", address = ").append(address);
+    sb.append(", port = ").append(port);
+    sb.append(", gatekeeperServiceURI = ").append(gatekeeperServiceURI);
+    sb.append(", secure = ").append(secure);
     sb.append('}');
     return sb.toString();
   }

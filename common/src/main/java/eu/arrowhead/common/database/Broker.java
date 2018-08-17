@@ -141,10 +141,10 @@ public class Broker {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("Broker{");
-    sb.append("brokerName='").append(brokerName).append('\'');
-    sb.append(", address='").append(address).append('\'');
-    sb.append(", port=").append(port);
-    sb.append(", secure=").append(secure);
+    sb.append(" brokerName = ").append(brokerName);
+    sb.append(", address = ").append(address);
+    sb.append(", port = ").append(port);
+    sb.append(", secure = ").append(secure);
     sb.append('}');
     return sb.toString();
   }

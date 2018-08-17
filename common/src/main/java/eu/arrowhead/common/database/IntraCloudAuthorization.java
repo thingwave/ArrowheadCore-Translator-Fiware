@@ -135,9 +135,9 @@ public class IntraCloudAuthorization {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("IntraCloudAuthorization{");
-    sb.append("consumer=").append(consumer);
-    sb.append(", provider=").append(provider);
-    sb.append(", service=").append(service);
+    sb.append(" consumer = ").append(consumer);
+    sb.append(", provider = ").append(provider);
+    sb.append(", service = ").append(service);
     sb.append('}');
     return sb.toString();
   }

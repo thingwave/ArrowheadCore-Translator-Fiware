@@ -199,8 +199,8 @@ public class EventFilter {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("EventFilter{");
-    sb.append("eventType='").append(eventType).append('\'');
-    sb.append(", consumer=").append(consumer);
+    sb.append(" eventType = ").append(eventType);
+    sb.append(", consumer = ").append(consumer);
     sb.append('}');
     return sb.toString();
   }

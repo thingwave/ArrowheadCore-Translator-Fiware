@@ -82,7 +82,7 @@ public class OwnCloud implements Serializable {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("OwnCloud{");
-    sb.append("cloud=").append(cloud);
+    sb.append(" cloud = ").append(cloud);
     sb.append('}');
     return sb.toString();
   }

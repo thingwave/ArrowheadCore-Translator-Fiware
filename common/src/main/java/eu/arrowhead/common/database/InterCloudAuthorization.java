@@ -113,8 +113,8 @@ public class InterCloudAuthorization {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("InterCloudAuthorization{");
-    sb.append("cloud=").append(cloud);
-    sb.append(", service=").append(service);
+    sb.append(" cloud = ").append(cloud);
+    sb.append(", service = ").append(service);
     sb.append('}');
     return sb.toString();
   }

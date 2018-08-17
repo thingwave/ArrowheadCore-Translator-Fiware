@@ -177,8 +177,8 @@ public class ServiceRegistryEntry {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ServiceRegistryEntry{");
-    sb.append("providedService=").append(providedService);
-    sb.append(", provider=").append(provider);
+    sb.append(" providedService = ").append(providedService);
+    sb.append(", provider = ").append(provider);
     sb.append('}');
     return sb.toString();
   }

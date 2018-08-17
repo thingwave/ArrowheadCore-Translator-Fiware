@@ -67,7 +67,7 @@ public class ArrowheadDevice {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ArrowheadDevice{");
-    sb.append("deviceName='").append(deviceName).append('\'');
+    sb.append(" deviceName = ").append(deviceName);
     sb.append('}');
     return sb.toString();
   }

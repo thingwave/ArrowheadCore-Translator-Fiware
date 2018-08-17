@@ -141,8 +141,7 @@ public class ArrowheadService {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ArrowheadService{");
-    sb.append("id=").append(id);
-    sb.append(", serviceDefinition='").append(serviceDefinition).append('\'');
+    sb.append(" serviceDefinition = ").append(serviceDefinition);
     sb.append('}');
     return sb.toString();
   }
