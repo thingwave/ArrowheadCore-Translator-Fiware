@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
@@ -62,6 +63,7 @@ public class ServiceRegistryEntry {
   @FutureOrPresent(message = "End of validity date cannot be in the past")
   private LocalDateTime endOfValidity;
 
+  @Version
   private Integer version = 1;
 
   public ServiceRegistryEntry() {
