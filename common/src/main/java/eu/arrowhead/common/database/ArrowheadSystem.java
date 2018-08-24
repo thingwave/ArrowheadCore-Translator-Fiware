@@ -33,6 +33,7 @@ public class ArrowheadSystem {
 
   @NotBlank
   @Size(max = 255, message = "System name must be 255 character at max")
+  //TODO allow these charachters: _ - :
   @Pattern(regexp = "[A-Za-z0-9]+", message = "System name can only contain alphanumerical characters")
   @Column(name = "system_name")
   private String systemName;

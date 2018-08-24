@@ -9,6 +9,7 @@
 
 package eu.arrowhead.common.misc;
 
+import eu.arrowhead.common.exception.AuthException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +40,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 
 public final class SecurityUtils {
@@ -232,19 +234,29 @@ public final class SecurityUtils {
     return sb.toString();
   }
 
-  public static PublicKey getPublicKey(String stringKey) throws InvalidKeySpecException {
-    byte[] byteKey = Base64.getDecoder().decode(stringKey);
+  public static PublicKey getPublicKey(String stringKey) {
+    byte[] byteKey;
+    try {
+      byteKey = Base64.getDecoder().decode(stringKey);
+    } catch (IllegalArgumentException e) {
+      throw new AuthException("Provider public key decoding failed! Caused by: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
+    }
     X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
-    KeyFactory kf = null;
+    KeyFactory kf;
     try {
       kf = KeyFactory.getInstance("RSA");
     } catch (NoSuchAlgorithmException e) {
       log.fatal("KeyFactory.getInstance(String) throws NoSuchAlgorithmException, code needs to be changed!");
-      e.printStackTrace();
+      throw new AssertionError("KeyFactory.getInstance(String) throws NoSuchAlgorithmException, code needs to be changed!", e);
     }
 
     // noinspection ConstantConditions
-    return kf.generatePublic(X509publicKey);
+    try {
+      return kf.generatePublic(X509publicKey);
+    } catch (InvalidKeySpecException e) {
+      log.error("getPublicKey: X509 keyspec could not be created from the decoded bytes.");
+      throw new AuthException("PublicKey decoding failed due wrong input key", e);
+    }
   }
 
   public static TrustManager[] createTrustManagers() {

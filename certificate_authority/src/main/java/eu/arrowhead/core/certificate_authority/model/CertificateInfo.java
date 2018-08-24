@@ -1,10 +1,14 @@
-package eu.arrowhead.common.messages;
+package eu.arrowhead.core.certificate_authority.model;
+
+import java.security.cert.X509Certificate;
 
 public class CertificateInfo {
 
   private String commonName;
   private String publicKey;
   private String privateKey;
+  private X509Certificate before;
+  private X509Certificate after;
 
   public CertificateInfo() {
   }
@@ -13,6 +17,14 @@ public class CertificateInfo {
     this.commonName = commonName;
     this.publicKey = publicKey;
     this.privateKey = privateKey;
+  }
+
+  public CertificateInfo(String commonName, String publicKey, String privateKey, X509Certificate before, X509Certificate after) {
+    this.commonName = commonName;
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
+    this.before = before;
+    this.after = after;
   }
 
   public String getCommonName() {
@@ -37,5 +49,21 @@ public class CertificateInfo {
 
   public void setPrivateKey(String privateKey) {
     this.privateKey = privateKey;
+  }
+
+  public X509Certificate getBefore() {
+    return before;
+  }
+
+  public void setBefore(X509Certificate before) {
+    this.before = before;
+  }
+
+  public X509Certificate getAfter() {
+    return after;
+  }
+
+  public void setAfter(X509Certificate after) {
+    this.after = after;
   }
 }

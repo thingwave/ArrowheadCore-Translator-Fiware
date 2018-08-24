@@ -29,7 +29,29 @@
       <artifactId>common</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>io.github.olivierlemasle</groupId>
+      <artifactId>java-ca-lib</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
   </dependencies>
+
+  <repositories>
+
+    <repository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+
+  </repositories>
 
   <build>
     <plugins>

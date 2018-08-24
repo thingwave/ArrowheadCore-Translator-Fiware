@@ -17,16 +17,14 @@ import eu.arrowhead.common.exception.AuthException;
 import eu.arrowhead.common.messages.ArrowheadToken;
 import eu.arrowhead.common.messages.RawTokenInfo;
 import eu.arrowhead.common.messages.TokenGenerationRequest;
+import eu.arrowhead.common.misc.SecurityUtils;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -159,9 +157,9 @@ class TokenGenerationService {
 
     for (ArrowheadSystem provider : providers) {
       try {
-        PublicKey key = getPublicKey(provider.getAuthenticationInfo());
+        PublicKey key = SecurityUtils.getPublicKey(provider.getAuthenticationInfo());
         keys.add(key);
-      } catch (InvalidKeySpecException | NullPointerException e) {
+      } catch (AuthException e) {
         log.error("The stored auth info for the ArrowheadSystem (" + provider.getSystemName()
                       + ") is not a proper RSA public key spec, or it is incorrectly encoded. The public key can not be generated from it.");
         keys.add(null);
@@ -182,28 +180,6 @@ class TokenGenerationService {
     }
 
     return keys;
-  }
-
-  private static PublicKey getPublicKey(String stringKey) throws InvalidKeySpecException {
-    byte[] byteKey;
-    try {
-      byteKey = Base64.getDecoder().decode(stringKey);
-    } catch (IllegalArgumentException e) {
-      throw new AuthException(
-          "Provider public key decoding failed during token generation! Make sure the database only has valid, base-64 coded provider public "
-              + "keys! Caused by: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
-    }
-    X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
-    KeyFactory kf;
-    try {
-      kf = KeyFactory.getInstance("RSA");
-    } catch (NoSuchAlgorithmException e) {
-      log.fatal("KeyFactory.getInstance(String) throws NoSuchAlgorithmException, code needs to be changed!");
-      throw new AssertionError("KeyFactory.getInstance(String) throws NoSuchAlgorithmException, code needs to be changed!", e);
-    }
-
-    //noinspection ConstantConditions
-    return kf.generatePublic(X509publicKey);
   }
 
 }

@@ -135,6 +135,7 @@ public class GatekeeperApi {
    */
   @PUT
   @Path("neighborhood")
+  //TODO might not work the merge on the NC object, it should be on the ArrowheadCloud (test needed)
   public Response updateNeighborCloud(@Valid NeighborCloud nc) {
     restrictionMap.put("operator", nc.getCloud().getOperator());
     restrictionMap.put("cloudName", nc.getCloud().getCloudName());
