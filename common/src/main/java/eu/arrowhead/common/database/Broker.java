@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"broker_name"})})
+@Table(name = "broker", uniqueConstraints = {@UniqueConstraint(columnNames = {"broker_name"})})
 public class Broker {
 
   @Id
