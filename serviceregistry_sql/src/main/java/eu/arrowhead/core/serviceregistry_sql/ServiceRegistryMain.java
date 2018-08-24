@@ -33,7 +33,8 @@ public class ServiceRegistryMain extends ArrowheadMain {
   private ServiceRegistryMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Arrays.asList(ServiceRegistryResource.class, ServiceRegistryApi.class, OldServiceRegResource.class,
                                                         ArrowheadSystemApi.class, ArrowheadServiceApi.class));
-    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.core.serviceregistry_sql.filter"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.serviceregistry_sql.filter"};
     init(CoreSystem.SERVICE_REGISTRY_SQL, args, classes, packages);
 
     //if provider ping is scheduled, start the TimerTask that provides it

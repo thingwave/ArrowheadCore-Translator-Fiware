@@ -16,15 +16,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DeviceRegistryMain extends ArrowheadMain {
-	private DeviceRegistryMain(String[] args) {
-		Set<Class<?>> classes = new HashSet<>(Collections.singleton(DeviceRegistryResource.class));
-		String[] packages = { "eu.arrowhead.common", "eu.arrowhead.DeviceRegistry.filter" };
+
+  private DeviceRegistryMain(String[] args) {
+    Set<Class<?>> classes = new HashSet<>(Collections.singleton(DeviceRegistryResource.class));
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.DeviceRegistry.filter"};
     init(CoreSystem.DEVICEREGISTRY, args, classes, packages);
 
-		listenForInput();
-	}
+    listenForInput();
+  }
 
-	public static void main(String[] args) {
-		new DeviceRegistryMain(args);
-	}
+  public static void main(String[] args) {
+    new DeviceRegistryMain(args);
+  }
 }

@@ -19,7 +19,7 @@ public class ChoreographerMain extends ArrowheadMain {
 
   private ChoreographerMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Collections.singleton(ChoreographerResource.class));
-    String[] packages = {"eu.arrowhead.common"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
     init(CoreSystem.CHOREOGRAPHER, args, classes, packages);
     listenForInput();
   }

@@ -28,7 +28,8 @@ public class EventHandlerMain extends ArrowheadMain {
 
   private EventHandlerMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Arrays.asList(EventHandlerResource.class, ArrowheadSystemApi.class));
-    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.core.eventhandler.filter"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.eventhandler.filter"};
     init(CoreSystem.EVENTHANDLER, args, classes, packages);
 
     //if removing old filters (based on endDate field) is requested, start the TimerTask that provides it

@@ -50,7 +50,8 @@ public class ServiceRegistryMain extends ArrowheadMain {
 
   private ServiceRegistryMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Collections.singleton(ServiceRegistryResource.class));
-    String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.serviceregistry.filter"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.serviceregistry.filter"};
     init(CoreSystem.SERVICE_REGISTRY_DNS, args, classes, packages);
 
     System.setProperty("dns.server", DNS_ADDRESS);

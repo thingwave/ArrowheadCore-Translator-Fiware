@@ -21,7 +21,7 @@ public class CAMain extends ArrowheadMain {
 
   private CAMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Collections.singletonList(CAResource.class));
-    String[] packages = {"eu.arrowhead.common"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
     init(CoreSystem.CERTIFICATE_AUTHORITY, args, classes, packages);
 
     trustStorePass = props.getProperty("truststorepass");

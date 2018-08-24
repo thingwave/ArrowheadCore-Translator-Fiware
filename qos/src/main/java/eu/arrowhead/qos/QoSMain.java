@@ -19,7 +19,7 @@ public class QoSMain extends ArrowheadMain {
 
   private QoSMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Collections.singleton(QoSResource.class));
-    String[] packages = {"eu.arrowhead.common"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
     init(CoreSystem.QOS, args, classes, packages);
 
     MONITOR_URL = props.getProperty("monitor_url");

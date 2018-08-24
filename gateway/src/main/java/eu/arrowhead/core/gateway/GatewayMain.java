@@ -27,7 +27,8 @@ public class GatewayMain extends ArrowheadMain {
 
   private GatewayMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Collections.singleton(GatewayResource.class));
-    String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.gateway.filter"};
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.gateway.filter"};
     init(CoreSystem.GATEWAY, args, classes, packages);
 
     minPort = props.getIntProperty("min_port", 8000);

@@ -18,7 +18,7 @@ import java.util.Set;
 public class SystemRegistryMain extends ArrowheadMain {
 	private SystemRegistryMain(String[] args) {
 		Set<Class<?>> classes = new HashSet<>(Collections.singleton(SystemRegistryResource.class));
-		String[] packages = { "eu.arrowhead.common", "eu.arrowhead.SystemRegistry.filter" };
+		String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.SystemRegistry.filter" };
 		init(CoreSystem.SYSTEMREGISTRY, args, classes, packages);
 
 		listenForInput();
