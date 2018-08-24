@@ -9,6 +9,7 @@
 
 package eu.arrowhead.common;
 
+import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
 import java.io.File;
@@ -291,7 +292,7 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:delete throws ConstraintViolationException");
-      throw new DuplicateEntryException(
+      throw new ArrowheadException(
           "There is a reference to this object in another table, which prevents the delete operation. (" + object.getClass() + ")",
           Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
