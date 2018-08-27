@@ -70,8 +70,7 @@ public class AccessControlFilter implements ContainerRequestFilter {
         return clientCN.equalsIgnoreCase("orchestrator." + serverFields[1]);
       } else {
         // Only requests from other Gatekeepers are allowed
-        String[] clientFields = clientCN.split("\\.", 3);
-        return clientFields.length == 3 && clientFields[0].equals("gatekeeper") && clientFields[2].endsWith("arrowhead.eu");
+        return SecurityUtils.isTrustStoreCNArrowheadValid(clientCN);
       }
     }
   }
