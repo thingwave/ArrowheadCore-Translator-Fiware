@@ -158,8 +158,14 @@ public final class Utility {
           throw new NotAllowedException("Invalid method type was given to the Utility.sendRequest() method");
       }
     } catch (ProcessingException e) {
-      log.error("UnavailableServerException occurred at " + uri, e);
-      throw new UnavailableServerException("Could not get any response from: " + uri, Status.SERVICE_UNAVAILABLE.getStatusCode(), e);
+      if (e.getCause().getMessage().contains("PKIX path")) {
+        log.error("The system at " + uri + " is not part of the same certificate chain of trust!");
+        throw new AuthException("The system at " + uri + " is not part of the same certificate chain of trust!", Status.UNAUTHORIZED.getStatusCode(),
+                                e);
+      } else {
+        log.error("UnavailableServerException occurred at " + uri, e);
+        throw new UnavailableServerException("Could not get any response from: " + uri, Status.SERVICE_UNAVAILABLE.getStatusCode(), e);
+      }
     }
 
     // If the response status code does not start with 2 the request was not successful
@@ -304,18 +310,33 @@ public final class Utility {
     return uriList;
   }
 
-  public static ArrowheadCloud getOwnCloud() {
+  public static ArrowheadCloud getOwnCloud(boolean isSecure) {
     List<OwnCloud> cloudList = DatabaseManager.getInstance().getAll(OwnCloud.class, null);
     if (cloudList.isEmpty()) {
       log.error("Utility:getOwnCloud not found in the database.");
       throw new DataNotFoundException("Own Cloud information not found in the database. This information is needed for the Gatekeeper System.",
                                       Status.NOT_FOUND.getStatusCode());
     }
-    if (cloudList.size() > 1) {
-      log.warn("own_cloud table should NOT have more than 1 rows.");
+    if (cloudList.size() > 2) {
+      log.warn("own_cloud table should NOT have more than 2 rows.");
     }
-
-    return cloudList.get(0).getCloud();
+    if (isSecure) {
+      for (OwnCloud cloud : cloudList) {
+        if (cloud.getCloud().isSecure()) {
+          return cloud.getCloud();
+        }
+      }
+      log.error("Utility:getOwnCloud finds no secure own cloud!");
+      throw new DataNotFoundException("Could not find secure own cloud information in the database!", Status.NOT_FOUND.getStatusCode());
+    } else {
+      for (OwnCloud cloud : cloudList) {
+        if (!cloud.getCloud().isSecure()) {
+          return cloud.getCloud();
+        }
+      }
+      log.error("Utility:getOwnCloud finds no insecure own cloud!");
+      throw new DataNotFoundException("Could not find insecure own cloud information in the database!", Status.NOT_FOUND.getStatusCode());
+    }
   }
 
   public static String stripEndSlash(String uri) {

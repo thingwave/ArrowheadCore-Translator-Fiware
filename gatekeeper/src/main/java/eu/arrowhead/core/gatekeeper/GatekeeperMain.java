@@ -90,7 +90,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
                                                              CoreSystemService.ORCH_SERVICE.getServiceDef()));
     getServicesTask = new GetCoreSystemServicesTask(this, serviceDefs);
     Timer timer = new Timer();
-    timer.schedule(getServicesTask, 15L * 1000L, 10L * 60L * 1000L); //15 sec delay, 10 min period
+    timer.schedule(getServicesTask, 15L * 1000L, 60L * 60L * 1000L); //15 sec delay, 1 hour period
   }
 
   public static void main(String[] args) throws IOException {

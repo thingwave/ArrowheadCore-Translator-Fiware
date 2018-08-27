@@ -43,7 +43,7 @@ public class NeighborCloud implements Serializable {
   @Valid
   @JoinColumn(name = "cloud_id")
   @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @OnDelete(action = OnDeleteAction.CASCADE) //NOTE this still does not have the expected effect, maybe orphanRemoval = true on OneToX annotations?
   private ArrowheadCloud cloud;
 
   public NeighborCloud() {
