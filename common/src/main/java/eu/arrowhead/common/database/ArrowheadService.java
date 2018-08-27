@@ -9,6 +9,8 @@
 
 package eu.arrowhead.common.database;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import eu.arrowhead.common.json.support.ArrowheadServiceSupport;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +26,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -52,9 +55,9 @@ public class ArrowheadService {
   @CollectionTable(name = "arrowhead_service_interfaces", joinColumns = @JoinColumn(name = "arrowhead_service_id"))
   private Set<@NotBlank String> interfaces = new HashSet<>();
 
+  @Transient
+  @JsonInclude(Include.NON_EMPTY)
   @Size(max = 100, message = "Service can only have 100 serviceMetadata key-value pairs at max")
-  @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "arrowhead_service_metadata", joinColumns = @JoinColumn(name = "arrowhead_service_id"))
   private Map<@NotBlank String, @NotBlank String> serviceMetadata = new HashMap<>();
 
   public ArrowheadService() {

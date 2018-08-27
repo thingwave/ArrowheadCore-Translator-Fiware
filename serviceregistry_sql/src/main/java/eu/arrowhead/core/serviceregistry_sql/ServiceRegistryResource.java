@@ -49,13 +49,13 @@ public class ServiceRegistryResource {
   @POST
   @Path("register")
   public Response registerService(@Valid ServiceRegistryEntry entry) {
+    entry.toDatabase();
     restrictionMap.put("serviceDefinition", entry.getProvidedService().getServiceDefinition());
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
     if (service == null) {
       service = dm.save(entry.getProvidedService());
     } else {
       service.setInterfaces(entry.getProvidedService().getInterfaces());
-      service.setServiceMetadata(entry.getProvidedService().getServiceMetadata());
       dm.merge(service);
     }
     entry.setProvidedService(service);
@@ -82,9 +82,10 @@ public class ServiceRegistryResource {
     } else {
       throw new DuplicateEntryException(
           "There is already a Service Registry entry with this provider(" + provider.getSystemName() + ") and " + "providedService(" + service
-              .getServiceDefinition() + ").");
+              .getServiceDefinition() + ")");
     }
 
+    savedEntry.fromDatabase();
     log.info("New " + entry.toString() + " is saved.");
     return Response.status(Status.CREATED).entity(savedEntry).build();
   }
@@ -102,6 +103,10 @@ public class ServiceRegistryResource {
     restrictionMap.clear();
     restrictionMap.put("providedService", service);
     List<ServiceRegistryEntry> providedServices = dm.getAll(ServiceRegistryEntry.class, restrictionMap);
+    for (ServiceRegistryEntry entry : providedServices) {
+      entry.fromDatabase();
+    }
+
     //NOTE add version filter too later, if deemed needed
     if (queryForm.isMetadataSearch()) {
       RegistryUtils.filterOnMeta(providedServices, queryForm.getService().getServiceMetadata());
@@ -133,6 +138,7 @@ public class ServiceRegistryResource {
     ServiceRegistryEntry retrievedEntry = dm.get(ServiceRegistryEntry.class, restrictionMap);
     if (retrievedEntry != null) {
       dm.delete(retrievedEntry);
+      retrievedEntry.fromDatabase();
       log.info(retrievedEntry.toString() + " deleted.");
       return Response.status(Status.OK).entity(retrievedEntry).build();
     } else {

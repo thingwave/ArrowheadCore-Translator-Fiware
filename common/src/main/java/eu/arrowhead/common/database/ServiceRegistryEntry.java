@@ -10,6 +10,7 @@
 package eu.arrowhead.common.database;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -64,6 +65,9 @@ public class ServiceRegistryEntry {
 
   private Integer version = 1;
 
+  //Takes the providedService metadata map
+  private String metadata;
+
   public ServiceRegistryEntry() {
   }
 
@@ -73,7 +77,6 @@ public class ServiceRegistryEntry {
     this.serviceUri = serviceUri;
   }
 
-
   public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceUri, boolean udp, LocalDateTime endOfValidity,
                               int version) {
     this.providedService = providedService;
@@ -82,6 +85,17 @@ public class ServiceRegistryEntry {
     this.udp = udp;
     this.endOfValidity = endOfValidity;
     this.version = version;
+  }
+
+  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceUri, Boolean udp, LocalDateTime endOfValidity,
+                              Integer version, String metadata) {
+    this.providedService = providedService;
+    this.provider = provider;
+    this.serviceUri = serviceUri;
+    this.udp = udp;
+    this.endOfValidity = endOfValidity;
+    this.version = version;
+    this.metadata = metadata;
   }
 
   public Long getId() {
@@ -180,4 +194,31 @@ public class ServiceRegistryEntry {
     sb.append('}');
     return sb.toString();
   }
+
+  public void toDatabase() {
+    if (providedService.getServiceMetadata() != null && !providedService.getServiceMetadata().isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      for (Map.Entry<String, String> entry : providedService.getServiceMetadata().entrySet()) {
+        sb.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+      }
+      metadata = sb.toString().substring(0, sb.length() - 1);
+    }
+  }
+
+  public void fromDatabase() {
+    ArrowheadService temp = providedService;
+    providedService = new ArrowheadService();
+    providedService.setServiceDefinition(temp.getServiceDefinition());
+    providedService.setInterfaces(temp.getInterfaces());
+
+    if (metadata != null) {
+      String[] parts = metadata.split(",");
+      providedService.getServiceMetadata().clear();
+      for (String part : parts) {
+        String[] pair = part.split("=");
+        providedService.getServiceMetadata().put(pair[0], pair[1]);
+      }
+    }
+  }
+
 }

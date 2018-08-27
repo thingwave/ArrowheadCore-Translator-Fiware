@@ -162,7 +162,8 @@ class TokenGenerationService {
         keys.add(key);
       } catch (AuthException e) {
         log.error("The stored auth info for the ArrowheadSystem (" + provider.getSystemName()
-                      + ") is not a proper RSA public key spec, or it is incorrectly encoded. The public key can not be generated from it.");
+                      + ") is not a proper RSA public key spec, or it is incorrectly encoded, or missing. The public key can not be decoded from "
+                      + "it.");
         keys.add(null);
       }
     }

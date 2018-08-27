@@ -55,6 +55,11 @@ public class ServiceRegistryApi {
   @Path("all")
   public Response getAllServices() {
     List<ServiceRegistryEntry> providedServices = dm.getAll(ServiceRegistryEntry.class, null);
+
+    for (ServiceRegistryEntry entry : providedServices) {
+      entry.fromDatabase();
+    }
+
     ServiceQueryResult result = new ServiceQueryResult(providedServices);
     log.info("getAllServices returns " + result.getServiceQueryData().size() + " entries");
     if (result.getServiceQueryData().isEmpty()) {
@@ -94,6 +99,10 @@ public class ServiceRegistryApi {
       throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadSystem in the database.");
     }
 
+    for (ServiceRegistryEntry entry : srList) {
+      entry.fromDatabase();
+    }
+
     log.info("getAllByProvider returns " + srList.size() + " entries");
     return srList;
   }
@@ -116,6 +125,10 @@ public class ServiceRegistryApi {
       throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadService in the database.");
     }
 
+    for (ServiceRegistryEntry entry : srList) {
+      entry.fromDatabase();
+    }
+
     log.info("getAllByService returns " + srList.size() + " entries");
     return srList;
   }
@@ -123,6 +136,7 @@ public class ServiceRegistryApi {
   @PUT
   @Path("update")
   public Response updateServiceRegistryEntry(@Valid ServiceRegistryEntry entry) {
+    entry.toDatabase();
     restrictionMap.put("serviceDefinition", entry.getProvidedService().getServiceDefinition());
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
     if (service == null) {
@@ -151,6 +165,7 @@ public class ServiceRegistryApi {
     retreivedEntry.setServiceUri(entry.getServiceUri());
     retreivedEntry.setEndOfValidity(entry.getEndOfValidity());
     retreivedEntry = dm.merge(retreivedEntry);
+    retreivedEntry.fromDatabase();
 
     log.info("updateServiceRegistryEntry successfully returns.");
     return Response.status(Status.ACCEPTED).entity(retreivedEntry).build();

@@ -187,7 +187,7 @@ public class DatabaseManager {
           criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
         }
       }
-      retrievedList = (List<T>) criteria.list();
+      retrievedList = (List<T>) criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
       transaction.commit();
     } catch (Exception e) {
       e.printStackTrace();
@@ -216,7 +216,7 @@ public class DatabaseManager {
         }
         criteria.add(disjunction);
       }
-      retrievedList = (List<T>) criteria.list();
+      retrievedList = (List<T>) criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
       transaction.commit();
     } catch (Exception e) {
       if (transaction != null) {

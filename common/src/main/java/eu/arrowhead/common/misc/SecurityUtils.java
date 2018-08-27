@@ -238,7 +238,7 @@ public final class SecurityUtils {
     byte[] byteKey;
     try {
       byteKey = Base64.getDecoder().decode(stringKey);
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException | NullPointerException e) {
       throw new AuthException("Provider public key decoding failed! Caused by: " + e.getMessage(), Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
     }
     X509EncodedKeySpec X509publicKey = new X509EncodedKeySpec(byteKey);
