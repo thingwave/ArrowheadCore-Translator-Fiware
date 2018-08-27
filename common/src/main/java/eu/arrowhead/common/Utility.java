@@ -297,14 +297,16 @@ public final class Utility {
     return Optional.empty();
   }
 
-  public static List<String> getNeighborCloudURIs() {
+  public static List<String> getNeighborCloudURIs(boolean isSecure) {
     List<NeighborCloud> cloudList = new ArrayList<>(DatabaseManager.getInstance().getAll(NeighborCloud.class, null));
 
     List<String> uriList = new ArrayList<>();
     for (NeighborCloud cloud : cloudList) {
-      uriList.add(
-          getUri(cloud.getCloud().getAddress(), cloud.getCloud().getPort(), cloud.getCloud().getGatekeeperServiceURI(), cloud.getCloud().isSecure(),
-                 false));
+      if (isSecure == cloud.getCloud().isSecure()) {
+        uriList.add(
+            getUri(cloud.getCloud().getAddress(), cloud.getCloud().getPort(), cloud.getCloud().getGatekeeperServiceURI(), cloud.getCloud().isSecure(),
+                   false));
+      }
     }
 
     return uriList;
