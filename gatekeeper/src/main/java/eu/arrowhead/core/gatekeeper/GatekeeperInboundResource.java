@@ -96,7 +96,7 @@ public class GatekeeperInboundResource {
       }
 
       log.info("GSDPoll successful, sending back GSDAnswer");
-      GSDAnswer answer = new GSDAnswer(gsdPoll.getRequestedService(), Utility.getOwnCloud());
+      GSDAnswer answer = new GSDAnswer(gsdPoll.getRequestedService(), Utility.getOwnCloud(GatekeeperMain.IS_SECURE));
       return Response.status(Status.OK).entity(answer).build();
     }
   }
@@ -184,7 +184,8 @@ public class GatekeeperInboundResource {
 
     ArrowheadSystem consumer = new ArrowheadSystem(icnProposal.getRequesterSystem());
     ConnectToProviderRequest connectionRequest = new ConnectToProviderRequest(chosenBroker.getAddress(), chosenBroker.getPort(), consumer, provider,
-                                                                              icnProposal.getRequesterCloud(), Utility.getOwnCloud(),
+                                                                              icnProposal.getRequesterCloud(),
+                                                                              Utility.getOwnCloud(GatekeeperMain.IS_SECURE),
                                                                               icnProposal.getRequestedService(), isSecure, timeout,
                                                                               icnProposal.getGatewayPublicKey());
 

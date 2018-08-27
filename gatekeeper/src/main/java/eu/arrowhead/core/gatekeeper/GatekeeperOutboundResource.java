@@ -70,7 +70,7 @@ public class GatekeeperOutboundResource {
   @PUT
   @Path("init_gsd")
   public Response GSDRequest(@Valid GSDRequestForm requestForm) {
-    ArrowheadCloud ownCloud = Utility.getOwnCloud();
+    ArrowheadCloud ownCloud = Utility.getOwnCloud(GatekeeperMain.IS_SECURE);
     GSDPoll gsdPoll = new GSDPoll(requestForm.getRequestedService(), ownCloud, requestForm.getRegistryFlags());
 
     // If no preferred Clouds were given, send GSD poll requests to the neighbor Clouds
@@ -147,7 +147,8 @@ public class GatekeeperOutboundResource {
   public Response ICNRequest(@Valid ICNRequestForm requestForm) {
     requestForm.getNegotiationFlags().put("useGateway", GatekeeperMain.USE_GATEWAY);
     // Compiling the payload and then getting the request URI
-    ICNProposal icnProposal = new ICNProposal(requestForm.getRequestedService(), Utility.getOwnCloud(), requestForm.getRequesterSystem(),
+    ICNProposal icnProposal = new ICNProposal(requestForm.getRequestedService(), Utility.getOwnCloud(GatekeeperMain.IS_SECURE),
+                                              requestForm.getRequesterSystem(),
                                               requestForm.getPreferredSystems(), requestForm.getNegotiationFlags(), null, GatekeeperMain.TIMEOUT,
                                               null);
 
@@ -178,7 +179,8 @@ public class GatekeeperOutboundResource {
     ConnectToConsumerRequest connectionRequest = new ConnectToConsumerRequest(gwConnInfo.getBrokerName(), gwConnInfo.getBrokerPort(),
                                                                               gwConnInfo.getQueueName(), gwConnInfo.getControlQueueName(),
                                                                               requestForm.getRequesterSystem(),
-                                                                              icnEnd.getOrchestrationForm().getProvider(), Utility.getOwnCloud(),
+                                                                              icnEnd.getOrchestrationForm().getProvider(),
+                                                                              Utility.getOwnCloud(GatekeeperMain.IS_SECURE),
                                                                               requestForm.getTargetCloud(), requestForm.getRequestedService(),
                                                                               isSecure, GatekeeperMain.TIMEOUT, gwConnInfo.getGatewayPublicKey());
 

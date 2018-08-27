@@ -85,6 +85,7 @@ public abstract class ArrowheadMain {
           System.out.println("Starting server in debug mode!");
           break;
         case "-tls":
+          System.setProperty("is_secure", "true");
           isSecure = true;
           break;
       }

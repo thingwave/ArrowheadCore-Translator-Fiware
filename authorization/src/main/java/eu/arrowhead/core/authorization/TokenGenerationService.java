@@ -80,7 +80,8 @@ class TokenGenerationService {
       if (request.getConsumerCloud() != null) {
         c = c.concat(".").concat(request.getConsumerCloud().getCloudName()).concat(".").concat(request.getConsumerCloud().getOperator());
       } else {
-        ArrowheadCloud ownCloud = Utility.getOwnCloud();
+        boolean secureMode = Boolean.valueOf(System.getProperty("is_secure", "false"));
+        ArrowheadCloud ownCloud = Utility.getOwnCloud(secureMode);
         c = c.concat(".").concat(ownCloud.getCloudName()).concat(".").concat(ownCloud.getOperator());
       }
       rawTokenInfo.setC(c);
