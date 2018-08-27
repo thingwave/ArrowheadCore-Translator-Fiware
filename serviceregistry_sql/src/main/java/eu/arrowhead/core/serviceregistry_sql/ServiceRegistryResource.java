@@ -55,6 +55,7 @@ public class ServiceRegistryResource {
       service = dm.save(entry.getProvidedService());
     } else {
       service.setInterfaces(entry.getProvidedService().getInterfaces());
+      service.setServiceMetadata(entry.getProvidedService().getServiceMetadata());
       dm.merge(service);
     }
     entry.setProvidedService(service);
@@ -67,7 +68,6 @@ public class ServiceRegistryResource {
     if (provider == null) {
       provider = dm.save(entry.getProvider());
     } else {
-      provider.setAddress(entry.getProvider().getAddress());
       provider.setAuthenticationInfo(entry.getProvider().getAuthenticationInfo());
       dm.merge(provider);
     }
