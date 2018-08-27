@@ -76,7 +76,7 @@ public class GatekeeperOutboundResource {
     // If no preferred Clouds were given, send GSD poll requests to the neighbor Clouds
     List<String> cloudURIs = new ArrayList<>();
     if (requestForm.getSearchPerimeter().isEmpty()) {
-      cloudURIs = Utility.getNeighborCloudURIs();
+      cloudURIs = Utility.getNeighborCloudURIs(GatekeeperMain.IS_SECURE);
     }
     // If there are preferred Clouds given, send GSD poll requests there
     else {
