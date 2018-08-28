@@ -18,8 +18,10 @@
 
   <modules>
     <module>authorization</module>
+    <module>certificate_authority</module>
     <module>choreographer</module>
     <module>common</module>
+    <module>deviceregistry</module>
     <module>dnssd</module>
     <module>eventhandler</module>
     <module>gatekeeper</module>
@@ -28,6 +30,7 @@
     <module>qos</module>
     <module>serviceregistry</module>
     <module>serviceregistry_sql</module>
+    <module>systemregistry</module>
   </modules>
 
   <properties>
