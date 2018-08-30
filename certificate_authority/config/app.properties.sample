@@ -3,6 +3,7 @@
 ##########################################
 
 # Certificate related paths and passwords
+#TODO CA cert keystore
 keystore=config/certificates/authorization.testcloud1.jks
 keystorepass=12345
 keypass=12345

@@ -173,6 +173,11 @@ public final class SecurityUtils {
     return cnFields.length == 5 && cnFields[3].equals("arrowhead") && cnFields[4].equals("eu");
   }
 
+  public static boolean isKeyStoreCNArrowheadValid(String clientCN, String cloudCN) {
+    String[] clientFields = clientCN.split("\\.", 2);
+    return cloudCN.equalsIgnoreCase(clientFields[1]);
+  }
+
   public static boolean isTrustStoreCNArrowheadValid(String commonName) {
     String[] cnFields = commonName.split("\\.", 0);
     return cnFields.length == 4 && cnFields[2].equals("arrowhead") && cnFields[3].equals("eu");

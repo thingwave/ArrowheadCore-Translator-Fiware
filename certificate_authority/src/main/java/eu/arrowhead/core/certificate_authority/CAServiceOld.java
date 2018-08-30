@@ -40,9 +40,9 @@ public class CAServiceOld {
       PrivateKey clientPrivateKey = keyGen.getPrivateKey();
 
       //Get signing cert stuff
-      X509Certificate cloudCert = SecurityUtils.getFirstCertFromKeyStore(CAMain.trustStore);
+      X509Certificate cloudCert = SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore);
       String cloudCN = SecurityUtils.getCertCNFromSubject(cloudCert.getSubjectDN().getName());
-      PrivateKey cloudPrivateKey = SecurityUtils.getPrivateKey(CAMain.trustStore, CAMain.trustStorePass);
+      PrivateKey cloudPrivateKey = SecurityUtils.getPrivateKey(CAMain.cloudKeystore, CAMain.trustStorePass);
 
       String systemCN = systemName + "." + cloudCN;
       String systemDN = "CN=" + systemCN;
