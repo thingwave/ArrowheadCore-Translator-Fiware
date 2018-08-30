@@ -1,14 +1,14 @@
 package eu.arrowhead.core.certificate_authority;
 
-import eu.arrowhead.common.exception.AuthException;
+import static io.github.olivierlemasle.ca.CA.dn;
+
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningRequest;
-import java.io.ByteArrayInputStream;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Base64;
-import javax.ws.rs.core.Response.Status;
+import eu.arrowhead.core.certificate_authority.model.CertificateSigningResponse;
+import io.github.olivierlemasle.ca.DistinguishedName;
+import io.github.olivierlemasle.ca.SignerImpl;
+import java.security.KeyPair;
+import java.security.PublicKey;
 
 final class CAService {
 
@@ -27,10 +27,10 @@ final class CAService {
      6: client restores the signed x509 cert and adds is to a new keystore, along with the generated private key
    */
 
-  static CertificateSigningRequest signCertificate(CertificateSigningRequest csr) {
-    byte[] pemBytes;
+  static CertificateSigningResponse signCertificate(CertificateSigningRequest csr) {
+    /*byte[] pemBytes;
     try {
-      pemBytes = Base64.getDecoder().decode(csr.getEncodedCert());
+      pemBytes = Base64.getDecoder().decode(csr.getDistinguishedName());
     } catch (IllegalArgumentException | NullPointerException e) {
       throw new AuthException("X509 cert decoding failed! Caused by: " + e.getMessage(), Status.BAD_REQUEST.getStatusCode(), e);
     }
@@ -49,9 +49,15 @@ final class CAService {
     if (!SecurityUtils.isKeyStoreCNArrowheadValid(clientCN, cloudCN)) {
       throw new AuthException("Certificate does not have a valid common name! Valid common name: {systemName}." + cloudCN,
                               Status.BAD_REQUEST.getStatusCode());
-    }
+    }*/
 
-    return new CertificateSigningRequest();
+    final PublicKey publicKey = SecurityUtils.getPublicKey(csr.getPemPublicKey());
+    final DistinguishedName dName = dn(csr.getDistinguishedName());
+    final KeyPair pair = new KeyPair(getX509Certificate().getPublicKey(), getPrivateKey());
+    final DistinguishedName signerSubject = dn(caCertificateHolder.getSubject());
+    SignerImpl new SignerImpl(pair, signerSubject, request.getPublicKey(), request.getSubject());
+
+    return null;
   }
 
 }

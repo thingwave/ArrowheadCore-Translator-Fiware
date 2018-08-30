@@ -2,20 +2,20 @@ package eu.arrowhead.core.certificate_authority.model;
 
 public class CertificateSigningResponse {
 
-  private String pemEncodedSignedCert;
+  private String pemSignedCert;
 
   public CertificateSigningResponse() {
   }
 
-  public CertificateSigningResponse(String pemEncodedSignedCert) {
-    this.pemEncodedSignedCert = pemEncodedSignedCert;
+  public CertificateSigningResponse(String pemSignedCert) {
+    this.pemSignedCert = pemSignedCert;
   }
 
-  public String getPemEncodedSignedCert() {
-    return pemEncodedSignedCert;
+  public String getPemSignedCert() {
+    return pemSignedCert;
   }
 
-  public void setPemEncodedSignedCert(String pemEncodedSignedCert) {
-    this.pemEncodedSignedCert = pemEncodedSignedCert;
+  public void setPemSignedCert(String pemSignedCert) {
+    this.pemSignedCert = pemSignedCert;
   }
 }

@@ -4,6 +4,7 @@ import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.core.certificate_authority.model.CertificateInfo;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningRequest;
+import eu.arrowhead.core.certificate_authority.model.CertificateSigningResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,8 +29,8 @@ public class CAResource {
   }
 
   @POST
-  public CertificateSigningRequest getSignedCertificate(CertificateSigningRequest csr) {
-    return CAService.signCertificate(csr);
+  public CertificateSigningResponse getSignedCertificate(CertificateSigningRequest request) {
+    return CAService.signCertificate(request);
   }
 
 }
