@@ -31,8 +31,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -82,7 +82,7 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private ArrowheadCloud providerCloud;
 
-  @Size(min = 1, message = "Priority can not be less than 1")
+  @Min(1)
   private Integer priority;
 
   @Column(name = "is_default")
