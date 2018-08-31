@@ -1,3 +1,4 @@
+/*
 package eu.arrowhead.core.certificate_authority;
 
 import static io.github.olivierlemasle.ca.CA.createSelfSignedCertificate;
@@ -82,3 +83,4 @@ public class CAServiceOld {
   }
 
 }
+*/
