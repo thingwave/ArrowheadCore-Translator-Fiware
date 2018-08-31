@@ -14,6 +14,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
+import javax.ws.rs.core.Response.Status;
 
 final class CAService {
 
@@ -22,13 +23,20 @@ final class CAService {
   }
 
   static CertificateSigningResponse signCertificate(CertificateSigningRequest csr) {
+    final String clientCN = SecurityUtils.getCertCNFromSubject(csr.getDistinguishedName());
+    final DistinguishedName signerSubject = dn(SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore).getIssuerX500Principal().getName());
+    final String cloudCN = SecurityUtils.getCertCNFromSubject(signerSubject.getName());
+    if (!SecurityUtils.isKeyStoreCNArrowheadValid(clientCN, cloudCN)) {
+      throw new AuthException("Certificate does not have a valid common name! Valid common name: {systemName}." + cloudCN,
+                              Status.BAD_REQUEST.getStatusCode());
+    }
+
     final PublicKey publicKey = SecurityUtils.getPublicKey(csr.getPemPublicKey());
     final DistinguishedName subject = dn(csr.getDistinguishedName());
 
     final PublicKey cloudPublicKey = SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore).getPublicKey();
     final PrivateKey cloudPrivateKey = SecurityUtils.getPrivateKey(CAMain.cloudKeystore, CAMain.trustStorePass);
     final KeyPair signerKeyPair = new KeyPair(cloudPublicKey, cloudPrivateKey);
-    final DistinguishedName signerSubject = dn(SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore).getIssuerX500Principal().getName());
     ArrowheadSignerImpl signer = new ArrowheadSignerImpl(signerKeyPair, signerSubject, publicKey, subject);
     final Certificate cert = signer.setRandomSerialNumber().validDuringYears(5).sign();
 
