@@ -44,7 +44,7 @@ final class CAService {
     try {
       encodedCert = cert.getX509Certificate().getEncoded();
     } catch (CertificateEncodingException e) {
-      throw new AuthException("Signed certificate encoding failed!", e);
+      throw new AuthException("Signed certificate encoding failed! Cause: " + e.getMessage(), e);
     }
     String pemEncodedSignedCert = Base64.getEncoder().encodeToString(encodedCert);
     return new CertificateSigningResponse(pemEncodedSignedCert);
