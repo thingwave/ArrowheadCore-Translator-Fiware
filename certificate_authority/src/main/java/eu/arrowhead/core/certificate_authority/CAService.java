@@ -24,7 +24,7 @@ final class CAService {
 
   static CertificateSigningResponse signCertificate(CertificateSigningRequest csr) {
     final String clientCN = SecurityUtils.getCertCNFromSubject(csr.getDistinguishedName());
-    final DistinguishedName signerSubject = dn(SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore).getIssuerX500Principal().getName());
+    final DistinguishedName signerSubject = dn(SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore).getSubjectX500Principal().getName());
     final String cloudCN = SecurityUtils.getCertCNFromSubject(signerSubject.getName());
     if (!SecurityUtils.isKeyStoreCNArrowheadValid(clientCN, cloudCN)) {
       throw new AuthException("Certificate does not have a valid common name! Valid common name: {systemName}." + cloudCN,
@@ -47,7 +47,7 @@ final class CAService {
       throw new AuthException("Signed certificate encoding failed! Cause: " + e.getMessage(), e);
     }
     String pemEncodedSignedCert = Base64.getEncoder().encodeToString(encodedCert);
-    return new CertificateSigningResponse(pemEncodedSignedCert);
+    return new CertificateSigningResponse(pemEncodedSignedCert, cert.getX509Certificate());
   }
 
 }
