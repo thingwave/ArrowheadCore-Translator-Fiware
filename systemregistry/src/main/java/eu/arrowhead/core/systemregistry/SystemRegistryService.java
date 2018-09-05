@@ -62,7 +62,7 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 			returnValue = optional.orElseThrow(() -> {
 				final String message = "The requested entity does not exist";
 				log.warn(message);
-				throw new EntityNotFoundException(message);
+				return new EntityNotFoundException(message);
 			});
 		} catch (final ArrowheadException e) {
 			log.warn(e.getMessage(), e);
