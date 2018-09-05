@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import org.apache.log4j.Logger;
 
-//Legacy version of the AccessControlFilter, with certificates containing the system group field
+//Legacy version of the AuthACF, with certificates containing the system group field
 //@Provider Uncomment this line to activate the filter
 @Priority(Priorities.AUTHORIZATION) //2nd highest priority constant, this filter gets executed after the SecurityFilter
 public class SupportAccessControlFilter implements ContainerRequestFilter {

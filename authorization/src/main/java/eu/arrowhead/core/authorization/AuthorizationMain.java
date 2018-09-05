@@ -39,5 +39,4 @@ public class AuthorizationMain extends ArrowheadMain {
   public static void main(String[] args) {
     new AuthorizationMain(args);
   }
-
 }

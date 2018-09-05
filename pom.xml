@@ -18,6 +18,7 @@
 
   <modules>
     <module>authorization</module>
+    <module>certificate_authority</module>
     <module>choreographer</module>
     <module>common</module>
     <module>deviceregistry</module>

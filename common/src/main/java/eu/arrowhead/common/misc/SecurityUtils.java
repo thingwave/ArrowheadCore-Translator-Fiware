@@ -22,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -64,11 +63,20 @@ public final class SecurityUtils {
     try {
       Enumeration<String> enumeration = keystore.aliases();
       String alias = enumeration.nextElement();
-      Certificate certificate = keystore.getCertificate(alias);
-      return (X509Certificate) certificate;
+      return (X509Certificate) keystore.getCertificate(alias);
     } catch (KeyStoreException | NoSuchElementException e) {
       log.error("Getting the first cert from keystore failed: " + e.toString() + " " + e.getMessage());
       throw new ServiceConfigurationError("Getting the first cert from keystore failed...", e);
+    }
+  }
+
+  public static String getFirstAliasFromKeyStore(KeyStore keyStore) {
+    try {
+      Enumeration<String> aliases = keyStore.aliases();
+      return aliases.nextElement();
+    } catch (KeyStoreException e) {
+      log.error("Getting the first alias from keystore failed: " + e.toString() + " " + e.getMessage());
+      throw new ServiceConfigurationError("Getting the first alias from keystore failed...", e);
     }
   }
 

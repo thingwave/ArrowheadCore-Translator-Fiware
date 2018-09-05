@@ -1,3 +1,12 @@
+/*
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
+ */
+
 package eu.arrowhead.core.certificate_authority.model;
 
 import static io.github.olivierlemasle.ca.CA.generateRandomSerialNumber;
@@ -105,11 +114,9 @@ public class ArrowheadSignerImpl implements Signer, SignerWithSerial {
       final SubjectPublicKeyInfo subPubKeyInfo = SubjectPublicKeyInfo.getInstance(publicKey.getEncoded());
 
       final JcaX509ExtensionUtils extUtils = new JcaX509ExtensionUtils();
-      final X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(signerDn.getX500Name(), serialNumber,
-                                                                                Date.from(notBefore.toInstant()), Date.from(notAfter.toInstant()),
-                                                                                dn.getX500Name(), subPubKeyInfo)
-          .addExtension(Extension.authorityKeyIdentifier, false, extUtils.createAuthorityKeyIdentifier(signerKeyPair.getPublic()))
-          .addExtension(Extension.subjectKeyIdentifier, false, extUtils.createSubjectKeyIdentifier(publicKey));
+      final X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(signerDn.getX500Name(), serialNumber, Date.from(notBefore.toInstant()), Date.from(notAfter.toInstant()),
+                                                                                dn.getX500Name(), subPubKeyInfo).addExtension(Extension.authorityKeyIdentifier, false, extUtils.createAuthorityKeyIdentifier(signerKeyPair.getPublic()))
+                                                                                                                .addExtension(Extension.subjectKeyIdentifier, false, extUtils.createSubjectKeyIdentifier(publicKey));
 
       for (final CertExtension e : extensions) {
         certBuilder.addExtension(e.getOid(), e.isCritical(), e.getValue());
