@@ -76,5 +76,4 @@ public class SupportAccessControlFilter implements ContainerRequestFilter {
       }
     }
   }
-
 }
