@@ -252,4 +252,7 @@ public abstract class ArrowheadMain {
     }
   }
 
+  public static boolean isClientAuthorized(String clientCN, String method, String requestTarget, String requestJson) {
+    return false;
+  }
 }

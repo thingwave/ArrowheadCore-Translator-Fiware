@@ -1,3 +1,7 @@
+### September 5th, 2018
+* AccessControlFilters now have an abstract parent class to avoid duplicate codes
+* Added 2 different certificate signing method to the CA module, both of which still need thorough testing
+
 ### August 27th, 2018
 * Fixed the registered packages on web server startup
 * ArrowheadCloud and ArrowheadSystem names now allow for the following special characters too: _ - :

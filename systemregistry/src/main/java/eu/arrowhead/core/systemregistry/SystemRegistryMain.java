@@ -11,14 +11,15 @@ package eu.arrowhead.core.systemregistry;
 
 import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.misc.CoreSystem;
-import java.util.Collections;
+import eu.arrowhead.core.systemregistry.filter.SystemRegACF;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class SystemRegistryMain extends ArrowheadMain {
 	private SystemRegistryMain(String[] args) {
-		Set<Class<?>> classes = new HashSet<>(Collections.singleton(SystemRegistryResource.class));
-		String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.SystemRegistry.filter" };
+		Set<Class<?>> classes = new HashSet<>(Arrays.asList(SystemRegistryResource.class, SystemRegACF.class));
+		String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
 		init(CoreSystem.SYSTEMREGISTRY, args, classes, packages);
 
 		listenForInput();

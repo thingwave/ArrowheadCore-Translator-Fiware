@@ -1,18 +1,27 @@
 /*
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
  *  This work is part of the Productive 4.0 innovation project, which receives grants from the
  *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
  *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
  *  national funding authorities from involved countries.
  */
 
-package eu.arrowhead.qos.drivers.implementations;
+/*
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
+ */
+
+package eu.arrowhead.core.qos.drivers.implementations;
 
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.messages.QoSReservationCommand;
-import eu.arrowhead.qos.drivers.IQoSDriver;
-import eu.arrowhead.qos.drivers.ReservationInfo;
-import eu.arrowhead.qos.drivers.ReservationResponse;
+import eu.arrowhead.core.qos.drivers.IQoSDriver;
+import eu.arrowhead.core.qos.drivers.ReservationInfo;
+import eu.arrowhead.core.qos.drivers.ReservationResponse;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,8 +91,7 @@ public class FTTSE implements IQoSDriver {
     URI uri = UriBuilder.fromPath(url + "/configure").build();
 
     WebTarget target = client.target(uri);
-    Response response = target.request().header("Content-type", "application/json")
-                              .post(Entity.json(new QoSReservationCommand(service, provider, consumer, commands, requestedQoS)));
+    Response response = target.request().header("Content-type", "application/json").post(Entity.json(new QoSReservationCommand(service, provider, consumer, commands, requestedQoS)));
 
     if (response.getStatus() > 199 && response.getStatus() < 300) {
       return new ReservationResponse(true, null, commands);
@@ -97,8 +105,7 @@ public class FTTSE implements IQoSDriver {
    * This method will see if there are enough parameters to generate the commands.
    */
   private boolean validateNetworkCOnfiguration(Map<String, String> networkConfiguration) {
-    if (!networkConfiguration.containsKey(NETWORK_EC) || !networkConfiguration.containsKey(NETWORK_ENTRYPOINT_URL) || !networkConfiguration
-        .containsKey(NETWORK_STREAM_ID) || !networkConfiguration.containsKey(NETWORK_MTU)) {
+    if (!networkConfiguration.containsKey(NETWORK_EC) || !networkConfiguration.containsKey(NETWORK_ENTRYPOINT_URL) || !networkConfiguration.containsKey(NETWORK_STREAM_ID) || !networkConfiguration.containsKey(NETWORK_MTU)) {
       return false;
     }
 

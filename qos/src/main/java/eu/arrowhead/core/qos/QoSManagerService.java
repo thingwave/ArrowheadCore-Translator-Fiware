@@ -1,11 +1,20 @@
 /*
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
  *  This work is part of the Productive 4.0 innovation project, which receives grants from the
  *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
  *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
  *  national funding authorities from involved countries.
  */
 
-package eu.arrowhead.qos;
+/*
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
+ */
+
+package eu.arrowhead.core.qos;
 
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.Utility;
@@ -24,8 +33,8 @@ import eu.arrowhead.common.messages.QoSReserve;
 import eu.arrowhead.common.messages.QoSVerificationResponse;
 import eu.arrowhead.common.messages.QoSVerifierResponse;
 import eu.arrowhead.common.messages.QoSVerify;
-import eu.arrowhead.qos.algorithms.VerifierAlgorithmFactory;
-import eu.arrowhead.qos.drivers.DriversFactory;
+import eu.arrowhead.core.qos.algorithms.VerifierAlgorithmFactory;
+import eu.arrowhead.core.qos.drivers.DriversFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

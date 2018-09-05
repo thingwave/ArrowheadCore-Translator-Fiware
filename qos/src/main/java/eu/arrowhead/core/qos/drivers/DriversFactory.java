@@ -1,11 +1,20 @@
 /*
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
  *  This work is part of the Productive 4.0 innovation project, which receives grants from the
  *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
  *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
  *  national funding authorities from involved countries.
  */
 
-package eu.arrowhead.qos.drivers;
+/*
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
+ */
+
+package eu.arrowhead.core.qos.drivers;
 
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
@@ -54,8 +63,7 @@ public class DriversFactory {
    */
 
   public Map<String, String> generateCommands(String communicationProtocol, Map<String, String> networkConfiguration, ArrowheadSystem provider,
-                                              ArrowheadSystem consumer, ArrowheadService service, Map<String, String> commands, Map<String, String>
-                                                  requestedQoS)
+                                              ArrowheadSystem consumer, ArrowheadService service, Map<String, String> commands, Map<String, String> requestedQoS)
       throws ReservationException, DriverNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
 
     // Class Invoking
