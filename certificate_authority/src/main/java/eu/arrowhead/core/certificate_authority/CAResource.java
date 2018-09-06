@@ -9,8 +9,6 @@
 
 package eu.arrowhead.core.certificate_authority;
 
-import eu.arrowhead.core.certificate_authority.model.CSRequest;
-import eu.arrowhead.core.certificate_authority.model.CSResponse;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningRequest;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningResponse;
 import javax.ws.rs.Consumes;
@@ -27,12 +25,6 @@ public class CAResource {
   @POST
   public CertificateSigningResponse getSignedCertificate(CertificateSigningRequest request) {
     return CAService.signCertificate(request);
-  }
-
-  @POST
-  @Path("bc")
-  public CSResponse doBouncy(CSRequest request) {
-    return CAService.doBouncy(request);
   }
 
 }

@@ -11,30 +11,20 @@ package eu.arrowhead.core.certificate_authority.model;
 
 public class CertificateSigningRequest {
 
-  private String distinguishedName;
-  private String pemPublicKey;
+  private String encodedCertRequest;
 
   public CertificateSigningRequest() {
   }
 
-  public CertificateSigningRequest(String distinguishedName, String pemPublicKey) {
-    this.distinguishedName = distinguishedName;
-    this.pemPublicKey = pemPublicKey;
+  public CertificateSigningRequest(String encodedCertRequest) {
+    this.encodedCertRequest = encodedCertRequest;
   }
 
-  public String getDistinguishedName() {
-    return distinguishedName;
+  public String getEncodedCertRequest() {
+    return encodedCertRequest;
   }
 
-  public void setDistinguishedName(String distinguishedName) {
-    this.distinguishedName = distinguishedName;
-  }
-
-  public String getPemPublicKey() {
-    return pemPublicKey;
-  }
-
-  public void setPemPublicKey(String pemPublicKey) {
-    this.pemPublicKey = pemPublicKey;
+  public void setEncodedCertRequest(String encodedCertRequest) {
+    this.encodedCertRequest = encodedCertRequest;
   }
 }

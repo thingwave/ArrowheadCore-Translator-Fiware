@@ -11,44 +11,44 @@ package eu.arrowhead.core.certificate_authority.model;
 
 public class CertificateSigningResponse {
 
-  private String pemSignedCert;
-  private String pemIntermediateCert;
-  private String pemRootCert;
+  private String encodedSignedCert;
+  private String intermediateCert;
+  private String rootCert;
 
   public CertificateSigningResponse() {
   }
 
-  public CertificateSigningResponse(String pemSignedCert) {
-    this.pemSignedCert = pemSignedCert;
+  public CertificateSigningResponse(String encodedSignedCert) {
+    this.encodedSignedCert = encodedSignedCert;
   }
 
-  public CertificateSigningResponse(String pemSignedCert, String pemIntermediateCert, String pemRootCert) {
-    this.pemSignedCert = pemSignedCert;
-    this.pemIntermediateCert = pemIntermediateCert;
-    this.pemRootCert = pemRootCert;
+  public CertificateSigningResponse(String encodedSignedCert, String intermediateCert, String rootCert) {
+    this.encodedSignedCert = encodedSignedCert;
+    this.intermediateCert = intermediateCert;
+    this.rootCert = rootCert;
   }
 
-  public String getPemSignedCert() {
-    return pemSignedCert;
+  public String getEncodedSignedCert() {
+    return encodedSignedCert;
   }
 
-  public void setPemSignedCert(String pemSignedCert) {
-    this.pemSignedCert = pemSignedCert;
+  public void setEncodedSignedCert(String encodedSignedCert) {
+    this.encodedSignedCert = encodedSignedCert;
   }
 
-  public String getPemIntermediateCert() {
-    return pemIntermediateCert;
+  public String getIntermediateCert() {
+    return intermediateCert;
   }
 
-  public void setPemIntermediateCert(String pemIntermediateCert) {
-    this.pemIntermediateCert = pemIntermediateCert;
+  public void setIntermediateCert(String intermediateCert) {
+    this.intermediateCert = intermediateCert;
   }
 
-  public String getPemRootCert() {
-    return pemRootCert;
+  public String getRootCert() {
+    return rootCert;
   }
 
-  public void setPemRootCert(String pemRootCert) {
-    this.pemRootCert = pemRootCert;
+  public void setRootCert(String rootCert) {
+    this.rootCert = rootCert;
   }
 }
