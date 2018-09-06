@@ -41,6 +41,7 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 	public SystemRegistryResource() throws ExceptionInInitializerError {
 		super();
 		registryService = new SystemRegistryService();
+		log.info(SystemRegistryResource.class.getSimpleName() + " created");
 	}
 
 	@GET
