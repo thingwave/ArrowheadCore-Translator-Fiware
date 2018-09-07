@@ -1,5 +1,5 @@
 ### September 7th, 2018
-* Certificate Authority core system is ready to use now. It uses the Bouncy Castle library. There is a certificate requester client inside the 
+* Certificate Authority core system is ready for use now. It uses the Bouncy Castle library. There is a certificate requester client inside the 
 client-java repository, which connects to this core system, and creates a usable keystore from the response. 
 
 ### September 5th, 2018
