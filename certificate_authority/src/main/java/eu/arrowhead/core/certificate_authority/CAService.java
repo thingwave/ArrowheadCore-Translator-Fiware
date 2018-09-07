@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -127,7 +128,7 @@ final class CAService {
     }
 
     try {
-      java.security.cert.Certificate[] chain = CAMain.cloudKeystore
+      Certificate[] chain = CAMain.cloudKeystore
           .getCertificateChain(SecurityUtils.getFirstAliasFromKeyStore(CAMain.cloudKeystore));
       String pemIntermediateCert = encoder.encodeToString(chain[0].getEncoded());
       String pemRootCert = encoder.encodeToString(chain[1].getEncoded());
