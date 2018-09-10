@@ -71,7 +71,7 @@ public abstract class ArrowheadMain {
   protected void init(CoreSystem coreSystem, String[] args, Set<Class<?>> classes, String[] packages) {
     System.out.println("Working directory: " + System.getProperty("user.dir"));
     this.coreSystem = coreSystem;
-//    DatabaseManager.init();
+    DatabaseManager.init();
 
     boolean isSecure = false;
     for (String arg : args) {
@@ -211,6 +211,7 @@ public abstract class ArrowheadMain {
     try {
       server = GrizzlyHttpServerFactory
           .createHttpServer(uri, config, true, new SSLEngineConfigurator(sslCon).setClientMode(false).setNeedClientAuth(true), false);
+      adaptServer(server);
       server.getServerConfiguration().setAllowPayloadForUndefinedHttpMethods(true);
       server.start();
       log.info("Started server at: " + baseUri);
