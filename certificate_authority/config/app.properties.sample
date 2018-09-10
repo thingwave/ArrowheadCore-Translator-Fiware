@@ -3,7 +3,7 @@
 ##########################################
 
 # Certificate related paths and passwords
-keystore=config/certificates/certificateauthority.testcloud1.jks
+keystore=config/certificates/certificateauthority.testcloud1.p12
 keystorepass=12345
 keypass=12345
 truststore=config/certificates/testcloud1_cert.jks
