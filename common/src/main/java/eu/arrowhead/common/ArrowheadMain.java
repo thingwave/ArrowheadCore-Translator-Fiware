@@ -143,10 +143,12 @@ public abstract class ArrowheadMain {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    adaptConfig(config);
 
     URI uri = UriBuilder.fromUri(baseUri).build();
     try {
       server = GrizzlyHttpServerFactory.createHttpServer(uri, config, false);
+      adaptServer(server);
       server.getServerConfiguration().setAllowPayloadForUndefinedHttpMethods(true);
       server.start();
       log.info("Started server at: " + baseUri);
@@ -157,10 +159,19 @@ public abstract class ArrowheadMain {
     }
   }
 
-  protected void startSecureServer(Set<Class<?>> classes, String[] packages) {
+  protected void adaptServer(HttpServer server) {
+		// NOOP
+	}
+
+	protected void adaptConfig(ResourceConfig config) {
+		// NOOP
+	}
+
+	protected void startSecureServer(Set<Class<?>> classes, String[] packages) {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    adaptConfig(config);
 
     String keystorePath = props.getProperty("keystore");
     String keystorePass = props.getProperty("keystorepass");
@@ -200,6 +211,7 @@ public abstract class ArrowheadMain {
     try {
       server = GrizzlyHttpServerFactory
           .createHttpServer(uri, config, true, new SSLEngineConfigurator(sslCon).setClientMode(false).setNeedClientAuth(true), false);
+      adaptServer(server);
       server.getServerConfiguration().setAllowPayloadForUndefinedHttpMethods(true);
       server.start();
       log.info("Started server at: " + baseUri);
