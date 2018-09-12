@@ -1,3 +1,8 @@
+### September 12th, 2018
+* Changed the way config files (properties file before) are processed by the core systems. Now there is a `default.conf` for each core system, 
+containing default values, and these values can be overridden with key-value pairs placed in a `app.conf` file, which only has to contain the 
+properties with the new values.
+
 ### September 7th, 2018
 * Certificate Authority core system is ready for use now. It uses the Bouncy Castle library. There is a certificate requester client inside the 
 client-java repository, which connects to this core system, and creates a usable keystore from the response. 

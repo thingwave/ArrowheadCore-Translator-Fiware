@@ -66,7 +66,7 @@ public class OrchestratorMain extends ArrowheadMain implements NeedsCoreSystemSe
     }
     getServicesTask = new GetCoreSystemServicesTask(this, serviceDefs);
     Timer timer = new Timer();
-    //TODO period to app.properties here + gatekeeper
+    //TODO period to default.conf here + gatekeeper
     timer.schedule(getServicesTask, 15L * 1000L, 60L * 60L * 1000L); //15 sec delay, 1 hour period
 
     listenForInput();
