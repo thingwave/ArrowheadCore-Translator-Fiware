@@ -21,7 +21,7 @@ Config files are processed the following way:
   * If found, the key-value pairs are loaded in from the file.
   * If not found, the program looks for `config/default.conf` and load those values.
   * If this is also not found, the program throws an error, and the core system wil fail to start.
-* The active working directory is search for `app.conf`
+* The active working directory is searched for `app.conf`
   * If found, the key-value pairs inside this file override the values from `default.conf` (if the default value for a key is fine, the `app.conf` 
   does not need to contain it)
   * If not found, the program looks for `config/app.conf` and use those values.
@@ -45,9 +45,9 @@ context in this mode (and to provide system identity), and core systems use the 
 version of the same core system can run at the same time on different ports, but an insecure core system can not communicate with a secure core 
 system.
 
-The Orchestrator core system also has a **`-nogk`** argument. When used, the Orchestrator will start in a "no Gatekeeper" mode, where it won't look
- for the Gatekeeper services in the Service Registry, but can only do intra-cloud orchestration (with the Authorization and Service Registry core 
- systems).
+The Orchestrator core system also has a **`-nogk`** argument. When used, the Orchestrator will start in "no Gatekeeper" mode, where it won't look
+ for the Gatekeeper services in the Service Registry, but can only do intra-cloud orchestration (with the help of the Authorization and Service 
+ Registry core systems).
 
 Startup bash scripts are provided in the `scripts` folder:
 * `start_insecure_coresystems.sh`: starts the core systems without using certificates, with plain HTTP
