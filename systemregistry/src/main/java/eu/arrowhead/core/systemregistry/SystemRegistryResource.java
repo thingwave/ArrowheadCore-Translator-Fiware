@@ -29,7 +29,12 @@ import org.apache.log4j.Logger;
 
 import eu.arrowhead.common.RegistryResource;
 import eu.arrowhead.common.exception.ArrowheadException;
+import eu.arrowhead.core.systemregistry.model.ErrorResponse;
 import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @Path("systemregistry")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -52,6 +57,10 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 
 	@GET
 	@Path(LOOKUP_PATH)
+	@Operation(summary="Searches a SystemRegistryEntry by id",
+	responses= {
+			@ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class)))
+	})
 	public Response lookup(@Context final UriInfo uriInfo, @PathParam("id") final Long id) {
 		SystemRegistryEntry returnValue;
 		Response response;
@@ -123,14 +132,14 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 	}
 
 	protected Response createNotFoundResponse() {
-		return Response.status(Status.NOT_FOUND).entity("The requested entity was not found in the system.").build();
+		return Response.status(Status.NOT_FOUND).entity(new ErrorResponse("The requested entity was not found in the system.")).build();
 	}
 
 	protected Response createArrowheadResponse(final ArrowheadException e) {
-		return Response.status(e.getErrorCode()).entity(e.getMessage()).build();
+		return Response.status(e.getErrorCode()).entity(new ErrorResponse(e)).build();
 	}
 
 	protected Response createGenericErrorResponse(final Exception e) {
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(new ErrorResponse(e)).build();
 	}
 }

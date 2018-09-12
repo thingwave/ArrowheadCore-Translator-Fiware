@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.RegistryService;
+import eu.arrowhead.common.database.ArrowheadDevice;
+import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
 
@@ -46,7 +48,7 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		}
 	}
 
-	protected void verifyNotNull(final SystemRegistryEntry entry) {
+	protected void verifyNotNull(final Object entry) {
 		if (entry == null) {
 			throw new ArrowheadException("The given entry is null", Status.BAD_REQUEST.getStatusCode());
 		}
@@ -80,6 +82,8 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 
 		try {
 			verifyNotNull(entity);
+			entity.setProvidedSystem(resolve(entity.getProvidedSystem()));
+			entity.setProvider(resolve(entity.getProvider()));
 			returnValue = databaseManager.save(entity);
 		} catch (final ArrowheadException e) {
 			log.warn(e.getMessage(), e);
@@ -91,8 +95,7 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		return returnValue;
 	}
 
-	public SystemRegistryEntry unpublish(final SystemRegistryEntry entity)
-			throws EntityNotFoundException, ArrowheadException {
+	public SystemRegistryEntry unpublish(final SystemRegistryEntry entity) throws EntityNotFoundException, ArrowheadException {
 		final SystemRegistryEntry returnValue;
 
 		try {
@@ -109,4 +112,33 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		return returnValue;
 	}
 
+	protected ArrowheadSystem resolve(final ArrowheadSystem providedSystem) {
+		final ArrowheadSystem returnValue;
+
+		verifyNotNull(providedSystem);
+
+		if (providedSystem.getId() != null) {
+			Optional<ArrowheadSystem> optional = databaseManager.get(ArrowheadSystem.class, providedSystem.getId());
+			returnValue = optional.orElseThrow(() -> new ArrowheadException("ProvidedSystem does not exist", Status.BAD_REQUEST.getStatusCode()));
+		} else {
+			returnValue = databaseManager.save(providedSystem);
+		}
+
+		return returnValue;
+	}
+
+	protected ArrowheadDevice resolve(final ArrowheadDevice provider) {
+		final ArrowheadDevice returnValue;
+
+		verifyNotNull(provider);
+
+		if (provider.getId() != null) {
+			Optional<ArrowheadDevice> optional = databaseManager.get(ArrowheadDevice.class, provider.getId());
+			returnValue = optional.orElseThrow(() -> new ArrowheadException("Provider does not exist", Status.BAD_REQUEST.getStatusCode()));
+		} else {
+			returnValue = databaseManager.save(provider);
+		}
+
+		return returnValue;
+	}
 }
