@@ -89,6 +89,8 @@ public class InsecureSocketThread extends Thread {
         log.error("Communication failed (Error occurred or remote peer closed the socket)");
         throw new ArrowheadException(e.getMessage(), e);
       }
+      System.out.println(queueName + " was closed by the other side!");
+      e.printStackTrace();
     }
 
   }

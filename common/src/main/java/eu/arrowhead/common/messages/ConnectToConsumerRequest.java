@@ -13,7 +13,7 @@ import eu.arrowhead.common.database.ArrowheadSystem;
 
 public class ConnectToConsumerRequest {
 
-  private String brokerName;
+  private String brokerHost;
   private int brokerPort;
   private String queueName;
   private String controlQueueName;
@@ -29,10 +29,10 @@ public class ConnectToConsumerRequest {
   public ConnectToConsumerRequest() {
   }
 
-  public ConnectToConsumerRequest(String brokerName, int brokerPort, String queueName, String controlQueueName, ArrowheadSystem consumer,
+  public ConnectToConsumerRequest(String brokerHost, int brokerPort, String queueName, String controlQueueName, ArrowheadSystem consumer,
                                   ArrowheadSystem provider, ArrowheadCloud consumerCloud, ArrowheadCloud providerCloud, ArrowheadService service,
                                   Boolean isSecure, int timeout, String providerGWPublicKey) {
-    this.brokerName = brokerName;
+    this.brokerHost = brokerHost;
     this.brokerPort = brokerPort;
     this.queueName = queueName;
     this.controlQueueName = controlQueueName;
@@ -46,12 +46,12 @@ public class ConnectToConsumerRequest {
     this.providerGWPublicKey = providerGWPublicKey;
   }
 
-  public String getBrokerName() {
-    return brokerName;
+  public String getBrokerHost() {
+    return brokerHost;
   }
 
-  public void setBrokerName(String brokerName) {
-    this.brokerName = brokerName;
+  public void setBrokerHost(String brokerHost) {
+    this.brokerHost = brokerHost;
   }
 
   public int getBrokerPort() {

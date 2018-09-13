@@ -20,23 +20,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.GeneralSecurityException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
-import java.util.ServiceConfigurationError;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 
@@ -152,14 +143,11 @@ public class GatewayService {
   public static byte[] decryptMessage(GatewayEncryption gatewayEncryption) {
     Cipher cipherRSA;
     Cipher cipherAES;
-    PrivateKey privateKey;
     byte[] decryptedMessage;
 
     try {
-      KeyStore keyStore = SecurityUtils.loadKeyStore(GatewayMain.keystore, GatewayMain.keystorePass);
-      privateKey = SecurityUtils.getPrivateKey(keyStore, GatewayMain.keystorePass);
       cipherRSA = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-      cipherRSA.init(Cipher.DECRYPT_MODE, privateKey);
+      cipherRSA.init(Cipher.DECRYPT_MODE, GatewayMain.privateKey);
     } catch (GeneralSecurityException e) {
       log.fatal("The initialization of the RSA cipher failed.");
       throw new ArrowheadException(e.getMessage(), Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
@@ -188,28 +176,6 @@ public class GatewayService {
     }
 
     return decryptedMessage;
-  }
-
-  public static SSLContext createSSLContext() {
-    String keystorePath = GatewayMain.keystore;
-    String keystorePass = GatewayMain.keystorePass;
-    KeyStore keyStore = SecurityUtils.loadKeyStore(keystorePath, keystorePass);
-
-    SSLContext sslContext;
-    KeyManagerFactory kmf;
-    try {
-      kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-      kmf.init(keyStore, keystorePass.toCharArray());
-      sslContext = SSLContext.getInstance("TLS");
-      sslContext.init(kmf.getKeyManagers(), SecurityUtils.createTrustManagers(), null);
-    } catch (NoSuchAlgorithmException | KeyManagementException e) {
-      log.fatal("createSSLContext: failed one of the object initializations");
-      throw new AssertionError("SSL related object initialization failed", e);
-    } catch (KeyStoreException | UnrecoverableKeyException e) {
-      log.error("createSSLContext: keystore malformed, factory init failed");
-      throw new ServiceConfigurationError("Keystore is malformed, or the password is invalid", e);
-    }
-    return sslContext;
   }
 
   /**

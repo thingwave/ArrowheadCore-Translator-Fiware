@@ -154,7 +154,6 @@ public final class SecurityUtils {
 
       SSLContext sslContext = SSLContext.getInstance("TLS");
       sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
-
       return sslContext;
     } catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | KeyManagementException e) {
       log.fatal("Master SSLContext creation failed: " + e.toString() + " " + e.getMessage());
@@ -162,16 +161,20 @@ public final class SecurityUtils {
     }
   }
 
-  public static SSLContext createAcceptAllSSLContext() {
-    SSLContext sslContext;
+  public static SSLContext createSSLContextWithDummyTrustManager(String keyStorePath, String keyStorePass) {
     try {
-      sslContext = SSLContext.getInstance("TLS");
-      sslContext.init(null, createTrustManagers(), null);
-    } catch (NoSuchAlgorithmException | KeyManagementException e) {
-      log.fatal("AcceptAll SSLContext creation failed: " + e.toString() + " " + e.getMessage());
+      KeyStore keyStore = loadKeyStore(keyStorePath, keyStorePass);
+      String kmfAlgorithm = System.getProperty("ssl.KeyManagerFactory.algorithm", KeyManagerFactory.getDefaultAlgorithm());
+      KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(kmfAlgorithm);
+      keyManagerFactory.init(keyStore, keyStorePass.toCharArray());
+
+      SSLContext sslContext = SSLContext.getInstance("TLS");
+      sslContext.init(keyManagerFactory.getKeyManagers(), createTrustManagers(), null);
+      return sslContext;
+    } catch (NoSuchAlgorithmException | KeyStoreException | UnrecoverableKeyException | KeyManagementException e) {
+      log.fatal("SSLContext (with dummy trust manager) creation failed: " + e.toString() + " " + e.getMessage());
       throw new ServiceConfigurationError("AcceptAll SSLContext creation failed...", e);
     }
-    return sslContext;
   }
 
   public static boolean isKeyStoreCNArrowheadValid(String commonName) {
@@ -270,7 +273,7 @@ public final class SecurityUtils {
     }
   }
 
-  public static TrustManager[] createTrustManagers() {
+  private static TrustManager[] createTrustManagers() {
     return new TrustManager[]{new X509TrustManager() {
 
       public java.security.cert.X509Certificate[] getAcceptedIssuers() {
