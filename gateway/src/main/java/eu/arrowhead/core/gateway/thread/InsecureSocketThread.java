@@ -46,6 +46,7 @@ public class InsecureSocketThread extends Thread {
     try {
       // Creating socket for Provider
       Channel channel = gatewaySession.getChannel();
+      log.info("port opening to " + connectionRequest.getProvider().getAddress() + connectionRequest.getProvider().getPort());
       providerSocket = new Socket(connectionRequest.getProvider().getAddress(), connectionRequest.getProvider().getPort());
       providerSocket.setSoTimeout(connectionRequest.getTimeout());
       InputStream inProvider = providerSocket.getInputStream();
