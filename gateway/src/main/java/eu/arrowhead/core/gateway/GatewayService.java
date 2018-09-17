@@ -85,7 +85,7 @@ public class GatewayService {
       gatewaySession.setChannel(channel);
     } catch (IOException | NullPointerException e) {
       log.error("Creating the channel to the Broker failed");
-      throw new ArrowheadException(e.getMessage(), Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
+      throw new ArrowheadException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
 
     log.info("Created a channel for broker: " + brokerHost + ":" + brokerPort);

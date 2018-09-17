@@ -54,7 +54,6 @@ public class InsecureSocketThread extends Thread {
       log.info("Created socket for Provider");
 
       // Receiving messages through AMQP Broker
-
       Consumer consumer = new DefaultConsumer(channel) {
         @Override
         public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {

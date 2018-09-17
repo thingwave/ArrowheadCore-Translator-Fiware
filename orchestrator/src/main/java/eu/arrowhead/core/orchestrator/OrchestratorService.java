@@ -97,7 +97,7 @@ final class OrchestratorService {
 
       //placeholder step
       if (orchestrationFlags.get("enableQoS")) {
-        srList = OrchestratorDriver.doQoSVerification(srList);
+        OrchestratorDriver.doQoSVerification(srList);
       }
 
       // If matchmaking is requested, we pick out 1 ServiceRegistryEntry entity from the list. Preferred Systems (2nd arg) have higher priority
@@ -109,7 +109,7 @@ final class OrchestratorService {
 
       //placeholder step
       if (orchestrationFlags.get("enableQoS")) {
-        srList = OrchestratorDriver.doQosReservation(srList);
+        OrchestratorDriver.doQosReservation(srList);
       }
 
       // All the filtering is done, need to compile the response
@@ -155,8 +155,8 @@ final class OrchestratorService {
     List<OrchestrationStore> entryList = OrchestratorDriver.queryOrchestrationStore(srf.getRequesterSystem(), srf.getRequestedService());
     int storeSize = entryList.size();
 
-    // Cross-checking the results with the Service Registry and Authorization
-    entryList = OrchestratorDriver.crossCheckStoreEntries(srf, entryList);
+    // Cross-checking the results with the Service Registry and Authorization (modifies the entryList)
+    OrchestratorDriver.crossCheckStoreEntries(srf, entryList);
     log.debug("orchestrationFromStore: SR-Auth cross-check is done");
 
     // In case of default store orchestration, we return all the remaining Store entries (all intra-cloud, 1 provider/service)
@@ -328,8 +328,8 @@ final class OrchestratorService {
       }
     }
 
-    // Generate the ArrowheadTokens if it is requested based on the service metadata
-    ofList = OrchestratorDriver.generateAuthTokens(srf, ofList);
+    // Generate the ArrowheadTokens if it is requested based on the service metadata (modifies the ofList)
+    OrchestratorDriver.generateAuthTokens(srf, ofList);
 
     log.info("compileOrchestrationResponse creates " + ofList.size() + " orchestration form");
     return new OrchestrationResponse(ofList);
