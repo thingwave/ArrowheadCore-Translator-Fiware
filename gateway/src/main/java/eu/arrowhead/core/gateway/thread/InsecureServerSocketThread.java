@@ -82,6 +82,7 @@ public class InsecureServerSocketThread extends Thread {
         }
       };
 
+      //noinspection InfiniteLoopStatement
       while (true) {
         // Get the request from the Consumer
         byte[] inputFromConsumer = new byte[1024];

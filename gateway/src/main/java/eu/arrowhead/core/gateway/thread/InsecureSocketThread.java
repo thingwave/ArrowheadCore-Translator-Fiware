@@ -71,6 +71,7 @@ public class InsecureSocketThread extends Thread {
         }
       };
 
+      //noinspection InfiniteLoopStatement
       while (true) {
         channel.basicConsume(queueName, true, consumer);
         channel.basicConsume(controlQueueName, true, controlConsumer);
