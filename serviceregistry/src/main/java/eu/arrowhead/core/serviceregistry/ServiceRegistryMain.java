@@ -33,9 +33,9 @@ public class ServiceRegistryMain extends ArrowheadMain {
   private static final TypeSafeProperties dnsProp = Utility.getProp("dns.properties");
 
   static {
-    TSIG_NAME = dnsProp.getProperty("tsig_name", "key.arrowhead.tmit.bme.hu");
-    TSIG_KEY = dnsProp.getProperty("tsig_key", "RM/jKKEPYB83peT0DQnYGg==");
-    TSIG_ALGORITHM = dnsProp.getProperty("tsig_algorithm", DnsSDRegistrator.TSIG_ALGORITHM_HMAC_MD5);
+    TSIG_NAME = dnsProp.getProperty("tsig_name");
+    TSIG_KEY = dnsProp.getProperty("tsig_key");
+    TSIG_ALGORITHM = dnsProp.getProperty("tsig_algorithm");
     DNS_ADDRESS = dnsProp.getProperty("dns_address", "152.66.246.237");
     DNS_DOMAIN = dnsProp.getProperty("dns_domain", "arrowhead.tmit.bme.hu");
     DNS_PORT = dnsProp.getIntProperty("dns_port", 53);
