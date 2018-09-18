@@ -24,7 +24,7 @@ public class EventHandlerACF extends AccessControlFilter {
   @Override
   public boolean isClientAuthorized(String clientCN, String method, String requestTarget, String requestJson) {
     if (!SecurityUtils.isKeyStoreCNArrowheadValid(clientCN)) {
-      log.info(clientCN + " is not valid!");
+      log.info(clientCN + " is not valid common name, access denied!");
       return false;
     }
 
