@@ -1,3 +1,4 @@
+[![Build Status](https://api.travis-ci.com/arrowhead-f/core-java.svg?branch=develop)](https://travis-ci.com/arrowhead-f/core-java)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?colorB=green)](https://github.com/arrowhead-f/core-java/blob/master/LICENSE)
 
 # Arrowhead Framework 4.2
