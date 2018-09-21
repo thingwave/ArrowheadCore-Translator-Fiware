@@ -57,6 +57,7 @@ public abstract class ArrowheadMain {
   private HttpServer server;
   private String baseUri;
   private String base64PublicKey;
+  private int registeringTries = 1;
 
   private static final Logger log = Logger.getLogger(ArrowheadMain.class.getName());
 
@@ -239,17 +240,27 @@ public abstract class ArrowheadMain {
           if (e.getExceptionType() == ExceptionType.DUPLICATE_ENTRY) {
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("register").build().toString(), "POST", srEntry);
+          } else if (e.getExceptionType() == ExceptionType.UNAVAILABLE) {
+            System.out.println("Service Registry is unavailable at the moment, retrying in 10 seconds...");
+            try {
+              Thread.sleep(10000);
+              if (registeringTries == 3) {
+                throw e;
+              } else {
+                registeringTries++;
+                useSRService(registering);
+              }
+            } catch (InterruptedException e1) {
+              e1.printStackTrace();
+            }
           } else {
             throw new ArrowheadException(service.getServiceDef() + " service registration failed.", e);
           }
         }
+        registeringTries = 1;
       } else {
         Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
       }
     }
-  }
-
-  public static boolean isClientAuthorized(String clientCN, String method, String requestTarget, String requestJson) {
-    return false;
   }
 }
