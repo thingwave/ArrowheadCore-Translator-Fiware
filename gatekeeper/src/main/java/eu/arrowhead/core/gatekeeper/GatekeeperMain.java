@@ -70,7 +70,7 @@ public class GatekeeperMain {
 
   static {
     PropertyConfigurator.configure("config" + File.separator + "log4j.properties");
-    props = Utility.getProp("app.properties");
+    props = Utility.getProp();
     USE_GATEWAY = props.getBooleanProperty("use_gateway", false);
     TIMEOUT = props.getIntProperty("timeout", 30000);
   }

@@ -20,7 +20,6 @@ import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.common.misc.TypeSafeProperties;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -53,7 +52,7 @@ public abstract class ArrowheadMain {
   public static final Map<String, String> secureServerMetadata = Collections.singletonMap("security", "certificate");
 
   protected String srBaseUri;
-  protected final TypeSafeProperties props = Utility.getProp("app.properties");
+  protected final TypeSafeProperties props = Utility.getProp();
 
   private boolean daemon = false;
   private CoreSystem coreSystem;
@@ -63,8 +62,8 @@ public abstract class ArrowheadMain {
 
   private static final Logger log = Logger.getLogger(ArrowheadMain.class.getName());
 
-  static {
-    PropertyConfigurator.configure("config" + File.separator + "log4j.properties");
+  {
+    PropertyConfigurator.configure(props);
   }
 
   protected void init(CoreSystem coreSystem, String[] args, Set<Class<?>> classes, String[] packages) {
