@@ -1,3 +1,11 @@
+### September 24th, 2018
+* `README.md` now has a detailed guide on how to setup an arrowhead cloud from source
+* The Gatekeeper AccessControlFilter had a critical bug fixed
+* Added a 2nd relay test certificate
+* Basic continuous integration tooling added to the project
+* Core systems now wait 10 second and retry with the service registration 3 times, when the SR is not available at start (makes core system 
+deployment easier) 
+
 ### September 12th, 2018
 * Changed the way config files (properties file before) are processed by the core systems. Now there is a `default.conf` for each core system, 
 containing default values, and these values can be overridden with key-value pairs placed in a `app.conf` file, which only has to contain the 
