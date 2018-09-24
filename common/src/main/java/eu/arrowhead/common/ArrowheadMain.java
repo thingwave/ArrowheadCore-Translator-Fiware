@@ -141,6 +141,7 @@ public abstract class ArrowheadMain {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     URI uri = UriBuilder.fromUri(baseUri).build();
     try {
@@ -159,6 +160,7 @@ public abstract class ArrowheadMain {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     String keystorePath = props.getProperty("keystore");
     String keystorePass = props.getProperty("keystorepass");

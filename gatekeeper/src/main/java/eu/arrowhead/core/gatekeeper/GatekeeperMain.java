@@ -169,6 +169,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       config.registerClasses(GatekeeperApi.class, GatekeeperOutboundResource.class, ArrowheadCloudApi.class);
     }
     config.packages("eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.core.gatekeeper.filter");
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     URI uri = UriBuilder.fromUri(url).build();
     try {
@@ -197,6 +198,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       config.registerClasses(GatekeeperApi.class, GatekeeperOutboundResource.class, ArrowheadCloudApi.class);
     }
     config.packages("eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.core.gatekeeper.filter");
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     String gatekeeperKeystorePath = props.getProperty("gatekeeper_keystore");
     String gatekeeperKeystorePass = props.getProperty("gatekeeper_keystore_pass");
