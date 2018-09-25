@@ -12,6 +12,7 @@ package eu.arrowhead.core.systemregistry;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -83,7 +84,7 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 
 	@POST
 	@Path(PUBLISH_PATH)
-	public Response publish(@Context final UriInfo uriInfo, final SystemRegistryEntry entry) {
+	public Response publish(@Context final UriInfo uriInfo, final @Valid SystemRegistryEntry entry) {
 		SystemRegistryEntry returnValue;
 		Response response;
 
@@ -103,7 +104,7 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 
 	@POST
 	@Path(UNPUBLISH_PATH)
-	public Response unpublish(@Context final UriInfo uriInfo, final SystemRegistryEntry entry) {
+	public Response unpublish(@Context final UriInfo uriInfo, final @Valid SystemRegistryEntry entry) {
 		SystemRegistryEntry returnValue;
 		Response response;
 

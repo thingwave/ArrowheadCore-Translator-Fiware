@@ -29,12 +29,7 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 	private final DatabaseManager databaseManager;
 
 	public SystemRegistryService() throws ExceptionInInitializerError {
-		try {
-			databaseManager = DatabaseManager.getInstance();
-		} catch (Throwable ex) {
-			log.fatal("Failed to initialize DatabaseManager: " + ex.getMessage(), ex);
-			throw new ExceptionInInitializerError(ex);
-		}
+		databaseManager = DatabaseManager.getInstance();
 	}
 
 	protected ArrowheadException logAndCreateException(final Exception e) {
@@ -95,13 +90,15 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		return returnValue;
 	}
 
-	public SystemRegistryEntry unpublish(final SystemRegistryEntry entity) throws EntityNotFoundException, ArrowheadException {
+	public SystemRegistryEntry unpublish(final SystemRegistryEntry entity)
+			throws EntityNotFoundException, ArrowheadException {
 		final SystemRegistryEntry returnValue;
 
 		try {
 			verifyNotNull(entity);
 
 			databaseManager.delete(entity);
+			// TODO verify cascading
 			returnValue = entity;
 		} catch (final ArrowheadException e) {
 			log.warn(e.getMessage(), e);
@@ -119,7 +116,8 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 
 		if (providedSystem.getId() != null) {
 			Optional<ArrowheadSystem> optional = databaseManager.get(ArrowheadSystem.class, providedSystem.getId());
-			returnValue = optional.orElseThrow(() -> new ArrowheadException("ProvidedSystem does not exist", Status.BAD_REQUEST.getStatusCode()));
+			returnValue = optional.orElseThrow(
+					() -> new ArrowheadException("ProvidedSystem does not exist", Status.BAD_REQUEST.getStatusCode()));
 		} else {
 			returnValue = databaseManager.save(providedSystem);
 		}
@@ -134,7 +132,8 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 
 		if (provider.getId() != null) {
 			Optional<ArrowheadDevice> optional = databaseManager.get(ArrowheadDevice.class, provider.getId());
-			returnValue = optional.orElseThrow(() -> new ArrowheadException("Provider does not exist", Status.BAD_REQUEST.getStatusCode()));
+			returnValue = optional.orElseThrow(
+					() -> new ArrowheadException("Provider does not exist", Status.BAD_REQUEST.getStatusCode()));
 		} else {
 			returnValue = databaseManager.save(provider);
 		}

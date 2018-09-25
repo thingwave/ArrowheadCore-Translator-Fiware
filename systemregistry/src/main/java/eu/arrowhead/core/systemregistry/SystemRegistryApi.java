@@ -38,7 +38,7 @@ import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
 public class SystemRegistryApi {
 
 	private final Logger log = Logger.getLogger(SystemRegistryApi.class.getName());
-  private final DatabaseManager databaseManager;
+	private final DatabaseManager databaseManager;
 
 	public SystemRegistryApi() throws ExceptionInInitializerError {
 		super();

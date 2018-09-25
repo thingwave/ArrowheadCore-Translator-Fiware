@@ -30,8 +30,8 @@ public class SystemRegistryMain extends ArrowheadMain {
 				"eu.arrowhead.common.json", 
 				"eu.arrowhead.common.filter", 
 				"eu.arrowhead.core.systemregistry", 
-				"eu.arrowhead.core.systemregistry.model", 
-				"eu.arrowhead.core.systemregistry.filter",
+				//"eu.arrowhead.core.systemregistry.model", 
+				//"eu.arrowhead.core.systemregistry.filter",
 				"io.swagger.v3.jaxrs2.integration.resources"};
 		init(CoreSystem.SYSTEMREGISTRY, args, classes, packages);
 		
