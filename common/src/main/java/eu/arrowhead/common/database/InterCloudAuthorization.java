@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -92,28 +93,17 @@ public class InterCloudAuthorization {
     if (!(o instanceof InterCloudAuthorization)) {
       return false;
     }
-
     InterCloudAuthorization that = (InterCloudAuthorization) o;
-
-    if (!cloud.equals(that.cloud)) {
-      return false;
-    }
-    return service.equals(that.service);
+    return Objects.equals(cloud, that.cloud) && Objects.equals(service, that.service);
   }
 
   @Override
   public int hashCode() {
-    int result = cloud.hashCode();
-    result = 31 * result + service.hashCode();
-    return result;
+    return Objects.hash(cloud, service);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("InterCloudAuthorization{");
-    sb.append(" cloud = ").append(cloud);
-    sb.append(", service = ").append(service);
-    sb.append('}');
-    return sb.toString();
+    return "InterCloudAuthorization{" + "cloud=" + cloud + ", service=" + service + '}';
   }
 }

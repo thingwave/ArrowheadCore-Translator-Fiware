@@ -8,6 +8,7 @@
 package eu.arrowhead.common.database;
 
 import eu.arrowhead.common.json.support.ArrowheadSystemSupport;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -140,24 +141,13 @@ public class ArrowheadSystem {
     if (!(o instanceof ArrowheadSystem)) {
       return false;
     }
-
     ArrowheadSystem that = (ArrowheadSystem) o;
-
-    if (systemName != null ? !systemName.equals(that.systemName) : that.systemName != null) {
-      return false;
-    }
-    if (address != null ? !address.equals(that.address) : that.address != null) {
-      return false;
-    }
-    return port != null ? port.equals(that.port) : that.port == null;
+    return Objects.equals(systemName, that.systemName) && Objects.equals(address, that.address) && Objects.equals(port, that.port);
   }
 
   @Override
   public int hashCode() {
-    int result = systemName != null ? systemName.hashCode() : 0;
-    result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + (port != null ? port.hashCode() : 0);
-    return result;
+    return Objects.hash(systemName, address, port);
   }
 
   //NOTE ArrowheadSystemKeyDeserializer relies on this implementation, do not change it without changing the (String json) constructor

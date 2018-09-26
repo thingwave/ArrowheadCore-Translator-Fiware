@@ -27,6 +27,7 @@ import eu.arrowhead.common.messages.ICNResult;
 import eu.arrowhead.common.messages.OrchestrationForm;
 import eu.arrowhead.common.messages.OrchestrationResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.ConstraintViolationException;
@@ -153,7 +154,9 @@ public class GatekeeperOutboundResource {
                                               null);
 
     if (GatekeeperMain.USE_GATEWAY) {
-      icnProposal.setPreferredBrokers(dm.getAll(Broker.class, null));
+      Map<String, Object> restrictionMap = new HashMap<>();
+      restrictionMap.put("secure", GatekeeperMain.IS_SECURE);
+      icnProposal.setPreferredBrokers(dm.getAll(Broker.class, restrictionMap));
       icnProposal.setGatewayPublicKey(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
     }
 

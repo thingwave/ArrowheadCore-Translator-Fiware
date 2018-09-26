@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -180,28 +181,17 @@ public class EventFilter {
     if (!(o instanceof EventFilter)) {
       return false;
     }
-
     EventFilter that = (EventFilter) o;
-
-    if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) {
-      return false;
-    }
-    return consumer.equals(that.consumer);
+    return Objects.equals(eventType, that.eventType) && Objects.equals(consumer, that.consumer);
   }
 
   @Override
   public int hashCode() {
-    int result = eventType != null ? eventType.hashCode() : 0;
-    result = 31 * result + consumer.hashCode();
-    return result;
+    return Objects.hash(eventType, consumer);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("EventFilter{");
-    sb.append(" eventType = ").append(eventType);
-    sb.append(", consumer = ").append(consumer);
-    sb.append('}');
-    return sb.toString();
+    return "EventFilter{" + "eventType='" + eventType + '\'' + ", consumer=" + consumer + '}';
   }
 }

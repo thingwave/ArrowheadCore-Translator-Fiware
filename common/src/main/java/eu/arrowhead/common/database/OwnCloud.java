@@ -10,6 +10,7 @@ package eu.arrowhead.common.database;
 import eu.arrowhead.common.messages.GSDPoll;
 import eu.arrowhead.common.messages.ICNProposal;
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -66,22 +67,17 @@ public class OwnCloud implements Serializable {
     if (!(o instanceof OwnCloud)) {
       return false;
     }
-
     OwnCloud ownCloud = (OwnCloud) o;
-
-    return cloud != null ? cloud.equals(ownCloud.cloud) : ownCloud.cloud == null;
+    return Objects.equals(cloud, ownCloud.cloud);
   }
 
   @Override
   public int hashCode() {
-    return cloud != null ? cloud.hashCode() : 0;
+    return Objects.hash(cloud);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("OwnCloud{");
-    sb.append(" cloud = ").append(cloud);
-    sb.append('}');
-    return sb.toString();
+    return "OwnCloud{" + "cloud=" + cloud + '}';
   }
 }

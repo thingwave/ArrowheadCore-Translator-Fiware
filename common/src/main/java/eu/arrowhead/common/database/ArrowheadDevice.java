@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,22 +61,17 @@ public class ArrowheadDevice {
     if (!(o instanceof ArrowheadDevice)) {
       return false;
     }
-
     ArrowheadDevice that = (ArrowheadDevice) o;
-
-    return deviceName != null ? deviceName.equals(that.deviceName) : that.deviceName == null;
+    return Objects.equals(deviceName, that.deviceName);
   }
 
   @Override
   public int hashCode() {
-    return deviceName != null ? deviceName.hashCode() : 0;
+    return Objects.hash(deviceName);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ArrowheadDevice{");
-    sb.append(" deviceName = ").append(deviceName);
-    sb.append('}');
-    return sb.toString();
+    return "ArrowheadDevice{" + "deviceName='" + deviceName + '\'' + '}';
   }
 }

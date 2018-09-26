@@ -14,6 +14,7 @@ import eu.arrowhead.common.json.support.ArrowheadServiceSupport;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -122,30 +123,30 @@ public class ArrowheadService {
     if (!(o instanceof ArrowheadService)) {
       return false;
     }
-
     ArrowheadService that = (ArrowheadService) o;
 
-    if (!serviceDefinition.equals(that.serviceDefinition)) {
+    if (!Objects.equals(serviceDefinition, that.serviceDefinition)) {
       return false;
     }
 
     //2 services can be equal if they have at least 1 common interface
-    Set<String> intersection = new HashSet<>(interfaces);
-    intersection.retainAll(that.interfaces);
-    return !intersection.isEmpty();
+    if (interfaces == null || that.interfaces == null) {
+      return true;
+    } else {
+      Set<String> intersection = new HashSet<>(interfaces);
+      intersection.retainAll(that.interfaces);
+      return !intersection.isEmpty();
+    }
   }
 
   @Override
   public int hashCode() {
-    return serviceDefinition.hashCode();
+    return Objects.hash(serviceDefinition);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ArrowheadService{");
-    sb.append(" serviceDefinition = ").append(serviceDefinition);
-    sb.append('}');
-    return sb.toString();
+    return "ArrowheadService{" + "serviceDefinition='" + serviceDefinition + '\'' + '}';
   }
 
   public void partialUpdate(ArrowheadService other) {

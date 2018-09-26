@@ -10,6 +10,7 @@ package eu.arrowhead.common.database;
 import eu.arrowhead.common.messages.GSDPoll;
 import eu.arrowhead.common.messages.ICNProposal;
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -67,22 +68,17 @@ public class NeighborCloud implements Serializable {
     if (!(o instanceof NeighborCloud)) {
       return false;
     }
-
     NeighborCloud that = (NeighborCloud) o;
-
-    return cloud.equals(that.cloud);
+    return Objects.equals(cloud, that.cloud);
   }
 
   @Override
   public int hashCode() {
-    return cloud.hashCode();
+    return Objects.hash(cloud);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("NeighborCloud{");
-    sb.append(" cloud = ").append(cloud);
-    sb.append('}');
-    return sb.toString();
+    return "NeighborCloud{" + "cloud=" + cloud + '}';
   }
 }

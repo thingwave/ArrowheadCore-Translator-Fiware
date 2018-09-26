@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -149,49 +150,20 @@ public class ArrowheadCloud {
     if (!(o instanceof ArrowheadCloud)) {
       return false;
     }
-
     ArrowheadCloud that = (ArrowheadCloud) o;
-
-    if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
-      return false;
-    }
-    if (cloudName != null ? !cloudName.equals(that.cloudName) : that.cloudName != null) {
-      return false;
-    }
-    if (address != null ? !address.equals(that.address) : that.address != null) {
-      return false;
-    }
-    if (port != null ? !port.equals(that.port) : that.port != null) {
-      return false;
-    }
-    if (gatekeeperServiceURI != null ? !gatekeeperServiceURI.equals(that.gatekeeperServiceURI) : that.gatekeeperServiceURI != null) {
-      return false;
-    }
-    return secure != null ? secure.equals(that.secure) : that.secure == null;
+    return Objects.equals(operator, that.operator) && Objects.equals(cloudName, that.cloudName) && Objects.equals(address, that.address) && Objects
+        .equals(port, that.port) && Objects.equals(gatekeeperServiceURI, that.gatekeeperServiceURI) && Objects.equals(secure, that.secure);
   }
 
   @Override
   public int hashCode() {
-    int result = operator != null ? operator.hashCode() : 0;
-    result = 31 * result + (cloudName != null ? cloudName.hashCode() : 0);
-    result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + (port != null ? port.hashCode() : 0);
-    result = 31 * result + (gatekeeperServiceURI != null ? gatekeeperServiceURI.hashCode() : 0);
-    result = 31 * result + (secure != null ? secure.hashCode() : 0);
-    return result;
+    return Objects.hash(operator, cloudName, address, port, gatekeeperServiceURI, secure);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ArrowheadCloud{");
-    sb.append(" operator = ").append(operator);
-    sb.append(", cloudName = ").append(cloudName);
-    sb.append(", address = ").append(address);
-    sb.append(", port = ").append(port);
-    sb.append(", gatekeeperServiceURI = ").append(gatekeeperServiceURI);
-    sb.append(", secure = ").append(secure);
-    sb.append('}');
-    return sb.toString();
+    return "ArrowheadCloud{" + "operator='" + operator + '\'' + ", cloudName='" + cloudName + '\'' + ", address='" + address + '\'' + ", port=" + port
+        + ", gatekeeperServiceURI='" + gatekeeperServiceURI + '\'' + ", secure=" + secure + '}';
   }
 
   public void partialUpdate(ArrowheadCloud other) {

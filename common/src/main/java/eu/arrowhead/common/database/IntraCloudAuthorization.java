@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -110,33 +111,17 @@ public class IntraCloudAuthorization {
     if (!(o instanceof IntraCloudAuthorization)) {
       return false;
     }
-
     IntraCloudAuthorization that = (IntraCloudAuthorization) o;
-
-    if (!consumer.equals(that.consumer)) {
-      return false;
-    }
-    if (!provider.equals(that.provider)) {
-      return false;
-    }
-    return service.equals(that.service);
+    return Objects.equals(consumer, that.consumer) && Objects.equals(provider, that.provider) && Objects.equals(service, that.service);
   }
 
   @Override
   public int hashCode() {
-    int result = consumer.hashCode();
-    result = 31 * result + provider.hashCode();
-    result = 31 * result + service.hashCode();
-    return result;
+    return Objects.hash(consumer, provider, service);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("IntraCloudAuthorization{");
-    sb.append(" consumer = ").append(consumer);
-    sb.append(", provider = ").append(provider);
-    sb.append(", service = ").append(service);
-    sb.append('}');
-    return sb.toString();
+    return "IntraCloudAuthorization{" + "consumer=" + consumer + ", provider=" + provider + ", service=" + service + '}';
   }
 }
