@@ -89,11 +89,6 @@ public class ServiceRequestForm {
   }
 
   public void setOrchestrationFlags(Map<String, Boolean> orchestrationFlags) {
-    for (String key : flagKeys) {
-      if (!orchestrationFlags.containsKey(key)) {
-        orchestrationFlags.put(key, false);
-      }
-    }
     this.orchestrationFlags = orchestrationFlags;
   }
 
@@ -149,11 +144,6 @@ public class ServiceRequestForm {
     }
 
     public Builder orchestrationFlags(Map<String, Boolean> flags) {
-      for (String key : flagKeys) {
-        if (!flags.containsKey(key)) {
-          flags.put(key, false);
-        }
-      }
       orchestrationFlags = flags;
       return this;
     }
@@ -179,17 +169,21 @@ public class ServiceRequestForm {
   }
 
   public void validateCrossParameterConstraints() {
+    for (String key : flagKeys) {
+      if (!orchestrationFlags.containsKey(key)) {
+        orchestrationFlags.put(key, false);
+      }
+    }
     if (requestedService == null && orchestrationFlags.get("overrideStore")) {
       throw new BadPayloadException("RequestedService can not be null when overrideStore is TRUE");
     }
 
     if (orchestrationFlags.get("onlyPreferred")) {
       List<PreferredProvider> tmp = new ArrayList<>();
-      for (PreferredProvider provider : preferredProviders) {
+      for (PreferredProvider provider : preferredProviders)
         if (!provider.isValid()) {
           tmp.add(provider);
         }
-      }
       preferredProviders.removeAll(tmp);
       if (preferredProviders.isEmpty()) {
         throw new BadPayloadException("There is no valid PreferredProvider, but \"onlyPreferred\" is set to true");
