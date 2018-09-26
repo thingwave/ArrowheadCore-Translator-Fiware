@@ -12,16 +12,17 @@ import eu.arrowhead.common.database.ArrowheadSystem;
 import java.util.HashSet;
 import java.util.Set;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
 
 public class IntraCloudAuthRequest {
 
   @Valid
   @NotNull
   private ArrowheadSystem consumer;
+  @Valid
   @NotEmpty
-  private Set<@NotNull @Valid ArrowheadSystem> providers = new HashSet<>();
+  private Set<ArrowheadSystem> providers = new HashSet<>();
   @Valid
   @NotNull
   private ArrowheadService service;

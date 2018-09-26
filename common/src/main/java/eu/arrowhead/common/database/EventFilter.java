@@ -7,6 +7,8 @@
 
 package eu.arrowhead.common.database;
 
+import eu.arrowhead.common.json.constraint.LDTInFuture;
+import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,14 +29,13 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "event_filter", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_type", "consumer_system_id"})})
@@ -56,23 +57,24 @@ public class EventFilter {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private ArrowheadSystem consumer;
 
+  @Valid
   @Size(max = 100, message = "Event filter can only have 100 sources at max")
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "event_filter_sources_list", joinColumns = @JoinColumn(name = "filter_id"))
-  private Set<@NotNull @Valid ArrowheadSystem> sources = new HashSet<>();
+  private Set<ArrowheadSystem> sources = new HashSet<>();
 
   @Column(name = "start_date")
   private LocalDateTime startDate;
 
   @Column(name = "end_date")
-  @FutureOrPresent(message = "Filter end date cannot be in the past")
+  @LDTInFuture(message = "Filter end date must be in the future")
   private LocalDateTime endDate;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapKeyColumn(name = "metadata_key")
   @Column(name = "metadata_value", length = 2047)
   @CollectionTable(name = "event_filter_metadata", joinColumns = @JoinColumn(name = "filter_id"))
-  private Map<@NotBlank String, @NotBlank String> filterMetadata = new HashMap<>();
+  private Map<@SENotBlank String, @SENotBlank String> filterMetadata = new HashMap<>();
 
   @Column(name = "notify_uri")
   private String notifyUri;

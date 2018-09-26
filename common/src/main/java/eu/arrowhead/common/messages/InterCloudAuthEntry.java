@@ -12,16 +12,17 @@ import eu.arrowhead.common.database.ArrowheadService;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
 
 public class InterCloudAuthEntry {
 
   @Valid
   @NotNull
   private ArrowheadCloud cloud;
+  @Valid
   @NotEmpty
-  private List<@NotNull @Valid ArrowheadService> serviceList = new ArrayList<>();
+  private List<ArrowheadService> serviceList = new ArrayList<>();
 
   public InterCloudAuthEntry() {
   }

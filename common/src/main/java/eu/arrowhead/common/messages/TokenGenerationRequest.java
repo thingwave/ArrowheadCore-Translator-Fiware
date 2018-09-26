@@ -13,8 +13,8 @@ import eu.arrowhead.common.database.ArrowheadSystem;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
 
 public class TokenGenerationRequest {
 
@@ -23,8 +23,9 @@ public class TokenGenerationRequest {
   private ArrowheadSystem consumer;
   @Valid
   private ArrowheadCloud consumerCloud;
+  @Valid
   @NotEmpty
-  private List<@NotNull @Valid ArrowheadSystem> providers = new ArrayList<>();
+  private List<ArrowheadSystem> providers = new ArrayList<>();
   @Valid
   @NotNull
   private ArrowheadService service;

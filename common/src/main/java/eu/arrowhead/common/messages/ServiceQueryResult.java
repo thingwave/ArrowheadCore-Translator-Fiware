@@ -14,7 +14,8 @@ import javax.validation.Valid;
 
 public class ServiceQueryResult {
 
-  private List<@Valid ServiceRegistryEntry> serviceQueryData = new ArrayList<>();
+  @Valid
+  private List<ServiceRegistryEntry> serviceQueryData = new ArrayList<>();
 
   public ServiceQueryResult() {
   }

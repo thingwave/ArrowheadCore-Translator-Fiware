@@ -13,7 +13,8 @@ import javax.validation.Valid;
 
 public class TokenGenerationResponse {
 
-  private List<@Valid TokenData> tokenData = new ArrayList<>();
+  @Valid
+  private List<TokenData> tokenData = new ArrayList<>();
 
   public TokenGenerationResponse() {
   }

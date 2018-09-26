@@ -13,7 +13,8 @@ import javax.validation.Valid;
 
 public class OrchestrationResponse {
 
-  private List<@Valid OrchestrationForm> response = new ArrayList<>();
+  @Valid
+  private List<OrchestrationForm> response = new ArrayList<>();
 
   public OrchestrationResponse() {
   }

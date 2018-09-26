@@ -11,6 +11,7 @@ import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.exception.BadPayloadException;
+import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,8 +35,9 @@ public class ServiceRequestForm {
   private ArrowheadCloud requesterCloud;
   @Valid
   private ArrowheadService requestedService;
-  private Map<String, Boolean> orchestrationFlags = new HashMap<>();
-  private List<@NotNull @Valid PreferredProvider> preferredProviders = new ArrayList<>();
+  private Map<@SENotBlank String, Boolean> orchestrationFlags = new HashMap<>();
+  @Valid
+  private List<PreferredProvider> preferredProviders = new ArrayList<>();
   private Map<String, String> requestedQoS = new HashMap<>();
   private Map<String, String> commands = new HashMap<>();
 
@@ -183,7 +185,7 @@ public class ServiceRequestForm {
 
     if (orchestrationFlags.get("onlyPreferred")) {
       List<PreferredProvider> tmp = new ArrayList<>();
-      for (@Valid PreferredProvider provider : preferredProviders) {
+      for (PreferredProvider provider : preferredProviders) {
         if (!provider.isValid()) {
           tmp.add(provider);
         }

@@ -41,6 +41,7 @@ import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 
 public abstract class ArrowheadMain {
 
@@ -142,6 +143,7 @@ public abstract class ArrowheadMain {
     config.registerClasses(classes);
     config.packages(packages);
     config.packages("io.swagger.v3.jaxrs2.integration.resources");
+    config.property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 
     URI uri = UriBuilder.fromUri(baseUri).build();
     try {

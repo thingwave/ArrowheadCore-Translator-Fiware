@@ -9,6 +9,7 @@ package eu.arrowhead.common.database;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import eu.arrowhead.common.json.constraint.SENotBlank;
 import eu.arrowhead.common.json.support.ArrowheadServiceSupport;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,8 +27,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * Representation of a service within Arrowhead.
@@ -51,12 +52,12 @@ public class ArrowheadService {
   @Size(max = 100, message = "Service can only have 100 interfaces at max")
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "arrowhead_service_interfaces", joinColumns = @JoinColumn(name = "arrowhead_service_id"))
-  private Set<@NotBlank String> interfaces = new HashSet<>();
+  private Set<@SENotBlank String> interfaces = new HashSet<>();
 
   @Transient
   @JsonInclude(Include.NON_EMPTY)
   @Size(max = 100, message = "Service can only have 100 serviceMetadata key-value pairs at max")
-  private Map<@NotBlank String, @NotBlank String> serviceMetadata = new HashMap<>();
+  private Map<@SENotBlank String, @SENotBlank String> serviceMetadata = new HashMap<>();
 
   public ArrowheadService() {
   }

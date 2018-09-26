@@ -8,6 +8,7 @@
 package eu.arrowhead.common.exception;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -21,12 +22,20 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
   private javax.inject.Provider<ContainerRequest> requestContext;
 
   @Override
-  public Response toResponse(ConstraintViolationException exception) {
-    exception.printStackTrace();
+  public Response toResponse(ConstraintViolationException ex) {
+    ex.printStackTrace();
+    StringBuilder messageBuilder = new StringBuilder();
+    for (ConstraintViolation violation : ex.getConstraintViolations()) {
+      if (violation.getMessage() != null) {
+        messageBuilder.append(violation.getMessage());
+      } else {
+        messageBuilder.append(violation.getMessageTemplate());
+      }
+    }
     int errorCode = 404; //Bad Request
     String origin = requestContext.get() != null ? requestContext.get().getAbsolutePath().toString() : "unknown";
 
-    ErrorMessage errorMessage = new ErrorMessage(exception.getMessage(), errorCode, ExceptionType.VALIDATION, origin);
+    ErrorMessage errorMessage = new ErrorMessage(messageBuilder.toString(), errorCode, ExceptionType.VALIDATION, origin);
     return Response.status(errorCode).entity(errorMessage).header("Content-type", "application/json").build();
   }
 }

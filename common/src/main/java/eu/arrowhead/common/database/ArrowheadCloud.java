@@ -16,10 +16,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "arrowhead_cloud", uniqueConstraints = {@UniqueConstraint(columnNames = {"operator", "cloud_name"})})
@@ -30,7 +31,7 @@ public class ArrowheadCloud {
   private Long id;
 
   @NotBlank
-  @Size(max = 255, message = "Cloud operator must be 255 character at max")
+  @Length(max = 255, message = "Cloud operator must be 255 character at max")
   @Pattern(regexp = "[A-Za-z0-9-_:]+", message = "Cloud operator can only contain alphanumerical characters and some special characters (dash, "
       + "underscore and colon)")
   private String operator;

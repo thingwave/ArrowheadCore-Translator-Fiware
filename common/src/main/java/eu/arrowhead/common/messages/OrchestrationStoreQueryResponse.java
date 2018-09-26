@@ -14,7 +14,8 @@ import javax.validation.Valid;
 
 public class OrchestrationStoreQueryResponse {
 
-  private List<@Valid OrchestrationStore> entryList = new ArrayList<>();
+  @Valid
+  private List<OrchestrationStore> entryList = new ArrayList<>();
 
   public OrchestrationStoreQueryResponse() {
   }

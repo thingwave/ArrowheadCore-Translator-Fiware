@@ -7,8 +7,10 @@
 
 package eu.arrowhead.common.database;
 
+import eu.arrowhead.common.json.constraint.LDTInFuture;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
@@ -58,7 +59,7 @@ public class ServiceRegistryEntry {
   private Boolean udp = false;
 
   @Column(name = "end_of_validity")
-  @FutureOrPresent(message = "End of validity date cannot be in the past")
+  @LDTInFuture(message = "End of validity date must be in the future")
   private LocalDateTime endOfValidity;
 
   private Integer version = 1;
@@ -160,28 +161,14 @@ public class ServiceRegistryEntry {
     if (!(o instanceof ServiceRegistryEntry)) {
       return false;
     }
-
     ServiceRegistryEntry that = (ServiceRegistryEntry) o;
-
-    if (!providedService.equals(that.providedService)) {
-      return false;
-    }
-    if (!provider.equals(that.provider)) {
-      return false;
-    }
-    if (serviceUri != null ? !serviceUri.equals(that.serviceUri) : that.serviceUri != null) {
-      return false;
-    }
-    return version != null ? version.equals(that.version) : that.version == null;
+    return Objects.equals(providedService, that.providedService) && Objects.equals(provider, that.provider) && Objects
+        .equals(serviceUri, that.serviceUri) && Objects.equals(version, that.version);
   }
 
   @Override
   public int hashCode() {
-    int result = providedService.hashCode();
-    result = 31 * result + provider.hashCode();
-    result = 31 * result + (serviceUri != null ? serviceUri.hashCode() : 0);
-    result = 31 * result + (version != null ? version.hashCode() : 0);
-    return result;
+    return Objects.hash(providedService, provider, serviceUri, version);
   }
 
   @Override
