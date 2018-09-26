@@ -16,7 +16,7 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.ContainerResponse;
 
 @Provider
-public class GenericExceptionMapper implements ExceptionMapper<Exception> {
+public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 
   @Inject
   private javax.inject.Provider<ContainerRequest> requestContext;
@@ -24,15 +24,15 @@ public class GenericExceptionMapper implements ExceptionMapper<Exception> {
   private javax.inject.Provider<ContainerResponse> responseContext;
 
   @Override
-  public Response toResponse(Exception ex) {
-    ex.printStackTrace();
+  public Response toResponse(Throwable t) {
+    t.printStackTrace();
     int errorCode = 500; //Internal Server Error
     String origin = requestContext.get() != null ? requestContext.get().getAbsolutePath().toString() : "unknown";
     if (responseContext.get() != null && responseContext.get().getStatusInfo().getFamily() != Family.OTHER) {
       errorCode = responseContext.get().getStatus();
     }
 
-    ErrorMessage errorMessage = new ErrorMessage(ex.getClass().toString() + ": " + ex.getMessage(), errorCode, ExceptionType.GENERIC, origin);
+    ErrorMessage errorMessage = new ErrorMessage(t.getClass().toString() + ": " + t.getMessage(), errorCode, ExceptionType.GENERIC, origin);
     return Response.status(errorCode).entity(errorMessage).header("Content-type", "application/json").build();
   }
 

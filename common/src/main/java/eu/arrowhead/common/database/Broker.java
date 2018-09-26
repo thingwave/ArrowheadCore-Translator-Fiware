@@ -28,6 +28,7 @@ public class Broker {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
+  //TODO not needed, address is enough
   @NotBlank
   @Column(name = "broker_name")
   @Size(max = 255, message = "Broker name must be 255 character at max")
@@ -45,6 +46,7 @@ public class Broker {
   @Type(type = "yes_no")
   private Boolean secure = false;
 
+  //TODO this field is not needed!
   @Column(name = "authentication_info")
   @Size(max = 2047, message = "Authentication information must be 2047 character at max")
   private String authenticationInfo;
