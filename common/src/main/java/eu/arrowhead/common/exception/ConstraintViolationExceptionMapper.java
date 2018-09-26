@@ -25,17 +25,13 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
   public Response toResponse(ConstraintViolationException ex) {
     ex.printStackTrace();
     StringBuilder messageBuilder = new StringBuilder();
-    for (ConstraintViolation violation : ex.getConstraintViolations()) {
-      if (violation.getMessage() != null) {
-        messageBuilder.append(violation.getMessage());
-      } else {
-        messageBuilder.append(violation.getMessageTemplate());
-      }
+    for (ConstraintViolation cv : ex.getConstraintViolations()) {
+      messageBuilder.append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(", ");
     }
     int errorCode = 404; //Bad Request
     String origin = requestContext.get() != null ? requestContext.get().getAbsolutePath().toString() : "unknown";
 
-    ErrorMessage errorMessage = new ErrorMessage(messageBuilder.toString(), errorCode, ExceptionType.VALIDATION, origin);
+    ErrorMessage errorMessage = new ErrorMessage(messageBuilder.toString(), errorCode, ExceptionType.BAD_PAYLOAD, origin);
     return Response.status(errorCode).entity(errorMessage).header("Content-type", "application/json").build();
   }
 }

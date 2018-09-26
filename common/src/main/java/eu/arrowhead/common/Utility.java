@@ -228,7 +228,7 @@ public final class Utility {
           throw new ArrowheadException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
         case DATA_NOT_FOUND:
           throw new DataNotFoundException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
-        case DNSSD:
+        case DNS_SD:
           throw new DnsException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
         case DUPLICATE_ENTRY:
           throw new DuplicateEntryException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
@@ -493,7 +493,6 @@ public final class Utility {
     return addresses.get(0).getHostAddress();
   }
 
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   public static <T> boolean isBeanValid(T bean) {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     Validator validator = factory.getValidator();

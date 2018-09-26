@@ -120,8 +120,10 @@ public class GatekeeperOutboundResource {
       }
 
       try {
-        @Valid GSDAnswer answer = response.readEntity(GSDAnswer.class);
-        gsdAnswerList.add(answer);
+        GSDAnswer answer = response.readEntity(GSDAnswer.class);
+        if (Utility.isBeanValid(answer)) {
+          gsdAnswerList.add(answer);
+        }
       } catch (ConstraintViolationException e) {
         e.printStackTrace();
         log.info("GSDAnswer from " + uri + " is not valid! Skipping it from GSDResult!");
