@@ -9,6 +9,7 @@ package eu.arrowhead.common.database;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.SENotBlank;
 import eu.arrowhead.common.json.support.ArrowheadServiceSupport;
 import java.util.HashMap;
@@ -146,7 +147,7 @@ public class ArrowheadService {
 
   @Override
   public String toString() {
-    return "ArrowheadService{" + "serviceDefinition='" + serviceDefinition + '\'' + '}';
+    return MoreObjects.toStringHelper(this).add("serviceDefinition", serviceDefinition).toString();
   }
 
   public void partialUpdate(ArrowheadService other) {

@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.LDTInFuture;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -173,8 +174,8 @@ public class ServiceRegistryEntry {
 
   @Override
   public String toString() {
-    return "ServiceRegistryEntry{" + "providedService=" + providedService + ", provider=" + provider + ", serviceUri='" + serviceUri + '\''
-        + ", version=" + version + '}';
+    return MoreObjects.toStringHelper(this).add("providedService", providedService).add("provider", provider).add("serviceUri", serviceUri)
+                      .add("version", version).toString();
   }
 
   public void toDatabase() {

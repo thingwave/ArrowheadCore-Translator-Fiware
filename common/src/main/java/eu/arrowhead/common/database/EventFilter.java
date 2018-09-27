@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.LDTInFuture;
 import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.time.LocalDateTime;
@@ -192,6 +193,6 @@ public class EventFilter {
 
   @Override
   public String toString() {
-    return "EventFilter{" + "eventType='" + eventType + '\'' + ", consumer=" + consumer + '}';
+    return MoreObjects.toStringHelper(this).add("eventType", eventType).add("consumer", consumer).toString();
   }
 }

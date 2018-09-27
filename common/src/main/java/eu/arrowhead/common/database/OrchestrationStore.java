@@ -9,6 +9,7 @@ package eu.arrowhead.common.database;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.exception.BadPayloadException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -261,8 +262,8 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
 
   @Override
   public String toString() {
-    return "OrchestrationStore{" + "service=" + service + ", consumer=" + consumer + ", providerSystem=" + providerSystem + ", providerCloud="
-        + providerCloud + ", priority=" + priority + ", defaultEntry=" + defaultEntry + '}';
+    return MoreObjects.toStringHelper(this).add("service", service).add("consumer", consumer).add("providerSystem", providerSystem)
+                      .add("providerCloud", providerCloud).add("priority", priority).add("defaultEntry", defaultEntry).toString();
   }
 
   public void validateCrossParameterConstraints() {

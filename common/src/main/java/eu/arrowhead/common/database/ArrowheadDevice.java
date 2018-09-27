@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -72,6 +73,6 @@ public class ArrowheadDevice {
 
   @Override
   public String toString() {
-    return "ArrowheadDevice{" + "deviceName='" + deviceName + '\'' + '}';
+    return MoreObjects.toStringHelper(this).add("deviceName", deviceName).toString();
   }
 }

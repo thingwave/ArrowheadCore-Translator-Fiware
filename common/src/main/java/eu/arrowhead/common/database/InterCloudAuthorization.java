@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -104,6 +105,6 @@ public class InterCloudAuthorization {
 
   @Override
   public String toString() {
-    return "InterCloudAuthorization{" + "cloud=" + cloud + ", service=" + service + '}';
+    return MoreObjects.toStringHelper(this).add("cloud", cloud).add("service", service).toString();
   }
 }

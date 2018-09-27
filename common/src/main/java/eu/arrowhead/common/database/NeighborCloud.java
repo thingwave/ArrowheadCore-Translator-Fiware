@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.messages.GSDPoll;
 import eu.arrowhead.common.messages.ICNProposal;
 import java.io.Serializable;
@@ -79,6 +80,6 @@ public class NeighborCloud implements Serializable {
 
   @Override
   public String toString() {
-    return "NeighborCloud{" + "cloud=" + cloud + '}';
+    return MoreObjects.toStringHelper(this).add("cloud", cloud).toString();
   }
 }

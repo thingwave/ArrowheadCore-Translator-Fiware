@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -162,8 +163,8 @@ public class ArrowheadCloud {
 
   @Override
   public String toString() {
-    return "ArrowheadCloud{" + "operator='" + operator + '\'' + ", cloudName='" + cloudName + '\'' + ", address='" + address + '\'' + ", port=" + port
-        + ", gatekeeperServiceURI='" + gatekeeperServiceURI + '\'' + ", secure=" + secure + '}';
+    return MoreObjects.toStringHelper(this).add("operator", operator).add("cloudName", cloudName).add("address", address).add("port", port)
+                      .add("gatekeeperServiceURI", gatekeeperServiceURI).add("secure", secure).toString();
   }
 
   public void partialUpdate(ArrowheadCloud other) {
