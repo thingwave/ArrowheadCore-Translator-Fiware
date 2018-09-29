@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.serviceregistry;
@@ -35,9 +33,9 @@ public class ServiceRegistryMain extends ArrowheadMain {
   private static final TypeSafeProperties dnsProp = Utility.getProp("dns.properties");
 
   static {
-    TSIG_NAME = dnsProp.getProperty("tsig_name", "key.arrowhead.tmit.bme.hu");
-    TSIG_KEY = dnsProp.getProperty("tsig_key", "RM/jKKEPYB83peT0DQnYGg==");
-    TSIG_ALGORITHM = dnsProp.getProperty("tsig_algorithm", DnsSDRegistrator.TSIG_ALGORITHM_HMAC_MD5);
+    TSIG_NAME = dnsProp.getProperty("tsig_name");
+    TSIG_KEY = dnsProp.getProperty("tsig_key");
+    TSIG_ALGORITHM = dnsProp.getProperty("tsig_algorithm");
     DNS_ADDRESS = dnsProp.getProperty("dns_address", "152.66.246.237");
     DNS_DOMAIN = dnsProp.getProperty("dns_domain", "arrowhead.tmit.bme.hu");
     DNS_PORT = dnsProp.getIntProperty("dns_port", 53);

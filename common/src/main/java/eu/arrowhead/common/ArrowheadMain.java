@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common;
@@ -20,7 +18,6 @@ import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.common.misc.TypeSafeProperties;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -36,7 +33,6 @@ import java.util.ServiceConfigurationError;
 import java.util.Set;
 import javax.net.ssl.SSLContext;
 import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -54,18 +50,19 @@ public abstract class ArrowheadMain {
   public static final Map<String, String> secureServerMetadata = Collections.singletonMap("security", "certificate");
 
   protected String srBaseUri;
-  protected final TypeSafeProperties props = Utility.getProp("app.properties");
+  protected final TypeSafeProperties props = Utility.getProp();
 
   private boolean daemon = false;
   private CoreSystem coreSystem;
   private HttpServer server;
   private String baseUri;
   private String base64PublicKey;
+  private int registeringTries = 1;
 
   private static final Logger log = Logger.getLogger(ArrowheadMain.class.getName());
 
-  static {
-    PropertyConfigurator.configure("config" + File.separator + "log4j.properties");
+  {
+    PropertyConfigurator.configure(props);
   }
 
   protected void init(CoreSystem coreSystem, String[] args, Set<Class<?>> classes, String[] packages) {
@@ -117,6 +114,7 @@ public abstract class ArrowheadMain {
   }
 
   protected void listenForInput() {
+    log.info(coreSystem + " startup completed.");
     if (daemon) {
       System.out.println("In daemon mode, process will terminate for TERM signal...");
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -143,6 +141,7 @@ public abstract class ArrowheadMain {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     URI uri = UriBuilder.fromUri(baseUri).build();
     try {
@@ -152,8 +151,8 @@ public abstract class ArrowheadMain {
       log.info("Started server at: " + baseUri);
       System.out.println("Started insecure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
+                                          e);
     }
   }
 
@@ -161,6 +160,7 @@ public abstract class ArrowheadMain {
     final ResourceConfig config = new ResourceConfig();
     config.registerClasses(classes);
     config.packages(packages);
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     String keystorePath = props.getProperty("keystore");
     String keystorePass = props.getProperty("keystorepass");
@@ -175,8 +175,8 @@ public abstract class ArrowheadMain {
     sslCon.setTrustStoreFile(truststorePath);
     sslCon.setTrustStorePass(truststorePass);
     if (!sslCon.validateConfiguration(true)) {
-      log.fatal("SSL Context is not valid, check the certificate files or app.properties!");
-      throw new AuthException("SSL Context is not valid, check the certificate files or app.properties!", Status.UNAUTHORIZED.getStatusCode());
+      log.fatal("SSL Context is not valid, check the certificate or the config files!");
+      throw new AuthException("SSL Context is not valid, check the certificate or the config files!");
     }
 
     SSLContext sslContext = sslCon.createSSLContext();
@@ -191,7 +191,7 @@ public abstract class ArrowheadMain {
       log.fatal("Server CN is not compliant with the Arrowhead cert structure");
       throw new AuthException(
           "Server CN ( " + serverCN + ") is not compliant with the Arrowhead cert structure, since it does not have 5 parts, or does not end with"
-              + " \"arrowhead.eu.\"", Status.UNAUTHORIZED.getStatusCode());
+              + " \"arrowhead.eu\"");
     }
     log.info("Certificate of the secure server: " + serverCN);
     config.property("server_common_name", serverCN);
@@ -205,8 +205,8 @@ public abstract class ArrowheadMain {
       log.info("Started server at: " + baseUri);
       System.out.println("Started secure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
+                                          e);
     }
   }
 
@@ -242,14 +242,28 @@ public abstract class ArrowheadMain {
           if (e.getExceptionType() == ExceptionType.DUPLICATE_ENTRY) {
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("register").build().toString(), "POST", srEntry);
+          } else if (e.getExceptionType() == ExceptionType.UNAVAILABLE) {
+            System.out.println("Service Registry is unavailable at the moment, retrying in 10 seconds...");
+            try {
+              Thread.sleep(10000);
+              if (registeringTries == 3) {
+                throw e;
+              } else {
+                registeringTries++;
+                //noinspection ConstantConditions
+                useSRService(registering);
+              }
+            } catch (InterruptedException e1) {
+              e1.printStackTrace();
+            }
           } else {
             throw new ArrowheadException(service.getServiceDef() + " service registration failed.", e);
           }
         }
+        registeringTries = 1;
       } else {
         Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
       }
     }
   }
-
 }

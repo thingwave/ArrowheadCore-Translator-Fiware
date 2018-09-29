@@ -1,15 +1,14 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
 import eu.arrowhead.common.json.support.ArrowheadSystemSupport;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,9 +18,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "arrowhead_system", uniqueConstraints = {@UniqueConstraint(columnNames = {"system_name", "address", "port"})})
@@ -142,24 +141,13 @@ public class ArrowheadSystem {
     if (!(o instanceof ArrowheadSystem)) {
       return false;
     }
-
     ArrowheadSystem that = (ArrowheadSystem) o;
-
-    if (systemName != null ? !systemName.equals(that.systemName) : that.systemName != null) {
-      return false;
-    }
-    if (address != null ? !address.equals(that.address) : that.address != null) {
-      return false;
-    }
-    return port != null ? port.equals(that.port) : that.port == null;
+    return Objects.equals(systemName, that.systemName) && Objects.equals(address, that.address) && Objects.equals(port, that.port);
   }
 
   @Override
   public int hashCode() {
-    int result = systemName != null ? systemName.hashCode() : 0;
-    result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + (port != null ? port.hashCode() : 0);
-    return result;
+    return Objects.hash(systemName, address, port);
   }
 
   //NOTE ArrowheadSystemKeyDeserializer relies on this implementation, do not change it without changing the (String json) constructor

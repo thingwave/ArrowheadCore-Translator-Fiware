@@ -1,20 +1,20 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.exception.BadPayloadException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -249,47 +249,21 @@ public class OrchestrationStore implements Comparable<OrchestrationStore> {
     if (!(o instanceof OrchestrationStore)) {
       return false;
     }
-
     OrchestrationStore that = (OrchestrationStore) o;
-
-    if (!service.equals(that.service)) {
-      return false;
-    }
-    if (!consumer.equals(that.consumer)) {
-      return false;
-    }
-    if (!providerSystem.equals(that.providerSystem)) {
-      return false;
-    }
-    if (providerCloud != null ? !providerCloud.equals(that.providerCloud) : that.providerCloud != null) {
-      return false;
-    }
-    if (priority != null ? !priority.equals(that.priority) : that.priority != null) {
-      return false;
-    }
-    return defaultEntry != null ? defaultEntry.equals(that.defaultEntry) : that.defaultEntry == null;
+    return Objects.equals(service, that.service) && Objects.equals(consumer, that.consumer) && Objects.equals(providerSystem, that.providerSystem)
+        && Objects.equals(providerCloud, that.providerCloud) && Objects.equals(priority, that.priority) && Objects
+        .equals(defaultEntry, that.defaultEntry);
   }
 
   @Override
   public int hashCode() {
-    int result = service.hashCode();
-    result = 31 * result + consumer.hashCode();
-    result = 31 * result + providerSystem.hashCode();
-    result = 31 * result + (providerCloud != null ? providerCloud.hashCode() : 0);
-    result = 31 * result + (priority != null ? priority.hashCode() : 0);
-    result = 31 * result + (defaultEntry != null ? defaultEntry.hashCode() : 0);
-    return result;
+    return Objects.hash(service, consumer, providerSystem, providerCloud, priority, defaultEntry);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("OrchestrationStore{");
-    sb.append(" service = ").append(service);
-    sb.append(", consumer = ").append(consumer);
-    sb.append(", priority = ").append(priority);
-    sb.append(", defaultEntry = ").append(defaultEntry);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("service", service).add("consumer", consumer).add("providerSystem", providerSystem)
+                      .add("providerCloud", providerCloud).add("priority", priority).add("defaultEntry", defaultEntry).toString();
   }
 
   public void validateCrossParameterConstraints() {
