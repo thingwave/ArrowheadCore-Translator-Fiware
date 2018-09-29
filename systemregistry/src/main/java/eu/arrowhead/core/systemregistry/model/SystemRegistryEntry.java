@@ -42,7 +42,7 @@ public class SystemRegistryEntry {
 	private ArrowheadSystem providedSystem;
 
 	@Valid
-	@NotNull(message = "Provider ArrowheadSystem cannot be null")
+	@NotNull(message = "Provider ArrowheadDevice cannot be null")
 	@JoinColumn(name = "provider_device_id")
 	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@OnDelete(action = OnDeleteAction.CASCADE)

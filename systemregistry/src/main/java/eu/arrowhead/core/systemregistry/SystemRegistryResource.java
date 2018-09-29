@@ -9,27 +9,26 @@
 
 package eu.arrowhead.core.systemregistry;
 
-import java.util.List;
-
-import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
 
 import eu.arrowhead.common.RegistryResource;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @Path("systemregistry")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -52,85 +51,39 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 
 	@GET
 	@Path(LOOKUP_PATH)
-	public Response lookup(@Context final UriInfo uriInfo, @PathParam("id") final Long id) {
+	@Operation(summary = "Searches a SystemRegistryEntry by id", responses = {
+	    @ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class))) })
+	public Response lookup(@PathParam("id") final long id) throws ArrowheadException {
 		SystemRegistryEntry returnValue;
 		Response response;
 
-		try {
-			log.info(String.format("request: GET %s", uriInfo.getPath()));
-			returnValue = registryService.lookup(id);
-			response = createSuccessResponse(returnValue, Status.OK);
-		} catch (final EntityNotFoundException e) {
-			response = createNotFoundResponse();
-		} catch (final ArrowheadException e) {
-			response = createArrowheadResponse(e);
-		} catch (final Exception e) {
-			response = createGenericErrorResponse(e);
-		}
+		returnValue = registryService.lookup(id);
+		response = Response.status(Status.OK).entity(returnValue).build();
 
-		log.info(String.format("response: GET %s - %d", uriInfo.getPath(), response.getStatus()));
 		return response;
 	}
 
 	@POST
 	@Path(PUBLISH_PATH)
-	public Response publish(@Context final UriInfo uriInfo, final SystemRegistryEntry entry) {
+	public Response publish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
 		SystemRegistryEntry returnValue;
 		Response response;
 
-		try {
-			log.info(String.format("request: POST %s - body: %s", uriInfo.getPath(), entry));
-			returnValue = registryService.publish(entry);
-			response = createSuccessResponse(returnValue, Status.CREATED);
-		} catch (final ArrowheadException e) {
-			response = createArrowheadResponse(e);
-		} catch (final Exception e) {
-			response = createGenericErrorResponse(e);
-		}
+		returnValue = registryService.publish(entry);
+		response = Response.status(Status.CREATED).entity(returnValue).build();
 
-		log.info(String.format("response: POST %s - %d", uriInfo.getPath(), response.getStatus()));
 		return response;
 	}
 
 	@POST
 	@Path(UNPUBLISH_PATH)
-	public Response unpublish(@Context final UriInfo uriInfo, final SystemRegistryEntry entry) {
+	public Response unpublish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
 		SystemRegistryEntry returnValue;
 		Response response;
 
-		try {
-			log.info(String.format("request: POST %s - body: %s", uriInfo.getPath(), entry));
-			returnValue = registryService.unpublish(entry);
-			response = createSuccessResponse(returnValue, Status.OK);
-		} catch (final EntityNotFoundException e) {
-			response = createNotFoundResponse();
-		} catch (final ArrowheadException e) {
-			response = createArrowheadResponse(e);
-		} catch (final Exception e) {
-			response = createGenericErrorResponse(e);
-		}
+		returnValue = registryService.unpublish(entry);
+		response = Response.status(Status.OK).entity(returnValue).build();
 
-		log.info(String.format("response: POST %s - %d", uriInfo.getPath(), response.getStatus()));
 		return response;
-	}
-
-	protected Response createSuccessResponse(final SystemRegistryEntry entity, final Status status) {
-		return Response.status(status).entity(entity).build();
-	}
-
-	protected Response createSuccessResponse(final List<SystemRegistryEntry> list, final Status status) {
-		return Response.status(status).entity(new GenericEntity<>(list, SystemRegistryEntry.class)).build();
-	}
-
-	protected Response createNotFoundResponse() {
-		return Response.status(Status.NOT_FOUND).entity("The requested entity was not found in the system.").build();
-	}
-
-	protected Response createArrowheadResponse(final ArrowheadException e) {
-		return Response.status(e.getErrorCode()).entity(e.getMessage()).build();
-	}
-
-	protected Response createGenericErrorResponse(final Exception e) {
-		return Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 	}
 }
