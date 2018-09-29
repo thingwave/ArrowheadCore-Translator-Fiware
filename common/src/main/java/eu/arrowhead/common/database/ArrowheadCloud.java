@@ -1,14 +1,14 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +18,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "arrowhead_cloud", uniqueConstraints = {@UniqueConstraint(columnNames = {"operator", "cloud_name"})})
@@ -32,7 +33,7 @@ public class ArrowheadCloud {
   private Long id;
 
   @NotBlank
-  @Size(max = 255, message = "Cloud operator must be 255 character at max")
+  @Length(max = 255, message = "Cloud operator must be 255 character at max")
   @Pattern(regexp = "[A-Za-z0-9-_:]+", message = "Cloud operator can only contain alphanumerical characters and some special characters (dash, "
       + "underscore and colon)")
   private String operator;
@@ -150,49 +151,20 @@ public class ArrowheadCloud {
     if (!(o instanceof ArrowheadCloud)) {
       return false;
     }
-
     ArrowheadCloud that = (ArrowheadCloud) o;
-
-    if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
-      return false;
-    }
-    if (cloudName != null ? !cloudName.equals(that.cloudName) : that.cloudName != null) {
-      return false;
-    }
-    if (address != null ? !address.equals(that.address) : that.address != null) {
-      return false;
-    }
-    if (port != null ? !port.equals(that.port) : that.port != null) {
-      return false;
-    }
-    if (gatekeeperServiceURI != null ? !gatekeeperServiceURI.equals(that.gatekeeperServiceURI) : that.gatekeeperServiceURI != null) {
-      return false;
-    }
-    return secure != null ? secure.equals(that.secure) : that.secure == null;
+    return Objects.equals(operator, that.operator) && Objects.equals(cloudName, that.cloudName) && Objects.equals(address, that.address) && Objects
+        .equals(port, that.port) && Objects.equals(gatekeeperServiceURI, that.gatekeeperServiceURI) && Objects.equals(secure, that.secure);
   }
 
   @Override
   public int hashCode() {
-    int result = operator != null ? operator.hashCode() : 0;
-    result = 31 * result + (cloudName != null ? cloudName.hashCode() : 0);
-    result = 31 * result + (address != null ? address.hashCode() : 0);
-    result = 31 * result + (port != null ? port.hashCode() : 0);
-    result = 31 * result + (gatekeeperServiceURI != null ? gatekeeperServiceURI.hashCode() : 0);
-    result = 31 * result + (secure != null ? secure.hashCode() : 0);
-    return result;
+    return Objects.hash(operator, cloudName, address, port, gatekeeperServiceURI, secure);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("ArrowheadCloud{");
-    sb.append(" operator = ").append(operator);
-    sb.append(", cloudName = ").append(cloudName);
-    sb.append(", address = ").append(address);
-    sb.append(", port = ").append(port);
-    sb.append(", gatekeeperServiceURI = ").append(gatekeeperServiceURI);
-    sb.append(", secure = ").append(secure);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("operator", operator).add("cloudName", cloudName).add("address", address).add("port", port)
+                      .add("gatekeeperServiceURI", gatekeeperServiceURI).add("secure", secure).toString();
   }
 
   public void partialUpdate(ArrowheadCloud other) {

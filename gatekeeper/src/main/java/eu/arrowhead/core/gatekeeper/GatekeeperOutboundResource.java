@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.gatekeeper;
@@ -29,6 +27,7 @@ import eu.arrowhead.common.messages.ICNResult;
 import eu.arrowhead.common.messages.OrchestrationForm;
 import eu.arrowhead.common.messages.OrchestrationResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.ConstraintViolationException;
@@ -122,8 +121,10 @@ public class GatekeeperOutboundResource {
       }
 
       try {
-        @Valid GSDAnswer answer = response.readEntity(GSDAnswer.class);
-        gsdAnswerList.add(answer);
+        GSDAnswer answer = response.readEntity(GSDAnswer.class);
+        if (Utility.isBeanValid(answer)) {
+          gsdAnswerList.add(answer);
+        }
       } catch (ConstraintViolationException e) {
         e.printStackTrace();
         log.info("GSDAnswer from " + uri + " is not valid! Skipping it from GSDResult!");
@@ -153,7 +154,9 @@ public class GatekeeperOutboundResource {
                                               null);
 
     if (GatekeeperMain.USE_GATEWAY) {
-      icnProposal.setPreferredBrokers(dm.getAll(Broker.class, null));
+      Map<String, Object> restrictionMap = new HashMap<>();
+      restrictionMap.put("secure", GatekeeperMain.IS_SECURE);
+      icnProposal.setPreferredBrokers(dm.getAll(Broker.class, restrictionMap));
       icnProposal.setGatewayPublicKey(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
     }
 

@@ -1,3 +1,24 @@
+### September 24th, 2018
+* `README.md` now has a detailed guide on how to setup an arrowhead cloud from source
+* The Gatekeeper AccessControlFilter had a critical bug fixed
+* Added a 2nd relay test certificate
+* Basic continuous integration tooling added to the project
+* Core systems now wait 10 second and retry with the service registration 3 times, when the SR is not available at start (makes core system 
+deployment easier) 
+
+### September 12th, 2018
+* Changed the way config files (properties file before) are processed by the core systems. Now there is a `default.conf` for each core system, 
+containing default values, and these values can be overridden with key-value pairs placed in a `app.conf` file, which only has to contain the 
+properties with the new values.
+
+### September 7th, 2018
+* Certificate Authority core system is ready for use now. It uses the Bouncy Castle library. There is a certificate requester client inside the 
+client-java repository, which connects to this core system, and creates a usable keystore from the response. 
+
+### September 5th, 2018
+* AccessControlFilters now have an abstract parent class to avoid duplicate codes
+* Added 2 different certificate signing method to the CA module, both of which still need thorough testing
+
 ### August 27th, 2018
 * Fixed the registered packages on web server startup
 * ArrowheadCloud and ArrowheadSystem names now allow for the following special characters too: _ - :

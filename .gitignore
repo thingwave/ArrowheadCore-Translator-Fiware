@@ -26,3 +26,4 @@
 *.properties
 */target
 *.txt
+*app.conf

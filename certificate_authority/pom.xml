@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This work is part of the Productive 4.0 innovation project, which receives grants from the
+  ~ European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+  ~ (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+  ~ national funding authorities from involved countries.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -14,10 +21,11 @@
   <packaging>jar</packaging>
 
   <properties>
+    <bouncy.castle.version>1.59</bouncy.castle.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.version>3.1</maven.compiler.version>
-    <maven.dependency.version>2.5.1</maven.dependency.version>
+    <maven.dependency.version>2.10</maven.dependency.version>
     <maven.jar.version>3.0.2</maven.jar.version>
     <maven.resources.version>2.7</maven.resources.version>
   </properties>
@@ -27,6 +35,12 @@
     <dependency>
       <groupId>eu.arrowhead</groupId>
       <artifactId>common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>${bouncy.castle.version}</version>
     </dependency>
 
     <dependency>
