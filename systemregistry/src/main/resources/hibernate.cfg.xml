@@ -13,13 +13,9 @@
 	<session-factory>
 		<property name="show_sql">true</property>
 		<property name="hibernate.hbm2ddl.auto">update</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-		<property name="hibernate.connection.url">jdbc:mysql://localhost/arrowhead?useSSL=false</property>
-		<property name="hibernate.connection.username">root</property>
-		<property name="hibernate.connection.password">root</property>
-    <mapping class="eu.arrowhead.common.database.ArrowheadSystem"/>
-    <mapping class="eu.arrowhead.common.database.ArrowheadDevice"/>
-    <mapping class="eu.arrowhead.core.systemregistry.model.SystemRegistryEntry"/>
+		<mapping class="eu.arrowhead.common.database.ArrowheadSystem" />
+		<mapping class="eu.arrowhead.common.database.ArrowheadDevice" />
+		<mapping
+			class="eu.arrowhead.core.systemregistry.model.SystemRegistryEntry" />
 	</session-factory>
 </hibernate-configuration>
