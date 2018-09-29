@@ -1,14 +1,14 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -112,33 +112,17 @@ public class IntraCloudAuthorization {
     if (!(o instanceof IntraCloudAuthorization)) {
       return false;
     }
-
     IntraCloudAuthorization that = (IntraCloudAuthorization) o;
-
-    if (!consumer.equals(that.consumer)) {
-      return false;
-    }
-    if (!provider.equals(that.provider)) {
-      return false;
-    }
-    return service.equals(that.service);
+    return Objects.equals(consumer, that.consumer) && Objects.equals(provider, that.provider) && Objects.equals(service, that.service);
   }
 
   @Override
   public int hashCode() {
-    int result = consumer.hashCode();
-    result = 31 * result + provider.hashCode();
-    result = 31 * result + service.hashCode();
-    return result;
+    return Objects.hash(consumer, provider, service);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("IntraCloudAuthorization{");
-    sb.append(" consumer = ").append(consumer);
-    sb.append(", provider = ").append(provider);
-    sb.append(", service = ").append(service);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("consumer", consumer).add("provider", provider).add("service", service).toString();
   }
 }

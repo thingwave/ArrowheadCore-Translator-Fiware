@@ -1,17 +1,17 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.messages.GSDPoll;
 import eu.arrowhead.common.messages.ICNProposal;
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -69,22 +69,17 @@ public class NeighborCloud implements Serializable {
     if (!(o instanceof NeighborCloud)) {
       return false;
     }
-
     NeighborCloud that = (NeighborCloud) o;
-
-    return cloud.equals(that.cloud);
+    return Objects.equals(cloud, that.cloud);
   }
 
   @Override
   public int hashCode() {
-    return cloud.hashCode();
+    return Objects.hash(cloud);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("NeighborCloud{");
-    sb.append(" cloud = ").append(cloud);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("cloud", cloud).toString();
   }
 }

@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common;
@@ -12,16 +10,12 @@ package eu.arrowhead.common;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ServiceConfigurationError;
 import javax.ws.rs.core.Response.Status;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -37,22 +31,22 @@ public class DatabaseManager {
 
   private static DatabaseManager instance;
   private static SessionFactory sessionFactory;
-  private static TypeSafeProperties prop;
+  private static TypeSafeProperties prop = Utility.getProp();
   private static String dbAddress;
   private static String dbUser;
   private static String dbPassword;
   private static final Logger log = Logger.getLogger(DatabaseManager.class.getName());
 
   static {
-    if (getProp().containsKey("db_address") || getProp().containsKey("log4j.appender.DB.URL")) {
-      if (getProp().containsKey("db_address")) {
-        dbAddress = getProp().getProperty("db_address");
-        dbUser = getProp().getProperty("db_user");
-        dbPassword = getProp().getProperty("db_password");
+    if (prop.containsKey("db_address") || prop.containsKey("log4j.appender.DB.URL")) {
+      if (prop.containsKey("db_address")) {
+        dbAddress = prop.getProperty("db_address");
+        dbUser = prop.getProperty("db_user");
+        dbPassword = prop.getProperty("db_password");
       } else {
-        dbAddress = getProp().getProperty("log4j.appender.DB.URL", "jdbc:mysql://127.0.0.1:3306/log");
-        dbUser = getProp().getProperty("log4j.appender.DB.user", "root");
-        dbPassword = getProp().getProperty("log4j.appender.DB.password", "root");
+        dbAddress = prop.getProperty("log4j.appender.DB.URL", "jdbc:mysql://127.0.0.1:3306/log");
+        dbUser = prop.getProperty("log4j.appender.DB.user", "root");
+        dbPassword = prop.getProperty("log4j.appender.DB.password", "root");
       }
 
       try {
@@ -61,13 +55,7 @@ public class DatabaseManager {
                                                          .setProperty("hibernate.connection.password", dbPassword);
         sessionFactory = configuration.buildSessionFactory();
       } catch (Exception e) {
-        if (!prop.containsKey("db_address")) {
-          e.printStackTrace();
-          System.out.println("Database connection could not be established, logging may not work! Check log4j.properties!");
-          Logger.getRootLogger().setLevel(Level.OFF);
-        } else {
-          throw new ServiceConfigurationError("Database connection could not be established, check app.properties!", e);
-        }
+        throw new ServiceConfigurationError("Database connection could not be established, check default.conf/app.conf files!", e);
       }
     }
   }
@@ -103,30 +91,6 @@ public class DatabaseManager {
       sessionFactory.close();
     }
     instance = null;
-  }
-
-  private synchronized static TypeSafeProperties getProp() {
-    try {
-      if (prop == null) {
-        prop = new TypeSafeProperties();
-        File file = new File("config" + File.separator + "app.properties");
-        FileInputStream inputStream = new FileInputStream(file);
-        prop.load(inputStream);
-
-        if (!prop.containsKey("db_address")) {
-          file = new File("config" + File.separator + "log4j.properties");
-          inputStream = new FileInputStream(file);
-          prop.load(inputStream);
-        }
-      }
-    } catch (FileNotFoundException ex) {
-      throw new ServiceConfigurationError("App.properties file not found, make sure you have the correct working directory set! (directory where "
-                                              + "the config folder can be found)", ex);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
-    return prop;
   }
 
   public <T> Optional<T> get(Class<T> queryClass, long id) {

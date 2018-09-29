@@ -1,14 +1,14 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -94,28 +94,17 @@ public class InterCloudAuthorization {
     if (!(o instanceof InterCloudAuthorization)) {
       return false;
     }
-
     InterCloudAuthorization that = (InterCloudAuthorization) o;
-
-    if (!cloud.equals(that.cloud)) {
-      return false;
-    }
-    return service.equals(that.service);
+    return Objects.equals(cloud, that.cloud) && Objects.equals(service, that.service);
   }
 
   @Override
   public int hashCode() {
-    int result = cloud.hashCode();
-    result = 31 * result + service.hashCode();
-    return result;
+    return Objects.hash(cloud, service);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("InterCloudAuthorization{");
-    sb.append(" cloud = ").append(cloud);
-    sb.append(", service = ").append(service);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("cloud", cloud).add("service", service).toString();
   }
 }

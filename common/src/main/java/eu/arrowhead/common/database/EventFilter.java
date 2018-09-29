@@ -1,18 +1,20 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.google.common.base.MoreObjects;
+import eu.arrowhead.common.json.constraint.LDTInFuture;
+import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -29,14 +31,13 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
-import javax.validation.constraints.FutureOrPresent;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Table(name = "event_filter", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_type", "consumer_system_id"})})
@@ -58,23 +59,24 @@ public class EventFilter {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private ArrowheadSystem consumer;
 
+  @Valid
   @Size(max = 100, message = "Event filter can only have 100 sources at max")
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "event_filter_sources_list", joinColumns = @JoinColumn(name = "filter_id"))
-  private Set<@NotNull @Valid ArrowheadSystem> sources = new HashSet<>();
+  private Set<ArrowheadSystem> sources = new HashSet<>();
 
   @Column(name = "start_date")
   private LocalDateTime startDate;
 
   @Column(name = "end_date")
-  @FutureOrPresent(message = "Filter end date cannot be in the past")
+  @LDTInFuture(message = "Filter end date must be in the future")
   private LocalDateTime endDate;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapKeyColumn(name = "metadata_key")
   @Column(name = "metadata_value", length = 2047)
   @CollectionTable(name = "event_filter_metadata", joinColumns = @JoinColumn(name = "filter_id"))
-  private Map<@NotBlank String, @NotBlank String> filterMetadata = new HashMap<>();
+  private Map<@SENotBlank String, @SENotBlank String> filterMetadata = new HashMap<>();
 
   @Column(name = "notify_uri")
   private String notifyUri;
@@ -180,28 +182,17 @@ public class EventFilter {
     if (!(o instanceof EventFilter)) {
       return false;
     }
-
     EventFilter that = (EventFilter) o;
-
-    if (eventType != null ? !eventType.equals(that.eventType) : that.eventType != null) {
-      return false;
-    }
-    return consumer.equals(that.consumer);
+    return Objects.equals(eventType, that.eventType) && Objects.equals(consumer, that.consumer);
   }
 
   @Override
   public int hashCode() {
-    int result = eventType != null ? eventType.hashCode() : 0;
-    result = 31 * result + consumer.hashCode();
-    return result;
+    return Objects.hash(eventType, consumer);
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("EventFilter{");
-    sb.append(" eventType = ").append(eventType);
-    sb.append(", consumer = ").append(consumer);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this).add("eventType", eventType).add("consumer", consumer).toString();
   }
 }
