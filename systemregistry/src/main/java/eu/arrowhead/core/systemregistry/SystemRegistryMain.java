@@ -38,6 +38,7 @@ public class SystemRegistryMain extends ArrowheadMain {
 																												SystemRegistryApi.class, 
 																												OpenApiResource.class,
 																												SystemRegistryMain.class));
+
 		String[] packages = {
 				"eu.arrowhead.common.exception", 
 				"eu.arrowhead.common.json", 
