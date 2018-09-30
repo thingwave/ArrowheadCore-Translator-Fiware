@@ -25,6 +25,7 @@ import org.glassfish.grizzly.http.server.HttpServer;
 
 import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.misc.CoreSystem;
+import eu.arrowhead.core.systemregistry.filter.SystemRegACF;
 import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
 
 @Path("/")
@@ -32,7 +33,8 @@ public class SystemRegistryMain extends ArrowheadMain {
 	private SystemRegistryMain(String[] args) {
 		Set<Class<?>> classes = new HashSet<>(Arrays.asList(
 																												SystemRegistryResource.class, 
-																												SystemRegistryApi.class, 
+																												SystemRegistryApi.class,
+																												SystemRegACF.class,
 																												OpenApiResource.class,
 																												SystemRegistryMain.class));
 
