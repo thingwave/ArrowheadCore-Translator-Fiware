@@ -28,12 +28,6 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		databaseManager = DatabaseManager.getInstance();
 	}
 
-	protected void verifyNotNull(final Object entry) {
-		if (entry == null) {
-			throw new ArrowheadException("The given entry is null", Status.BAD_REQUEST.getStatusCode());
-		}
-	}
-
 	public SystemRegistryEntry lookup(final long id) throws EntityNotFoundException, ArrowheadException {
 		final SystemRegistryEntry returnValue;
 
@@ -55,7 +49,6 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		final SystemRegistryEntry returnValue;
 
 		try {
-			verifyNotNull(entity);
 			entity.setProvidedSystem(resolve(entity.getProvidedSystem()));
 			entity.setProvider(resolve(entity.getProvider()));
 			returnValue = databaseManager.save(entity);
@@ -72,8 +65,6 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 		final SystemRegistryEntry returnValue;
 
 		try {
-			verifyNotNull(entity);
-
 			databaseManager.delete(entity);
 			returnValue = entity;
 		} catch (final ArrowheadException e) {
@@ -87,8 +78,6 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 	protected ArrowheadSystem resolve(final ArrowheadSystem providedSystem) {
 		final ArrowheadSystem returnValue;
 
-		verifyNotNull(providedSystem);
-
 		if (providedSystem.getId() != null) {
 			Optional<ArrowheadSystem> optional = databaseManager.get(ArrowheadSystem.class, providedSystem.getId());
 			returnValue = optional.orElseThrow(() -> new ArrowheadException("ProvidedSystem does not exist", Status.BAD_REQUEST.getStatusCode()));
@@ -101,8 +90,6 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 
 	protected ArrowheadDevice resolve(final ArrowheadDevice provider) {
 		final ArrowheadDevice returnValue;
-
-		verifyNotNull(provider);
 
 		if (provider.getId() != null) {
 			Optional<ArrowheadDevice> optional = databaseManager.get(ArrowheadDevice.class, provider.getId());
