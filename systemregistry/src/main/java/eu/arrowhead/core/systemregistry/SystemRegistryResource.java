@@ -24,62 +24,59 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.log4j.Logger;
 
 @Path("systemregistry")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class SystemRegistryResource implements RegistryResource<SystemRegistryEntry, Response> {
-	private final Logger log = Logger.getLogger(SystemRegistryResource.class.getName());
-	private final SystemRegistryService registryService;
 
-	public SystemRegistryResource() throws ExceptionInInitializerError {
-		super();
-		registryService = new SystemRegistryService();
-		log.info(SystemRegistryResource.class.getSimpleName() + " created");
-	}
+  private final SystemRegistryService registryService;
 
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response ping() {
-		return Response.status(Response.Status.OK).entity("This is the System Registry Arrowhead Core System.").build();
-	}
+  public SystemRegistryResource() {
+    registryService = new SystemRegistryService();
+  }
 
-	@GET
-	@Path(LOOKUP_PATH)
-	@Operation(summary = "Searches a SystemRegistryEntry by id", responses = {
-	    @ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class))) })
-	public Response lookup(@PathParam("id") final long id) throws ArrowheadException {
-		SystemRegistryEntry returnValue;
-		Response response;
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response ping() {
+    return Response.status(Response.Status.OK).entity("This is the System Registry Arrowhead Core System.").build();
+  }
 
-		returnValue = registryService.lookup(id);
-		response = Response.status(Status.OK).entity(returnValue).build();
+  @GET
+  @Path(LOOKUP_PATH)
+  @Operation(summary = "Searches a SystemRegistryEntry by id", responses = {
+      @ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class)))})
+  public Response lookup(@PathParam("id") final long id) throws ArrowheadException {
+    SystemRegistryEntry returnValue;
+    Response response;
 
-		return response;
-	}
+    returnValue = registryService.lookup(id);
+    response = Response.status(Status.OK).entity(returnValue).build();
 
-	@POST
-	@Path(PUBLISH_PATH)
-	public Response publish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
-		SystemRegistryEntry returnValue;
-		Response response;
+    return response;
+  }
 
-		returnValue = registryService.publish(entry);
-		response = Response.status(Status.CREATED).entity(returnValue).build();
+  @POST
+  @Path(PUBLISH_PATH)
+  public Response publish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
+    SystemRegistryEntry returnValue;
+    Response response;
 
-		return response;
-	}
+    returnValue = registryService.publish(entry);
+    response = Response.status(Status.CREATED).entity(returnValue).build();
 
-	@POST
-	@Path(UNPUBLISH_PATH)
-	public Response unpublish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
-		SystemRegistryEntry returnValue;
-		Response response;
+    return response;
+  }
 
-		returnValue = registryService.unpublish(entry);
-		response = Response.status(Status.OK).entity(returnValue).build();
+  @POST
+  @Path(UNPUBLISH_PATH)
+  public Response unpublish(@Valid final SystemRegistryEntry entry) throws ArrowheadException {
+    SystemRegistryEntry returnValue;
+    Response response;
 
-		return response;
-	}
+    returnValue = registryService.unpublish(entry);
+    response = Response.status(Status.OK).entity(returnValue).build();
+
+    return response;
+  }
 }

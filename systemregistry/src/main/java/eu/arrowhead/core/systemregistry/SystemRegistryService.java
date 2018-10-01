@@ -22,7 +22,7 @@ public class SystemRegistryService implements RegistryService<SystemRegistryEntr
 
 	private final DatabaseManager databaseManager;
 
-	public SystemRegistryService() throws ExceptionInInitializerError {
+  public SystemRegistryService() {
 		databaseManager = DatabaseManager.getInstance();
 	}
 

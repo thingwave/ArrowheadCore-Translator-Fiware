@@ -11,18 +11,16 @@ import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.misc.CoreSystem;
 
 public class SystemRegistryMain extends ArrowheadMain {
-	private SystemRegistryMain(String[] args) {
-		String[] packages = {
-				"eu.arrowhead.common.exception", 
-				"eu.arrowhead.common.json", 
-				"eu.arrowhead.common.filter", 
-				"eu.arrowhead.core.systemregistry"};
+
+  private SystemRegistryMain(String[] args) {
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.systemregistry"};
     init(CoreSystem.SYSTEMREGISTRY, args, null, packages);
-		
-		listenForInput();
-	}
-	
-	public static void main(String[] args) {
-		new SystemRegistryMain(args);
-	}
+
+    listenForInput();
+  }
+
+  public static void main(String[] args) {
+    new SystemRegistryMain(args);
+  }
 }

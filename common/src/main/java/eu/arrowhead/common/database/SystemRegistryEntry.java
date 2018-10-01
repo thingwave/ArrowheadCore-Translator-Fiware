@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import eu.arrowhead.common.json.constraint.LDTInFuture;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.CascadeType;
@@ -21,7 +22,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.Valid;
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
@@ -55,19 +55,17 @@ public class SystemRegistryEntry {
 	private String serviceUri;
 
 	@Column(name = "end_of_validity")
-	@FutureOrPresent(message = "End of validity date cannot be in the past")
+  @LDTInFuture(message = "End of validity date cannot be in the past")
 	private LocalDateTime endOfValidity;
 
 	public SystemRegistryEntry() {
-		super();
 	}
 
 	public SystemRegistryEntry(Long id,
-			@Valid @NotNull(message = "Provided ArrowheadSystem cannot be null") ArrowheadSystem providedSystem,
-			@Valid @NotNull(message = "Provider ArrowheadDevice cannot be null") ArrowheadDevice provider,
-			@Size(max = 255, message = "Service URI must be 255 character at max") String serviceUri,
-			@FutureOrPresent(message = "End of validity date cannot be in the past") LocalDateTime endOfValidity) {
-		super();
+                             @Valid @NotNull(message = "Provided ArrowheadSystem cannot be null") ArrowheadSystem providedSystem,
+                             @Valid @NotNull(message = "Provider ArrowheadDevice cannot be null") ArrowheadDevice provider,
+                             @Size(max = 255, message = "Service URI must be 255 character at max") String serviceUri,
+                             @LDTInFuture(message = "End of validity date cannot be in the past") LocalDateTime endOfValidity) {
 		this.id = id;
 		this.providedSystem = providedSystem;
 		this.provider = provider;
