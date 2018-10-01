@@ -9,9 +9,13 @@
 
 package eu.arrowhead.core.systemregistry;
 
+import eu.arrowhead.common.DatabaseManager;
+import eu.arrowhead.common.database.ArrowheadDevice;
+import eu.arrowhead.common.database.ArrowheadSystem;
+import eu.arrowhead.common.database.SystemRegistryEntry;
+import eu.arrowhead.common.exception.DataNotFoundException;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,14 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.log4j.Logger;
-
-import eu.arrowhead.common.DatabaseManager;
-import eu.arrowhead.common.database.ArrowheadDevice;
-import eu.arrowhead.common.database.ArrowheadSystem;
-import eu.arrowhead.common.exception.DataNotFoundException;
-import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
 
 @Path("systemregistry/mgmt")
 @Consumes(MediaType.APPLICATION_JSON)

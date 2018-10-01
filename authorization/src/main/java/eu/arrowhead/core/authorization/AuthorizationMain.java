@@ -12,9 +12,6 @@ import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.SecurityUtils;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class AuthorizationMain extends ArrowheadMain {
 
@@ -27,9 +24,8 @@ public class AuthorizationMain extends ArrowheadMain {
     privateKey = SecurityUtils.getPrivateKey(keyStore, props.getProperty("keystorepass"));
     enableAuthForCloud = props.getBooleanProperty("enable_auth_for_cloud", false);
 
-    Set<Class<?>> classes = new HashSet<>(Arrays.asList(AuthorizationResource.class, AuthorizationApi.class));
-    String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.authorization.filter"};
-    init(CoreSystem.AUTHORIZATION, args, classes, packages);
+    String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.authorization"};
+    init(CoreSystem.AUTHORIZATION, args, null, packages);
 
     listenForInput();
   }

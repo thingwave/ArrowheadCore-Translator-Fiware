@@ -1,8 +1,14 @@
-package eu.arrowhead.core.systemregistry.model;
+/*
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
+ */
+
+package eu.arrowhead.common.database;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,12 +24,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import eu.arrowhead.common.database.ArrowheadDevice;
-import eu.arrowhead.common.database.ArrowheadSystem;
 
 @Entity
 @Table(name = "system_registry", uniqueConstraints = {

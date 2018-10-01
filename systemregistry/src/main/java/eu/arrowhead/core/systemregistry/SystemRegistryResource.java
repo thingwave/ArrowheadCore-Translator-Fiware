@@ -7,6 +7,13 @@
 
 package eu.arrowhead.core.systemregistry;
 
+import eu.arrowhead.common.RegistryResource;
+import eu.arrowhead.common.database.SystemRegistryEntry;
+import eu.arrowhead.common.exception.ArrowheadException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,16 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.log4j.Logger;
-
-import eu.arrowhead.common.RegistryResource;
-import eu.arrowhead.common.exception.ArrowheadException;
-import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @Path("systemregistry")
 @Consumes(MediaType.APPLICATION_JSON)
