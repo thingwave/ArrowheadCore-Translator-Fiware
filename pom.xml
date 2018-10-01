@@ -41,7 +41,9 @@
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <jersey.version>2.23.1</jersey.version>
     <log4j.version>1.2.17</log4j.version>
-    <mysql.connector.version>5.1.6</mysql.connector.version>
+    <mariadb.jdbc.driver>2.2.6</mariadb.jdbc.driver>
+    <mysql.jdbc.driver>5.1.6</mysql.jdbc.driver>
+    <postgre.jdbc.driver>42.2.2</postgre.jdbc.driver>
     <slf4j.version>1.7.21</slf4j.version>
     <swagger.version>2.0.0</swagger.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -107,7 +109,7 @@
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>${mysql.connector.version}</version>
+        <version>${mysql.jdbc.driver}</version>
       </dependency>
 
       <dependency>
@@ -134,6 +136,18 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-java8</artifactId>
         <version>${hibernate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mariadb.jdbc</groupId>
+        <artifactId>mariadb-java-client</artifactId>
+        <version>${mariadb.jdbc.driver}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgre.jdbc.driver}</version>
       </dependency>
 
       <!-- Only used by the HikariCP DB connection pool manager dependency -->
