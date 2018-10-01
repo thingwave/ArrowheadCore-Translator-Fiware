@@ -1,167 +1,103 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.systemregistry;
 
-import eu.arrowhead.common.DatabaseManager;
-import eu.arrowhead.core.systemregistry.model.AHSystem;
-import eu.arrowhead.core.systemregistry.model.HttpEndpoint;
-import eu.arrowhead.core.systemregistry.model.SystemIdentity;
-import eu.arrowhead.core.systemregistry.model.SystemInformation;
-import eu.arrowhead.core.systemregistry.model.SystemRegistry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import javax.ws.rs.core.Response;
+import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response.Status;
-import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.Restrictions;
 
-public class SystemRegistryService {
-	private static final Logger log = Logger.getLogger(SystemRegistryService.class.getName());
-	private static final DatabaseManager dm = DatabaseManager.getInstance();
-	private static final HashMap<String, Object> restrictionMap = new HashMap<>();
-	private static SessionFactory factory;
+import eu.arrowhead.common.DatabaseManager;
+import eu.arrowhead.common.RegistryService;
+import eu.arrowhead.common.database.ArrowheadDevice;
+import eu.arrowhead.common.database.ArrowheadSystem;
+import eu.arrowhead.common.exception.ArrowheadException;
+import eu.arrowhead.common.exception.DataNotFoundException;
+import eu.arrowhead.core.systemregistry.model.SystemRegistryEntry;
 
-	public SystemRegistryService() throws Exception {
-		try {
-			factory = new Configuration().configure().buildSessionFactory();
-		} catch (Throwable ex) {
-			System.err.println("Failed to create sessionFactory object." + ex);
-			throw new ExceptionInInitializerError(ex);
-		}
+public class SystemRegistryService implements RegistryService<SystemRegistryEntry> {
+
+	private final DatabaseManager databaseManager;
+
+	public SystemRegistryService() throws ExceptionInInitializerError {
+		databaseManager = DatabaseManager.getInstance();
 	}
 
-	@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
-	public List<AHSystem> Lookup(String id) throws Exception {
-		Session session = factory.openSession();
-		Transaction tx = null;
-		List<AHSystem> ret_systems = new ArrayList<AHSystem>();
+	public SystemRegistryEntry lookup(final long id) throws EntityNotFoundException, ArrowheadException {
+		final SystemRegistryEntry returnValue;
 
 		try {
-			tx = session.beginTransaction();
-			Criteria cr = session.createCriteria(SystemRegistry.class);
-
-			if (id != null) {
-				cr.add(Restrictions.like("id", "%" + id + "%"));
-			}
-
-			List<SystemRegistry> systems = cr.list();
-
-			for (Iterator iterator = systems.iterator(); iterator.hasNext();) {
-				SystemRegistry ahSystem = (SystemRegistry) iterator.next();
-				SystemInformation information = new SystemInformation(
-						new SystemIdentity(ahSystem.getId(), ahSystem.getType()), new HttpEndpoint(ahSystem.getHost(), ahSystem.getPort(), ahSystem.getPath(),
-																																											 ahSystem.getSecure()),
-						null, null);
-
-				ret_systems.add(new AHSystem(information));
-			}
-
-			tx.commit();
-		} catch (HibernateException e) {
-			if (tx != null) {
-				tx.rollback();
-			}
-
-			e.printStackTrace();
-		} finally {
-			session.close();
+			Optional<SystemRegistryEntry> optional = databaseManager.get(SystemRegistryEntry.class, id);
+			returnValue = optional.orElseThrow(() -> {
+				return new DataNotFoundException("The requested entity does not exist", Status.NOT_FOUND.getStatusCode());
+			});
+		} catch (final ArrowheadException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new ArrowheadException(e.getMessage(), Status.NOT_FOUND.getStatusCode(), e);
 		}
 
-		return ret_systems;
+		return returnValue;
 	}
 
-	public Status Publish(String id) throws Exception {
-		List<AHSystem> systems = Lookup(id);
-		Status retStatus = null;
-		Session session = null;
-		Transaction tx = null;
+	public SystemRegistryEntry publish(final SystemRegistryEntry entity) throws ArrowheadException {
+		final SystemRegistryEntry returnValue;
 
-		if (!systems.isEmpty()) {
-			// ID already exists
-			retStatus = Response.Status.CONFLICT;
+		try {
+			entity.setProvidedSystem(resolve(entity.getProvidedSystem()));
+			entity.setProvider(resolve(entity.getProvider()));
+			returnValue = databaseManager.save(entity);
+		} catch (final ArrowheadException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new ArrowheadException(e.getMessage(), Status.NOT_FOUND.getStatusCode(), e);
+		}
+
+		return returnValue;
+	}
+
+	public SystemRegistryEntry unpublish(final SystemRegistryEntry entity) throws EntityNotFoundException, ArrowheadException {
+		final SystemRegistryEntry returnValue;
+
+		try {
+			databaseManager.delete(entity);
+			returnValue = entity;
+		} catch (final ArrowheadException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new ArrowheadException(e.getMessage(), Status.NOT_FOUND.getStatusCode(), e);
+		}
+		return returnValue;
+	}
+
+	protected ArrowheadSystem resolve(final ArrowheadSystem providedSystem) {
+		final ArrowheadSystem returnValue;
+
+		if (providedSystem.getId() != null) {
+			Optional<ArrowheadSystem> optional = databaseManager.get(ArrowheadSystem.class, providedSystem.getId());
+			returnValue = optional.orElseThrow(() -> new ArrowheadException("ProvidedSystem does not exist", Status.BAD_REQUEST.getStatusCode()));
 		} else {
-			// create new system
-			session = factory.openSession();
-
-			try {
-				tx = session.beginTransaction();
-
-				SystemRegistry newSystem = new SystemRegistry("OS", "test-host", 7000, "test-path", false, "", "Device1");
-				newSystem.setId(id);
-
-				session.save(newSystem);
-				tx.commit();
-
-				retStatus = Response.Status.CREATED;
-			} catch (HibernateException e) {
-				if (tx != null) {
-					tx.rollback();
-				}
-
-				e.printStackTrace();
-			} finally {
-				session.close();
-			}
+			returnValue = databaseManager.save(providedSystem);
 		}
 
-		return retStatus;
+		return returnValue;
 	}
 
-	public Status Unpublish(String id) throws Exception {
-		List<AHSystem> systems = Lookup(id);
-		Status retStatus = null;
-		Session session = null;
-		Transaction tx = null;
+	protected ArrowheadDevice resolve(final ArrowheadDevice provider) {
+		final ArrowheadDevice returnValue;
 
-		if (!systems.isEmpty()) {
-			// delete the found system
-			session = factory.openSession();
-
-			try {
-				// create transaction
-				tx = session.beginTransaction();
-
-				// find system
-				SystemRegistry sys = (SystemRegistry) session.get(SystemRegistry.class, id);
-
-				// delete system
-				session.delete(sys);
-
-				// commit work
-				tx.commit();
-
-				// create response
-				retStatus = Response.Status.OK;
-			} catch (HibernateException e) {
-				if (tx != null) {
-					tx.rollback();
-				}
-
-				e.printStackTrace();
-			} finally {
-				session.close();
-			}
+		if (provider.getId() != null) {
+			Optional<ArrowheadDevice> optional = databaseManager.get(ArrowheadDevice.class, provider.getId());
+			returnValue = optional.orElseThrow(() -> new ArrowheadException("Provider does not exist", Status.BAD_REQUEST.getStatusCode()));
 		} else {
-			// ID does not exist
-			retStatus = Response.Status.NOT_FOUND;
+			returnValue = databaseManager.save(provider);
 		}
 
-		return retStatus;
+		return returnValue;
 	}
-
 }

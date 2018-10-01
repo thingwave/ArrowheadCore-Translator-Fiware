@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common;
@@ -43,6 +41,8 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -85,6 +85,10 @@ public final class Utility {
     return true;
   };
 
+  private static final String DEFAULT_CONF = "default.conf";
+  private static final String DEFAULT_CONF_DIR = "config" + File.separator + "default.conf";
+  private static final String APP_CONF = "app.conf";
+  private static final String APP_CONF_DIR = "config" + File.separator + "app.conf";
 
   private Utility() throws AssertionError {
     throw new AssertionError("Arrowhead Common:Utility is a non-instantiable class");
@@ -224,7 +228,7 @@ public final class Utility {
           throw new ArrowheadException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
         case DATA_NOT_FOUND:
           throw new DataNotFoundException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
-        case DNSSD:
+        case DNS_SD:
           throw new DnsException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
         case DUPLICATE_ENTRY:
           throw new DuplicateEntryException(errorMessage.getErrorMessage(), errorMessage.getErrorCode(), errorMessage.getOrigin());
@@ -424,6 +428,30 @@ public final class Utility {
     return prop;
   }
 
+  public static TypeSafeProperties getProp() {
+    TypeSafeProperties prop = new TypeSafeProperties();
+
+    try {
+      if (Files.isReadable(Paths.get(DEFAULT_CONF))) {
+        prop.load(new FileInputStream(new File(DEFAULT_CONF)));
+      } else if (Files.isReadable(Paths.get(DEFAULT_CONF_DIR))) {
+        prop.load(new FileInputStream(new File(DEFAULT_CONF_DIR)));
+      } else {
+        throw new ServiceConfigurationError("default.conf file not found in the working directory! (" + System.getProperty("user.dir") + ")");
+      }
+
+      if (Files.isReadable(Paths.get(APP_CONF))) {
+        prop.load(new FileInputStream(new File(APP_CONF)));
+      } else if (Files.isReadable(Paths.get(APP_CONF_DIR))) {
+        prop.load(new FileInputStream(new File(APP_CONF_DIR)));
+      }
+    } catch (IOException e) {
+      throw new AssertionError("File loading failed...", e);
+    }
+
+    return prop;
+  }
+
   public static void checkProperties(Set<String> propertyNames, List<String> mandatoryProperties) {
     if (mandatoryProperties == null || mandatoryProperties.isEmpty()) {
       return;
@@ -432,7 +460,7 @@ public final class Utility {
     List<String> properties = new ArrayList<>(mandatoryProperties);
     if (!propertyNames.containsAll(mandatoryProperties)) {
       properties.removeIf(propertyNames::contains);
-      throw new ServiceConfigurationError("Missing field(s) from app.properties file: " + properties.toString());
+      throw new ServiceConfigurationError("Missing field(s) from config file: " + properties.toString());
     }
   }
 
@@ -465,7 +493,6 @@ public final class Utility {
     return addresses.get(0).getHostAddress();
   }
 
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   public static <T> boolean isBeanValid(T bean) {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     Validator validator = factory.getValidator();

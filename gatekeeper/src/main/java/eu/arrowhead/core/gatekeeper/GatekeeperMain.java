@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.gatekeeper;
@@ -25,7 +23,6 @@ import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.common.misc.TypeSafeProperties;
 import eu.arrowhead.common.web.ArrowheadCloudApi;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -77,8 +74,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
   private static final Logger log = Logger.getLogger(GatekeeperMain.class.getName());
 
   static {
-    PropertyConfigurator.configure("config" + File.separator + "log4j.properties");
-    props = Utility.getProp("app.properties");
+    props = Utility.getProp();
+    PropertyConfigurator.configure(props);
     USE_GATEWAY = props.getBooleanProperty("use_gateway", false);
     TIMEOUT = props.getIntProperty("timeout", 30000);
   }
@@ -172,6 +169,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       config.registerClasses(GatekeeperApi.class, GatekeeperOutboundResource.class, ArrowheadCloudApi.class);
     }
     config.packages("eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.core.gatekeeper.filter");
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     URI uri = UriBuilder.fromUri(url).build();
     try {
@@ -187,8 +185,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       }
       return server;
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
+                                          e);
     }
   }
 
@@ -200,6 +198,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       config.registerClasses(GatekeeperApi.class, GatekeeperOutboundResource.class, ArrowheadCloudApi.class);
     }
     config.packages("eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter", "eu.arrowhead.core.gatekeeper.filter");
+    config.packages("io.swagger.v3.jaxrs2.integration.resources");
 
     String gatekeeperKeystorePath = props.getProperty("gatekeeper_keystore");
     String gatekeeperKeystorePass = props.getProperty("gatekeeper_keystore_pass");
@@ -221,8 +220,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       clientConfig.setTrustStoreFile(cloudKeystorePath);
       clientConfig.setTrustStorePass(cloudKeystorePass);
       if (!clientConfig.validateConfiguration(true)) {
-        log.fatal("Internal client SSL Context is not valid, check the certificate files or app.properties!");
-        throw new AuthException("Internal client SSL Context is not valid, check the certificate files or app.properties!");
+        log.fatal("Internal client SSL Context is not valid, check the certificate or the config files!");
+        throw new AuthException("Internal client SSL Context is not valid, check the certificate or the config files!");
       }
       SSLContext clientContext = clientConfig.createSSLContext();
       Utility.setSSLContext(clientContext);
@@ -234,8 +233,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       serverConfig.setTrustStoreFile(cloudKeystorePath);
       serverConfig.setTrustStorePass(cloudKeystorePass);
       if (!serverConfig.validateConfiguration(true)) {
-        log.fatal("External server SSL Context is not valid, check the certificate files or app.properties!");
-        throw new AuthException("External server SSL Context is not valid, check the certificate files or app.properties!");
+        log.fatal("External server SSL Context is not valid, check the certificate or the config files!");
+        throw new AuthException("External server SSL Context is not valid, check the certificate or the config files!");
       }
       serverContext = serverConfig.createSSLContext();
       outboundServerContext = serverContext;
@@ -259,8 +258,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       }
       return server;
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
+                                          e);
     }
   }
 

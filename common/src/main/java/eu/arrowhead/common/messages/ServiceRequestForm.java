@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.messages;
@@ -13,6 +11,7 @@ import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.exception.BadPayloadException;
+import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,8 +35,9 @@ public class ServiceRequestForm {
   private ArrowheadCloud requesterCloud;
   @Valid
   private ArrowheadService requestedService;
-  private Map<String, Boolean> orchestrationFlags = new HashMap<>();
-  private List<@NotNull @Valid PreferredProvider> preferredProviders = new ArrayList<>();
+  private Map<@SENotBlank String, Boolean> orchestrationFlags = new HashMap<>();
+  @Valid
+  private List<PreferredProvider> preferredProviders = new ArrayList<>();
   private Map<String, String> requestedQoS = new HashMap<>();
   private Map<String, String> commands = new HashMap<>();
 
@@ -89,11 +89,6 @@ public class ServiceRequestForm {
   }
 
   public void setOrchestrationFlags(Map<String, Boolean> orchestrationFlags) {
-    for (String key : flagKeys) {
-      if (!orchestrationFlags.containsKey(key)) {
-        orchestrationFlags.put(key, false);
-      }
-    }
     this.orchestrationFlags = orchestrationFlags;
   }
 
@@ -149,11 +144,6 @@ public class ServiceRequestForm {
     }
 
     public Builder orchestrationFlags(Map<String, Boolean> flags) {
-      for (String key : flagKeys) {
-        if (!flags.containsKey(key)) {
-          flags.put(key, false);
-        }
-      }
       orchestrationFlags = flags;
       return this;
     }
@@ -179,17 +169,21 @@ public class ServiceRequestForm {
   }
 
   public void validateCrossParameterConstraints() {
+    for (String key : flagKeys) {
+      if (!orchestrationFlags.containsKey(key)) {
+        orchestrationFlags.put(key, false);
+      }
+    }
     if (requestedService == null && orchestrationFlags.get("overrideStore")) {
       throw new BadPayloadException("RequestedService can not be null when overrideStore is TRUE");
     }
 
     if (orchestrationFlags.get("onlyPreferred")) {
       List<PreferredProvider> tmp = new ArrayList<>();
-      for (@Valid PreferredProvider provider : preferredProviders) {
+      for (PreferredProvider provider : preferredProviders)
         if (!provider.isValid()) {
           tmp.add(provider);
         }
-      }
       preferredProviders.removeAll(tmp);
       if (preferredProviders.isEmpty()) {
         throw new BadPayloadException("There is no valid PreferredProvider, but \"onlyPreferred\" is set to true");
