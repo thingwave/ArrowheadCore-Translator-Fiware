@@ -130,9 +130,8 @@ final class CAService {
       String pemRootCert = encoder.encodeToString(chain[1].getEncoded());
       return new CertificateSigningResponse(encodedSignedCert, pemIntermediateCert, pemRootCert);
     } catch (KeyStoreException | CertificateEncodingException e) {
-      e.printStackTrace();
+      throw new AuthException("Getting the cloud certificate chain failed! (" + e.getMessage() + ")", e);
     }
-    return new CertificateSigningResponse(encodedSignedCert);
   }
 
 }
