@@ -12,6 +12,7 @@ import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.core.certificate_authority.filter.CertAuthorityACF;
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +21,8 @@ public class CAMain extends ArrowheadMain {
 
   static KeyStore cloudKeystore;
   static String trustStorePass;
+  static X509Certificate cloudCert;
+  static String cloudCN;
 
   private CAMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Arrays.asList(CAResource.class, CertAuthorityACF.class));
@@ -28,6 +31,8 @@ public class CAMain extends ArrowheadMain {
 
     trustStorePass = props.getProperty("truststorepass");
     cloudKeystore = SecurityUtils.loadKeyStore(props.getProperty("truststore"), trustStorePass);
+    cloudCert = SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore);
+    cloudCN = SecurityUtils.getCertCNFromSubject(cloudCert.getSubjectX500Principal().getName());
 
     listenForInput();
   }
