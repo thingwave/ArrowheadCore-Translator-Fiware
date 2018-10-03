@@ -15,7 +15,7 @@ import eu.arrowhead.common.exception.AuthException;
 import eu.arrowhead.common.misc.SecurityUtils;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -49,13 +49,8 @@ public class AccessControlFilter implements ContainerRequestFilter {
         throw new AuthException(commonName + " is unauthorized to access " + requestTarget, Status.UNAUTHORIZED.getStatusCode());
       }
 
-      try {
-        InputStream in = new ByteArrayInputStream(requestJson.getBytes("UTF-8"));
-        requestContext.setEntityStream(in);
-      } catch (UnsupportedEncodingException e) {
-        log.fatal("AccessControlFilter String.getBytes() has unsupported charset set!");
-        throw new AssertionError("AccessControlFilter String.getBytes() has unsupported charset set! Code needs to be changed!", e);
-      }
+      InputStream in = new ByteArrayInputStream(requestJson.getBytes(StandardCharsets.UTF_8));
+      requestContext.setEntityStream(in);
     }
   }
 
@@ -83,7 +78,8 @@ public class AccessControlFilter implements ContainerRequestFilter {
       ServiceRegistryEntry entry = Utility.fromJson(requestJson, ServiceRegistryEntry.class);
       String[] clientFields = clientCN.split("\\.", 2);
 
-      if (!entry.getProvider().getSystemName().equalsIgnoreCase(clientFields[0])) {
+      String providerName = entry.getProvider().getSystemName().replaceAll("_", "");
+      if (!providerName.equalsIgnoreCase(clientFields[0])) {
         // BUT a provider system can only register/remove its own services!
         log.error("Provider system name and cert common name do not match! SR registering/removing denied!");
         throw new AuthException("Provider system " + entry.getProvider().getSystemName() + " and cert common name (" + clientCN + ") do not match!",
