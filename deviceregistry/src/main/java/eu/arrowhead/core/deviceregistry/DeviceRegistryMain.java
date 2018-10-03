@@ -19,7 +19,7 @@ public class DeviceRegistryMain extends ArrowheadMain {
   private DeviceRegistryMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Arrays.asList(DeviceRegistryResource.class, DeviceRegACF.class));
     String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
-    init(CoreSystem.DEVICEREGISTRY, args, classes, packages);
+    init(CoreSystem.DEVICE_REGISTRY, args, classes, packages);
 
     listenForInput();
   }

@@ -15,7 +15,7 @@ public class SystemRegistryMain extends ArrowheadMain {
   private SystemRegistryMain(String[] args) {
     String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
         "eu.arrowhead.core.systemregistry"};
-    init(CoreSystem.SYSTEMREGISTRY, args, null, packages);
+    init(CoreSystem.SYSTEM_REGISTRY, args, null, packages);
 
     listenForInput();
   }
