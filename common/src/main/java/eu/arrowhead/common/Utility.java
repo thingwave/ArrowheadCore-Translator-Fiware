@@ -430,7 +430,7 @@ public final class Utility {
     List<String> properties = new ArrayList<>(mandatoryProperties);
     if (!propertyNames.containsAll(mandatoryProperties)) {
       properties.removeIf(propertyNames::contains);
-      throw new ServiceConfigurationError("Missing field(s) from app.properties file: " + properties.toString());
+      throw new ServiceConfigurationError("Missing field(s) from config files file: " + properties.toString());
     }
   }
 

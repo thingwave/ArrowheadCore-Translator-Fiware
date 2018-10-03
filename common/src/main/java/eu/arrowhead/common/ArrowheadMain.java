@@ -150,7 +150,7 @@ public abstract class ArrowheadMain {
       System.out.println("Started insecure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
       throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+          "Make sure you gave a valid address in the config files file! (Assignable to this JVM and not in use already)", e);
     }
   }
 
@@ -172,8 +172,8 @@ public abstract class ArrowheadMain {
     sslCon.setTrustStoreFile(truststorePath);
     sslCon.setTrustStorePass(truststorePass);
     if (!sslCon.validateConfiguration(true)) {
-      log.fatal("SSL Context is not valid, check the certificate files or app.properties!");
-      throw new AuthException("SSL Context is not valid, check the certificate files or app.properties!", Status.UNAUTHORIZED.getStatusCode());
+      log.fatal("SSL Context is not valid, check the certificate files or config files!");
+      throw new AuthException("SSL Context is not valid, check the certificate files or config files!", Status.UNAUTHORIZED.getStatusCode());
     }
 
     SSLContext sslContext = sslCon.createSSLContext();
@@ -203,7 +203,7 @@ public abstract class ArrowheadMain {
       System.out.println("Started secure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
       throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+          "Make sure you gave a valid address in the config files file! (Assignable to this JVM and not in use already)", e);
     }
   }
 

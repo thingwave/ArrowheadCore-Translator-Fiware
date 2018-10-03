@@ -63,7 +63,7 @@ public class DatabaseManager {
           System.out.println("Database connection could not be established, logging may not work! Check log4j.properties!");
           Logger.getRootLogger().setLevel(Level.OFF);
         } else {
-          throw new ServiceConfigurationError("Database connection could not be established, check app.properties!", e);
+          throw new ServiceConfigurationError("Database connection could not be established, check config files!", e);
         }
       }
     }

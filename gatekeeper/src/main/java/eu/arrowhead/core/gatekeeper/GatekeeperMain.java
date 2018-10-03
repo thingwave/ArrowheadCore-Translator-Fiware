@@ -176,7 +176,7 @@ public class GatekeeperMain {
       return server;
     } catch (IOException | ProcessingException e) {
       throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+          "Make sure you gave a valid address in the config files file! (Assignable to this JVM and not in use already)", e);
     }
   }
 
@@ -209,8 +209,8 @@ public class GatekeeperMain {
       clientConfig.setTrustStoreFile(cloudKeystorePath);
       clientConfig.setTrustStorePass(cloudKeystorePass);
       if (!clientConfig.validateConfiguration(true)) {
-        log.fatal("Internal client SSL Context is not valid, check the certificate files or app.properties!");
-        throw new AuthException("Internal client SSL Context is not valid, check the certificate files or app.properties!");
+        log.fatal("Internal client SSL Context is not valid, check the certificate files or config files!");
+        throw new AuthException("Internal client SSL Context is not valid, check the certificate files or config files!");
       }
       SSLContext clientContext = clientConfig.createSSLContext();
       Utility.setSSLContext(clientContext);
@@ -222,8 +222,8 @@ public class GatekeeperMain {
       serverConfig.setTrustStoreFile(cloudKeystorePath);
       serverConfig.setTrustStorePass(cloudKeystorePass);
       if (!serverConfig.validateConfiguration(true)) {
-        log.fatal("External server SSL Context is not valid, check the certificate files or app.properties!");
-        throw new AuthException("External server SSL Context is not valid, check the certificate files or app.properties!");
+        log.fatal("External server SSL Context is not valid, check the certificate files or config files!");
+        throw new AuthException("External server SSL Context is not valid, check the certificate files or config files!");
       }
       serverContext = serverConfig.createSSLContext();
       outboundServerContext = serverContext;
@@ -248,7 +248,7 @@ public class GatekeeperMain {
       return server;
     } catch (IOException | ProcessingException e) {
       throw new ServiceConfigurationError(
-          "Make sure you gave a valid address in the app.properties file! (Assignable to this JVM and not in use already)", e);
+          "Make sure you gave a valid address in the config files file! (Assignable to this JVM and not in use already)", e);
     }
   }
 
