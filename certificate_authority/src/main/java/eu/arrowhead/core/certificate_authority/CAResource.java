@@ -18,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 
 @Path("ca")
 @Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class CAResource {
 
   @GET
@@ -29,11 +28,13 @@ public class CAResource {
 
   @GET
   @Path("auth")
-  public CertificateSigningResponse getAuthPublicKey() {
-    return new CertificateSigningResponse(CAMain.encodedAuthPublicKey);
+  @Produces(MediaType.TEXT_PLAIN)
+  public String getAuthPublicKey() {
+    return CAMain.encodedAuthPublicKey;
   }
 
   @POST
+  @Produces(MediaType.APPLICATION_JSON)
   public CertificateSigningResponse getSignedCertificate(CertificateSigningRequest request) {
     return CAService.signCertificate(request);
   }

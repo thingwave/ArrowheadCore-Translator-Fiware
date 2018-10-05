@@ -44,9 +44,10 @@ public class CAMain extends ArrowheadMain {
 
       if (optionalUri.isPresent()) {
         String authUri = optionalUri.get()[0];
-        authUri = authUri.substring(0, authUri.lastIndexOf("/")) + "/mgmt/publickey";
+        authUri = authUri.substring(0, authUri.lastIndexOf("/")) + "/authorization/mgmt/publickey";
         Response response = Utility.sendRequest(authUri, "GET", null);
         encodedAuthPublicKey = response.readEntity(String.class);
+        System.out.println("Authorization public key acquired!");
       }
       return null;
     });
