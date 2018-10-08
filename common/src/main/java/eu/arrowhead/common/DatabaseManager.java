@@ -29,7 +29,7 @@ import org.hibernate.exception.ConstraintViolationException;
 
 public class DatabaseManager {
 
-  private static DatabaseManager instance;
+  private static volatile DatabaseManager instance;
   private static SessionFactory sessionFactory;
   private static TypeSafeProperties prop = Utility.getProp();
   private static String dbAddress;
