@@ -7,6 +7,7 @@
 
 package eu.arrowhead.core.certificate_authority;
 
+import eu.arrowhead.common.exception.DataNotFoundException;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningRequest;
 import eu.arrowhead.core.certificate_authority.model.CertificateSigningResponse;
 import javax.ws.rs.Consumes;
@@ -30,7 +31,11 @@ public class CAResource {
   @Path("auth")
   @Produces(MediaType.TEXT_PLAIN)
   public String getAuthPublicKey() {
-    return CAMain.encodedAuthPublicKey;
+    if (CAMain.encodedAuthPublicKey != null) {
+      return CAMain.encodedAuthPublicKey;
+    } else {
+      throw new DataNotFoundException("Authorization public key could not be acquired (yet) from the Authorization Core System.");
+    }
   }
 
   @POST

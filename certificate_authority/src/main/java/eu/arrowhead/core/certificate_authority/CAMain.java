@@ -8,7 +8,6 @@
 package eu.arrowhead.core.certificate_authority;
 
 import eu.arrowhead.common.ArrowheadMain;
-import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.core.certificate_authority.filter.CertAuthorityACF;
@@ -16,10 +15,9 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import javax.ws.rs.core.Response;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CAMain extends ArrowheadMain {
 
@@ -28,6 +26,7 @@ public class CAMain extends ArrowheadMain {
   static X509Certificate cloudCert;
   static String cloudCN;
   static String encodedAuthPublicKey;
+  static Timer authTimer;
 
   private CAMain(String[] args) {
     Set<Class<?>> classes = new HashSet<>(Arrays.asList(CAResource.class, CertAuthorityACF.class));
@@ -39,18 +38,10 @@ public class CAMain extends ArrowheadMain {
     cloudCert = SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore);
     cloudCN = SecurityUtils.getCertCNFromSubject(cloudCert.getSubjectX500Principal().getName());
 
-    CompletableFuture.supplyAsync(() -> {
-      Optional<String[]> optionalUri = Utility.getServiceInfo("AuthorizationControl");
-
-      if (optionalUri.isPresent()) {
-        String authUri = optionalUri.get()[0];
-        authUri = authUri.substring(0, authUri.lastIndexOf("/")) + "/authorization/mgmt/publickey";
-        Response response = Utility.sendRequest(authUri, "GET", null);
-        encodedAuthPublicKey = response.readEntity(String.class);
-        System.out.println("Authorization public key acquired!");
-      }
-      return null;
-    });
+    authTimer = new Timer();
+    TimerTask authTask = new GetAuthPublicKeyTask();
+    //Run the task every minute until it runs successfully, and the timer is canceled from inside the task
+    authTimer.schedule(authTask, 15L * 1000L, 60L * 1000L);
 
     listenForInput();
   }
