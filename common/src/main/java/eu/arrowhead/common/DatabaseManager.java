@@ -118,6 +118,8 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         for (Entry<String, Object> entry : restrictionMap.entrySet()) {
@@ -144,6 +146,8 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         for (Entry<String, Object> entry : restrictionMap.entrySet()) {
@@ -170,6 +174,8 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         Disjunction disjunction = Restrictions.disjunction();
