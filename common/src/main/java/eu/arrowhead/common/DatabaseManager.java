@@ -18,7 +18,6 @@ import java.util.ServiceConfigurationError;
 import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -26,6 +25,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
 public class DatabaseManager {
 
@@ -269,7 +269,7 @@ public class DatabaseManager {
   @SuppressWarnings("unused")
   public void deleteAll(String tableName) {
     Session session = getSessionFactory().openSession();
-    String stringQuery = "DELETE FROM " + tableName;
+    String stringQuery = "DELETE * FROM " + tableName;
     Query query = session.createQuery(stringQuery);
     query.executeUpdate();
   }
