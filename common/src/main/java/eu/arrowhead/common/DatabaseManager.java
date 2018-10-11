@@ -28,6 +28,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
+//NOTE should move to EntityManager from Sessions, using the JPA criteria API (Hibernate criteria will be removed in Hibernate 6)
 public class DatabaseManager {
 
   private static volatile DatabaseManager instance;
@@ -51,8 +52,7 @@ public class DatabaseManager {
       }
 
       try {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
-                                                         .setProperty("hibernate.connection.username", dbUser)
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
                                                          .setProperty("hibernate.connection.password", dbPassword);
         sessionFactory = configuration.buildSessionFactory();
       } catch (Exception e) {
@@ -79,8 +79,7 @@ public class DatabaseManager {
 
   private synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
-                                                       .setProperty("hibernate.connection.username", dbUser)
+      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
                                                        .setProperty("hibernate.connection.password", dbPassword);
       sessionFactory = configuration.buildSessionFactory();
     }
@@ -210,9 +209,8 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:save throws DuplicateEntryException", e);
-      throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-          Status.BAD_REQUEST.getStatusCode(), e);
+      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+                                        Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
@@ -236,9 +234,8 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:merge throws DuplicateEntryException", e);
-      throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-          Status.BAD_REQUEST.getStatusCode(), e);
+      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+                                        Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
