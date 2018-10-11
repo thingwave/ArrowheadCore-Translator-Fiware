@@ -86,13 +86,13 @@
 
       <dependency>
         <groupId>eu.arrowhead</groupId>
-        <artifactId>common</artifactId>
+        <artifactId>arrowhead-common</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>eu.arrowhead</groupId>
-        <artifactId>dnssd</artifactId>
+        <artifactId>arrowhead-dnssd</artifactId>
         <version>${project.version}</version>
       </dependency>
 

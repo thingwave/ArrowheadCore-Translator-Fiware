@@ -15,7 +15,7 @@
     <version>4.0</version>
   </parent>
 
-  <artifactId>dnssd</artifactId>
+  <artifactId>arrowhead-dnssd</artifactId>
 
   <dependencies>
 

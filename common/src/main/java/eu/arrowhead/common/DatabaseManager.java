@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ServiceConfigurationError;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -204,11 +205,11 @@ public class DatabaseManager {
       transaction = session.beginTransaction();
       session.save(object);
       transaction.commit();
-    } catch (ConstraintViolationException e) {
+    } catch (PersistenceException e) {
       if (transaction != null) {
         transaction.rollback();
       }
-      log.error("DatabaseManager:save throws DuplicateEntryException");
+      log.error("DatabaseManager:save throws DuplicateEntryException", e);
       throw new DuplicateEntryException(
           "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
           Status.BAD_REQUEST.getStatusCode(), e);
@@ -230,11 +231,11 @@ public class DatabaseManager {
       transaction = session.beginTransaction();
       session.merge(object);
       transaction.commit();
-    } catch (ConstraintViolationException e) {
+    } catch (PersistenceException e) {
       if (transaction != null) {
         transaction.rollback();
       }
-      log.error("DatabaseManager:merge throws DuplicateEntryException");
+      log.error("DatabaseManager:merge throws DuplicateEntryException", e);
       throw new DuplicateEntryException(
           "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
           Status.BAD_REQUEST.getStatusCode(), e);

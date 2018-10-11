@@ -416,7 +416,12 @@ public final class Utility {
   public static TypeSafeProperties getProp(String fileName) {
     TypeSafeProperties prop = new TypeSafeProperties();
     try {
-      File file = new File("config" + File.separator + fileName);
+      File file;
+      if (new File(fileName).exists()) {
+        file = new File(fileName);
+      } else {
+        file = new File("config" + File.separator + fileName);
+      }
       FileInputStream inputStream = new FileInputStream(file);
       prop.load(inputStream);
     } catch (FileNotFoundException ex) {

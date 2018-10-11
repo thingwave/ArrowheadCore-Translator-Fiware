@@ -16,14 +16,14 @@
     <version>4.0</version>
   </parent>
 
-  <artifactId>qos</artifactId>
+  <artifactId>arrowhead-qos</artifactId>
   <packaging>jar</packaging>
 
   <dependencies>
 
     <dependency>
       <groupId>eu.arrowhead</groupId>
-      <artifactId>common</artifactId>
+      <artifactId>arrowhead-common</artifactId>
     </dependency>
 
   </dependencies>

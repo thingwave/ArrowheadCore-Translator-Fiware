@@ -16,7 +16,7 @@
     <version>4.0</version>
   </parent>
 
-  <artifactId>orchestrator</artifactId>
+  <artifactId>arrowhead-orchestrator</artifactId>
   <packaging>jar</packaging>
 
   <properties>
@@ -32,7 +32,7 @@
 
     <dependency>
       <groupId>eu.arrowhead</groupId>
-      <artifactId>common</artifactId>
+      <artifactId>arrowhead-common</artifactId>
     </dependency>
 
   </dependencies>
@@ -75,7 +75,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>eu.arrowhead.core.orchestrator.OrchestratorMain</mainClass>
-              <classpathPrefix>lib/</classpathPrefix>
+              <classpathPrefix>../lib/</classpathPrefix>
             </manifest>
           </archive>
         </configuration>
@@ -117,6 +117,56 @@
                   <directory>config</directory>
                 </resource>
               </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>jdeb</artifactId>
+        <groupId>org.vafer</groupId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jdeb</goal>
+            </goals>
+            <configuration>
+              <!--<snapshotExpand>true</snapshotExpand>-->
+              <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
+              <!--<snapshotEnv>USER</snapshotEnv>-->
+              <verbose>true</verbose>
+              <controlDir>${basedir}/src/deb/control</controlDir>
+              <dataSet>
+
+                <data>
+                  <type>file</type>
+                  <src>${project.build.directory}/${project.build.finalName}.jar</src>
+                  <mapper>
+                    <type>perm</type>
+                    <prefix>/usr/share/arrowhead/systems</prefix>
+                    <user>arrowhead</user>
+                    <filemode>755</filemode>
+                  </mapper>
+                </data>
+
+                <data>
+                  <type>file</type>
+                  <src>${project.basedir}/src/deb/arrowhead-orchestrator.service</src>
+                  <mapper>
+                    <type>perm</type>
+                    <prefix>/etc/systemd/system</prefix>
+                    <filemode>664</filemode>
+                  </mapper>
+                </data>
+
+                <data>
+                  <type>file</type>
+                  <src>${project.basedir}/src/deb/create_orchestrator_db_empty.sql</src>
+                  <dst>/usr/share/arrowhead/db/create_orchestrator_db_empty.sql</dst>
+                </data>
+
+              </dataSet>
             </configuration>
           </execution>
         </executions>
