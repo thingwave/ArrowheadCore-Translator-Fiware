@@ -114,7 +114,6 @@
 
   <build>
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -137,7 +136,6 @@
           <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
-
       <!-- Copy project dependency -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -157,11 +155,9 @@
           </execution>
         </executions>
       </plugin>
-
-      <!-- Debian package generator -->
       <plugin>
-        <groupId>org.vafer</groupId>
         <artifactId>jdeb</artifactId>
+        <groupId>org.vafer</groupId>
         <version>1.5</version>
         <executions>
           <execution>
@@ -197,8 +193,8 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.basedir}/src/deb/ahcert.sh</src>
-                  <dst>ahcert</dst>
+                  <src>${project.basedir}/src/deb/ah_gen_system.sh</src>
+                  <dst>ah_gen_system</dst>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/bin</prefix>
@@ -208,8 +204,8 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.basedir}/src/deb/ahcert_cloud.sh</src>
-                  <dst>ahcert_cloud</dst>
+                  <src>${project.basedir}/src/deb/ah_gen_cloud.sh</src>
+                  <dst>ah_gen_cloud</dst>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/bin</prefix>
@@ -219,8 +215,8 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.basedir}/src/deb/ahcert_export.sh</src>
-                  <dst>ahcert_export</dst>
+                  <src>${project.basedir}/src/deb/ah_add_neighbor.sh</src>
+                  <dst>ah_add_neighbor</dst>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/bin</prefix>
@@ -230,8 +226,8 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.basedir}/src/deb/ah_quickstart_gen.sh</src>
-                  <dst>ah_quickstart_gen</dst>
+                  <src>${project.basedir}/src/deb/ah_gen_quickstart.sh</src>
+                  <dst>ah_gen_quickstart</dst>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/bin</prefix>
@@ -264,7 +260,7 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
+
 </project>
