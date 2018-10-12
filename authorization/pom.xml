@@ -173,6 +173,7 @@
                   <dst>/usr/share/arrowhead/db/create_authorization_db_empty.sql</dst>
                 </data>
 
+                <!-- NOTE hardcoded jar file name can be a problem, for example when updating the library version -->
                 <data>
                   <type>file</type>
                   <src>${project.build.directory}/lib/bcprov-jdk15on-1.59.jar</src>

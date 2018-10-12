@@ -6,5 +6,5 @@ CREATE TABLE  IF NOT EXISTS `hibernate_sequence` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 LOCK TABLES `hibernate_sequence` WRITE, `hibernate_sequence` AS hs READ;
-INSERT INTO `hibernate_sequence` SELECT (25) FROM DUAL WHERE NOT EXISTS (SELECT * FROM `hibernate_sequence` AS hs);
+INSERT INTO `hibernate_sequence` SELECT (1) FROM DUAL WHERE NOT EXISTS (SELECT * FROM `hibernate_sequence` AS hs);
 UNLOCK TABLES;
