@@ -1,10 +1,10 @@
 [Unit]
 Description=arrowhead-gatekeeper
-After=network.target mysql.target arrowhead-serviceregistry-sql.service arrowhead-authorization.service arrowhead-gateway.service
+After=network.target mysql.target arrowhead-serviceregistry-sql.service
 Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service arrowhead-gateway.service
 
 [Service]
-WorkingDirectory=/etc/arrowhead/gatekeeper
+WorkingDirectory=/etc/arrowhead/systems/gatekeeper
 ExecStart=/usr/bin/java --add-modules java.xml.bind -jar /usr/share/arrowhead/systems/arrowhead-gatekeeper-4.0.jar -d -daemon -tls
 TimeoutStopSec=5
 Type=simple

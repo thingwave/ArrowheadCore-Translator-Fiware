@@ -21,6 +21,7 @@ case ${RET} in
         ;;
 esac
 
+# TODO port numbers need to be here too
 ah_gen_system client1 127.0.0.1
 echo >&2
 ah_gen_system SecureTemperatureSensor 127.0.0.1 IndoorTemperature
