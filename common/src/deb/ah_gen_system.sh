@@ -37,14 +37,16 @@ SYSTEM_64PUB=$(\
     | tr -d '\n'\
 )
 
+#TODO update arrowheadsystem generation with port number input (hardcoded value for now)
 echo "Registering system '${SYSTEM_NAME}' in database" >&2
 db_cmd="
     LOCK TABLES arrowhead_system WRITE, hibernate_sequence WRITE, arrowhead_service WRITE;
-    INSERT INTO arrowhead_system (id, address, authentication_info, system_name)
-        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}' , '${SYSTEM_NAME}' FROM hibernate_sequence;
+    INSERT INTO arrowhead_system (id, address, authentication_info, port, system_name)
+        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}', 8080, '${SYSTEM_NAME}' FROM hibernate_sequence;
     UPDATE hibernate_sequence SET next_val = next_val + 1;
 "
 
+#TODO adding provided interfaces (to the arrowhead_service_interfaces table) (at least 1 if a list is problematic)
 if [ ! -z "${SERVICE}" ]; then
     if [ $(mysql -u root arrowhead -sse "SELECT EXISTS(SELECT 1 FROM arrowhead_service WHERE service_definition = '${SERVICE}')") != 1 ]; then
         echo "Registering service '${SERVICE}' in database" >&2

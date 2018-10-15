@@ -86,17 +86,17 @@ EOF
                 Yes )
                     mysql -u root arrowhead <<EOF
 LOCK TABLES broker WRITE, hibernate_sequence WRITE;
-INSERT INTO broker (id, address, authentication_info, broker_name, port, is_secure)
-    SELECT next_val, 'arrowhead-relay.tmit.bme.hu', NULL, 'arrowhead-relay-insecure', 5672, 'N' FROM hibernate_sequence;
+INSERT INTO broker (id, address, port, is_secure)
+    SELECT next_val, 'arrowhead-relay.tmit.bme.hu', 5672, 'N' FROM hibernate_sequence;
 UPDATE hibernate_sequence SET next_val = next_val + 1;
-INSERT INTO broker (id, address, authentication_info, broker_name, port, is_secure)
-    SELECT next_val, 'arrowhead-relay.tmit.bme.hu', NULL, 'arrowhead-relay-secure', 5671, 'Y' FROM hibernate_sequence;
+INSERT INTO broker (id, address, port, is_secure)
+    SELECT next_val, 'arrowhead-relay.tmit.bme.hu', 5671, 'Y' FROM hibernate_sequence;
 UPDATE hibernate_sequence SET next_val = next_val + 1;
-INSERT INTO broker (id, address, authentication_info, broker_name, port, is_secure)
-    SELECT next_val, 'arrowhead-relay2.tmit.bme.hu', NULL, 'arrowhead-relay2-insecure', 5672, 'N' FROM hibernate_sequence;
+INSERT INTO broker (id, address, port, is_secure)
+    SELECT next_val, 'arrowhead-relay2.tmit.bme.hu', 5672, 'N' FROM hibernate_sequence;
 UPDATE hibernate_sequence SET next_val = next_val + 1;
-INSERT INTO broker (id, address, authentication_info, broker_name, port, is_secure)
-    SELECT next_val, 'arrowhead-relay2.tmit.bme.hu', NULL, 'arrowhead-relay2-secure', 5671, 'Y' FROM hibernate_sequence;
+INSERT INTO broker (id, address, port, is_secure)
+    SELECT next_val, 'arrowhead-relay2.tmit.bme.hu', 5671, 'Y' FROM hibernate_sequence;
 UPDATE hibernate_sequence SET next_val = next_val + 1;
 UNLOCK TABLES;
 EOF
