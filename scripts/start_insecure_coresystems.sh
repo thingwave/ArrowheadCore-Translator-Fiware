@@ -31,4 +31,3 @@ echo Gatekeeper started
 cd ../../orchestrator/target
 nohup java -jar arrowhead-orchestrator-4.0.jar -d -daemon &> insecure_orch.log &
 echo Orchestrator started
-
