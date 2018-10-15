@@ -4,35 +4,37 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 
 cd "$parent_path"
 
+time_to_sleep=10s
+
 echo Starting Core Systems - wait 1 minute
 #More sleep time between core systems might be needed on slower devices like a Raspberry Pi
 
 cd ../serviceregistry_sql/target
-nohup java -jar serviceregistry_sql-4.0.jar -d -daemon -tls &> secure_sr.log &
+nohup java -jar arrowhead-serviceregistry-sql-4.0.jar -d -daemon -tls &> secure_sr.log &
 echo Service Registry started
-sleep 10s
+sleep ${time_to_sleep}
 
 cd ../../authorization/target
-nohup java -jar authorization-4.0.jar -d -daemon -tls &> secure_auth.log &
+nohup java -jar arrowhead-authorization-4.0.jar -d -daemon -tls &> secure_auth.log &
 echo Authorization started
-sleep 10s
+sleep ${time_to_sleep}
 
 cd ../../gateway/target
-nohup java -jar gateway-4.0.jar -d -daemon -tls &> secure_gateway.log &
+nohup java -jar arrowhead-gateway-4.0.jar -d -daemon -tls &> secure_gateway.log &
 echo Gateway started
-sleep 10s
+sleep ${time_to_sleep}
 
 cd ../../eventhandler/target
-nohup java -jar eventhandler-4.0.jar -d -daemon -tls &> secure_eventhandler.log &
+nohup java -jar arrowhead-eventhandler-4.0.jar -d -daemon -tls &> secure_eventhandler.log &
 echo Event Handler started
-sleep 10s
+sleep ${time_to_sleep}
 
 cd ../../gatekeeper/target
-nohup java -jar gatekeeper-4.0.jar -d -daemon -tls &> secure_gk.log &
+nohup java -jar arrowhead-gatekeeper-4.0.jar -d -daemon -tls &> secure_gk.log &
 echo Gatekeeper started
-sleep 10s
+sleep ${time_to_sleep}
 
 cd ../../orchestrator/target
-nohup java -jar orchestrator-4.0.jar -d -daemon -tls &> secure_orch.log &
+nohup java -jar arrowhead-orchestrator-4.0.jar -d -daemon -tls &> secure_orch.log &
 echo Orchestrator started
-sleep 10s
+sleep ${time_to_sleep}
