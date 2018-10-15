@@ -120,8 +120,8 @@ log4j.appender.FILE.Append=false
 log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
 log4j.appender.FILE.layout.conversionPattern=%d{yyyy-MM-dd HH:mm:ss}, %C, %p, %m%n
 EOF
-            chown root:arrowhead ${SYSTEM_DIR}/app.properties
-            chmod 640 ${SYSTEM_DIR}/app.properties
+            chown root:arrowhead ${SYSTEM_DIR}/app.conf
+            chmod 640 ${SYSTEM_DIR}/app.conf
         fi
 
         #This method call is unnecessary from now on
