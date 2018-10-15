@@ -84,7 +84,7 @@ final class OrchestratorDriver {
       if (!Utility.isBeanValid(entry)) {
         temp.add(entry);
       }
-      //TODO this should be done on the SR side I think
+      //NOTE this should be done on the SR side I think
       if (!StoreService.hasMatchingInterfaces(service, entry.getProvidedService())) {
         temp.add(entry);
       }

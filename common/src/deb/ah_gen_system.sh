@@ -10,7 +10,8 @@ fi
 
 SYSTEM_NAME=${1}
 SYSTEM_HOST=${2}
-SERVICE=${3}
+PORT=${3}
+SERVICE=${4}
 
 SYSTEM_DIR="${AH_SYSTEMS_DIR}/${SYSTEM_NAME}"
 SYSTEM_STORE="${SYSTEM_DIR}/${SYSTEM_NAME}.p12"
@@ -37,22 +38,22 @@ SYSTEM_64PUB=$(\
     | tr -d '\n'\
 )
 
-#TODO update arrowheadsystem generation with port number input (hardcoded value for now)
 echo "Registering system '${SYSTEM_NAME}' in database" >&2
 db_cmd="
-    LOCK TABLES arrowhead_system WRITE, hibernate_sequence WRITE, arrowhead_service WRITE;
+    LOCK TABLES arrowhead_system WRITE, hibernate_sequence WRITE, arrowhead_service WRITE, arrowhead_service_interfaces WRITE;
     INSERT INTO arrowhead_system (id, address, authentication_info, port, system_name)
-        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}', 8080, '${SYSTEM_NAME}' FROM hibernate_sequence;
+        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}', '${PORT}', '${SYSTEM_NAME}' FROM hibernate_sequence;
     UPDATE hibernate_sequence SET next_val = next_val + 1;
 "
 
-#TODO adding provided interfaces (to the arrowhead_service_interfaces table) (at least 1 if a list is problematic)
 if [ ! -z "${SERVICE}" ]; then
     if [ $(mysql -u root arrowhead -sse "SELECT EXISTS(SELECT 1 FROM arrowhead_service WHERE service_definition = '${SERVICE}')") != 1 ]; then
         echo "Registering service '${SERVICE}' in database" >&2
         db_cmd="${db_cmd}
             INSERT INTO arrowhead_service (id, service_definition)
                 SELECT next_val, '${SERVICE}' FROM hibernate_sequence;
+            INSERT INTO arrowhead_service_interfaces (arrowhead_service_id, interfaces)
+                SELECT next_val, 'JSON' FROM hibernate_sequence;
             UPDATE hibernate_sequence SET next_val = next_val + 1;
         "
     fi
@@ -64,7 +65,7 @@ mysql -u root arrowhead -e "${db_cmd}"
 
 if [ -z "${SERVICE}" ]; then
     echo "Generating consumer-only properties file" >&2
-    echo "" > "${SYSTEM_DIR}/app.properties"
+    echo "" > "${SYSTEM_DIR}/app.conf"
 else
     echo "Generating full provider properties file" >&2
     echo "
@@ -85,7 +86,7 @@ metadata=unit-celsius
 insecure_system_name=${SYSTEM_NAME}
 secure_system_name=${SYSTEM_NAME}
 fi
-" > "${SYSTEM_DIR}/app.properties"
+" > "${SYSTEM_DIR}/app.conf"
 fi
 
 echo "
@@ -119,11 +120,11 @@ keypass=${AH_PASS_CERT}
 truststore=${SYSTEM_STORE}
 truststorepass=${AH_PASS_CERT}
 authorization_cert=${SYSTEM_DIR}/authorization.crt
-" >> "${SYSTEM_DIR}/app.properties"
+" >> "${SYSTEM_DIR}/app.conf"
 
-chown root:arrowhead "${SYSTEM_DIR}/app.properties"
-chmod 640 "${SYSTEM_DIR}/app.properties"
+chown root:arrowhead "${SYSTEM_DIR}/app.conf"
+chmod 640 "${SYSTEM_DIR}/app.conf"
 
 echo >&2
 echo "System files stored in '${SYSTEM_DIR}'" >&2
-echo "Please verify that 'app.properties' is correct" >&2
+echo "Please verify that 'app.conf' is correct" >&2

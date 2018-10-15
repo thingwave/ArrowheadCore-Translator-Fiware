@@ -37,7 +37,7 @@ case "$1" in
 
         ah_cert_signed_system ${SYSTEM_NAME}
 
-        if [ ! -f "${SYSTEM_DIR}/app.properties" ]; then
+        if [ ! -f "${SYSTEM_DIR}/app.conf" ]; then
             db_get arrowhead-gateway/address; ADDRESS="$RET"
             if [ -z "${ADDRESS}" ]; then
                 ADDRESS=($(hostname -I))
@@ -47,12 +47,12 @@ case "$1" in
             db_go || true
             db_get arrowhead-gateway/address; ADDRESS="$RET"
 
-            /bin/cat <<EOF >${SYSTEM_DIR}/app.properties
-##########################################
-# MANDATORY PARAMETERS ONLY IN SECURE MODE
-##########################################
+            /bin/cat <<EOF >${SYSTEM_DIR}/app.conf
+############################################
+###       APPLICATION PARAMETERS         ###
+############################################
 
-# Certificate related paths and passwords
+# Certificate related paths and passwords (mandatory in secure mode)
 keystore=${SYSTEM_DIR}/${SYSTEM_NAME}.p12
 keystorepass=${AH_PASS_CERT}
 keypass=${AH_PASS_CERT}
@@ -61,29 +61,64 @@ truststorepass=${AH_PASS_CERT}
 trustpass=${AH_PASS_CERT}
 master_arrowhead_cert=${AH_CONF_DIR}/master.crt
 
-################################################
-# NON-MANDATORY PARAMETERS (defaults are showed)
-################################################
-
-# Webserver parameters
+# Gateway web-server parameters
 address=${ADDRESS}
 insecure_port=8452
 secure_port=8453
 
-# Service Registry
+# Service Registry web-server parameters (to register the Gateway services)
 sr_address=0.0.0.0
 sr_insecure_port=8442
 sr_secure_port=8443
 
-# Socket openings port range
+# Port range for socket openings (to facilitate inter-cloud communication between consumer and provider systems)
 min_port=8000
 max_port=8100
+
+############################################
+###          LOGGING PARAMETERS          ###
+############################################
+
+# Define the root logger with appender file
+log4j.rootLogger=INFO, DB, FILE
+
+# Database related config
+# Define the DB appender
+log4j.appender.DB=org.apache.log4j.jdbc.JDBCAppender
+# Set Database Driver
+log4j.appender.DB.driver=com.mysql.jdbc.Driver
+# Set Database URL
+log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
+# Set database user name and password
+log4j.appender.DB.user=arrowhead
+log4j.appender.DB.password=${AH_PASS_DB}
+# Set the SQL statement to be executed.
+log4j.appender.DB.sql=INSERT INTO logs VALUES(DEFAULT,'%d{yyyy-MM-dd HH:mm:ss}','%C','%p','%m')
+# Define the layout for file appender
+log4j.appender.DB.layout=org.apache.log4j.PatternLayout
+# Disable Hibernate verbose logging
+log4j.logger.org.hibernate=fatal
+
+# File related config
+# Define the file appender
+log4j.appender.FILE=org.apache.log4j.FileAppender
+# Set the name of the file
+log4j.appender.FILE.File=/var/log/arrowhead/${system_name}.log
+# Set the immediate flush to true (default)
+log4j.appender.FILE.ImmediateFlush=true
+# Set the threshold to debug mode
+log4j.appender.FILE.Threshold=debug
+# Set the append to false, overwrite
+log4j.appender.FILE.Append=false
+# Define the layout for file appender
+log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+log4j.appender.FILE.layout.conversionPattern=%d{yyyy-MM-dd HH:mm:ss}, %C, %p, %m%n
 EOF
-            chown root:arrowhead ${SYSTEM_DIR}/app.properties
-            chmod 640 ${SYSTEM_DIR}/app.properties
+            chown root:arrowhead ${SYSTEM_DIR}/app.conf
+            chmod 640 ${SYSTEM_DIR}/app.conf
         fi
 
-        ah_log4j_conf ${SYSTEM_NAME}
+        #ah_log4j_conf ${SYSTEM_NAME}
 
         echo "Restarting ${PKG_NAME}..." >&2
         systemctl daemon-reload
