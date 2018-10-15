@@ -176,7 +176,7 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.build.directory}/lib/bcprov-jdk15on-1.59.jar</src>
+                  <src>${project.build.directory}/lib/bcprov-jdk15on-${bouncy.castle.version}.jar</src>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/share/arrowhead/lib</prefix>
@@ -185,7 +185,7 @@
 
                 <data>
                   <type>file</type>
-                  <src>${project.build.directory}/lib/bcpkix-jdk15on-1.59.jar</src>
+                  <src>${project.build.directory}/lib/bcpkix-jdk15on-${bouncy.castle.version}.jar</src>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/share/arrowhead/lib</prefix>

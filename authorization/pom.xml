@@ -173,10 +173,9 @@
                   <dst>/usr/share/arrowhead/db/create_authorization_db_empty.sql</dst>
                 </data>
 
-                <!-- NOTE hardcoded jar file name can be a problem, for example when updating the library version -->
                 <data>
                   <type>file</type>
-                  <src>${project.build.directory}/lib/bcprov-jdk15on-1.59.jar</src>
+                  <src>${project.build.directory}/lib/bcprov-jdk15on-${bouncy.castle.version}.jar</src>
                   <mapper>
                     <type>perm</type>
                     <prefix>/usr/share/arrowhead/lib</prefix>
