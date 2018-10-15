@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for arrowhead-orchestrator
+# postrm script for arrowhead-certificate_authority
 #
 # see: dh_installdeb(1)
 
@@ -7,7 +7,7 @@ set -e
 
 . /usr/share/debconf/confmodule
 
-SYSTEM_NAME="orchestrator"
+SYSTEM_NAME="certificate_authority"
 
 # summary of how this script can be called:
 #        * <postrm> `remove'
