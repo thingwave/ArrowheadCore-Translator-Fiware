@@ -51,7 +51,7 @@ The Orchestrator core system also has a **`-nogk`** argument. When used, the Orc
  for the Gatekeeper services in the Service Registry, but can only do intra-cloud orchestration (with the help of the Authorization and Service 
  Registry core systems).
 
-Startup bash scripts are provided in the `scripts` folder:
+Startup bash scripts (Linux & iOS) and batch files (Windows) are provided in the `scripts` folder:
 * `start_insecure_coresystems.sh`: starts the core systems without using certificates, with plain HTTP
 * `start_secure_coresystems.sh`: starts the core systems using certificates, with HTTPS
 * `stop_coresystems.sh`: stops all running core systems
