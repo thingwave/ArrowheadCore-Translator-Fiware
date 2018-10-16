@@ -82,7 +82,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>eu.arrowhead.core.authorization.AuthorizationMain</mainClass>
-              <classpathPrefix>../lib/</classpathPrefix>
+              <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
         </configuration>

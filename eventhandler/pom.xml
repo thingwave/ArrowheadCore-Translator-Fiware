@@ -76,7 +76,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>eu.arrowhead.core.eventhandler.EventHandlerMain</mainClass>
-              <classpathPrefix>../lib/</classpathPrefix>
+              <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
         </configuration>

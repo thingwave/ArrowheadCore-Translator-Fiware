@@ -80,7 +80,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>eu.arrowhead.core.serviceregistry.ServiceRegistryMain</mainClass>
-              <classpathPrefix>../lib/</classpathPrefix>
+              <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
         </configuration>
