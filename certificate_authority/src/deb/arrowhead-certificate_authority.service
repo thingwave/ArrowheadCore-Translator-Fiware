@@ -1,7 +1,7 @@
 [Unit]
 Description=arrowhead-certificate-authority
-After=network.target mysql.target arrowhead-serviceregistry-sql.service
-Requires=arrowhead-serviceregistry-sql.service
+After=network.target mysql.target arrowhead-serviceregistry-sql.service arrowhead-authorization.service
+Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service
 
 [Service]
 WorkingDirectory=/etc/arrowhead/systems/certificate_authority
