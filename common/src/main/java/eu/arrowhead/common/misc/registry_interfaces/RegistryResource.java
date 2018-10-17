@@ -1,8 +1,7 @@
-package eu.arrowhead.common;
-
-import javax.validation.Valid;
+package eu.arrowhead.common.misc.registry_interfaces;
 
 import eu.arrowhead.common.exception.ArrowheadException;
+import javax.validation.Valid;
 
 /**
  * A RegistryResource offers methods to publish, unpublish and lookup entities

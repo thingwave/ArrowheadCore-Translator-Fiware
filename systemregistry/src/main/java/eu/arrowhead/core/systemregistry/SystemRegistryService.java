@@ -8,12 +8,12 @@
 package eu.arrowhead.core.systemregistry;
 
 import eu.arrowhead.common.DatabaseManager;
-import eu.arrowhead.common.RegistryService;
 import eu.arrowhead.common.database.ArrowheadDevice;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.SystemRegistryEntry;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DataNotFoundException;
+import eu.arrowhead.common.misc.registry_interfaces.RegistryService;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response.Status;

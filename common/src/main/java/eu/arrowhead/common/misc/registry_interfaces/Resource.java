@@ -1,4 +1,4 @@
-package eu.arrowhead.common;
+package eu.arrowhead.common.misc.registry_interfaces;
 
 /**
  * This interface denotes a resource in the Arrowhead framework which is reachable by non-RMI methods.

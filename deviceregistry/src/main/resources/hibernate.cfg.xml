@@ -10,8 +10,10 @@
   "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
    <session-factory>
-      <property name="show_sql">true</property>
-      <property name="hibernate.hbm2ddl.auto">update</property>
-      <mapping class="eu.arrowhead.common.database.ArrowheadDevice"/>
+     <property name="show_sql">true</property>
+     <property name="hibernate.hbm2ddl.auto">update</property>
+     <mapping class="eu.arrowhead.common.database.ArrowheadSystem"/>
+     <mapping class="eu.arrowhead.common.database.ArrowheadDevice"/>
+     <mapping class="eu.arrowhead.common.database.DeviceRegistryEntry"/>
    </session-factory>
 </hibernate-configuration>

@@ -35,7 +35,6 @@
       <groupId>eu.arrowhead</groupId>
       <artifactId>arrowhead-common</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>

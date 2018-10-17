@@ -7,9 +7,9 @@
 
 package eu.arrowhead.core.systemregistry;
 
-import eu.arrowhead.common.RegistryResource;
 import eu.arrowhead.common.database.SystemRegistryEntry;
 import eu.arrowhead.common.exception.ArrowheadException;
+import eu.arrowhead.common.misc.registry_interfaces.RegistryResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +25,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+/**
+ * @author FHB
+ */
 @Path("systemregistry")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,8 +47,7 @@ public class SystemRegistryResource implements RegistryResource<SystemRegistryEn
 
   @GET
   @Path(LOOKUP_PATH)
-  @Operation(summary = "Searches a SystemRegistryEntry by id", responses = {
-      @ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class)))})
+  @Operation(summary = "Searches a SystemRegistryEntry by id", responses = {@ApiResponse(content = @Content(schema = @Schema(implementation = SystemRegistryEntry.class)))})
   public Response lookup(@PathParam("id") final long id) throws ArrowheadException {
     SystemRegistryEntry returnValue;
     Response response;

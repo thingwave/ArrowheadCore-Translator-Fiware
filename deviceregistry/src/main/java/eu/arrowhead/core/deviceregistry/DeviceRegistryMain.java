@@ -9,17 +9,15 @@ package eu.arrowhead.core.deviceregistry;
 
 import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.misc.CoreSystem;
-import eu.arrowhead.core.deviceregistry.filter.DeviceRegACF;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 public class DeviceRegistryMain extends ArrowheadMain {
 
   private DeviceRegistryMain(String[] args) {
-    Set<Class<?>> classes = new HashSet<>(Arrays.asList(DeviceRegistryResource.class, DeviceRegACF.class));
-    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
-    init(CoreSystem.DEVICE_REGISTRY, args, classes, packages);
+
+    String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter",
+        "eu.arrowhead.core.deviceregistry"};
+    init(CoreSystem.DEVICE_REGISTRY, args, null, packages);
+
 
     listenForInput();
   }
