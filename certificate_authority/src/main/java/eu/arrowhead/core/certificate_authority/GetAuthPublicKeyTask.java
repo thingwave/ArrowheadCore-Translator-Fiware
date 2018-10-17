@@ -29,6 +29,8 @@ public class GetAuthPublicKeyTask extends TimerTask {
         CAMain.encodedAuthPublicKey = response.readEntity(String.class);
         log.info("Authorization public key acquired, canceling the Timer calling this Task.");
         CAMain.authTimer.cancel();
+      } else {
+        log.info("Authorization public key could not be acquired because Authorization is offline!");
       }
     } catch (ArrowheadException e) {
       log.info("Authorization public key could not be acquired: " + e.getMessage(), e);
