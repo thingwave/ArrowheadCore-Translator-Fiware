@@ -50,9 +50,12 @@ public class ServiceRegACF extends AccessControlFilter {
 
       return serverFields[1].equalsIgnoreCase(clientFields[1]);
     } else if (requestTarget.endsWith("query")) {
-
-      // Only requests from the local Orchestrator and Gatekeeper are allowed
-      return clientCN.equalsIgnoreCase("orchestrator." + serverFields[1]) || clientCN.equalsIgnoreCase("gatekeeper." + serverFields[1]);
+      String[] allowedCoreSystems = {"orchestrator", "gatekeeper", "certificateauthority"};
+      for (String coreSystem : allowedCoreSystems) {
+        if (clientCN.equalsIgnoreCase(coreSystem + "." + serverFields[1])) {
+          return true;
+        }
+      }
     }
 
     return false;

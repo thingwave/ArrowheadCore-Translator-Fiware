@@ -20,20 +20,18 @@ public class GetAuthPublicKeyTask extends TimerTask {
 
   @Override
   public void run() {
-    Optional<String[]> optionalUri = Utility.getServiceInfo("AuthorizationControl");
-
-    if (optionalUri.isPresent()) {
-      String authUri = optionalUri.get()[0];
-      authUri = authUri.substring(0, authUri.lastIndexOf("/")) + "/authorization/mgmt/publickey";
-      Response response;
-      try {
-        response = Utility.sendRequest(authUri, "GET", null);
+    try {
+      Optional<String[]> optionalUri = Utility.getServiceInfo("AuthorizationControl");
+      if (optionalUri.isPresent()) {
+        String authUri = optionalUri.get()[0];
+        authUri = authUri.substring(0, authUri.lastIndexOf("/")) + "/authorization/mgmt/publickey";
+        Response response = Utility.sendRequest(authUri, "GET", null);
         CAMain.encodedAuthPublicKey = response.readEntity(String.class);
         log.info("Authorization public key acquired, canceling the Timer calling this Task.");
         CAMain.authTimer.cancel();
-      } catch (ArrowheadException e) {
-        log.info("Authorization public key could not be acquired: " + e.getMessage(), e);
       }
+    } catch (ArrowheadException e) {
+      log.info("Authorization public key could not be acquired: " + e.getMessage(), e);
     }
   }
 }
