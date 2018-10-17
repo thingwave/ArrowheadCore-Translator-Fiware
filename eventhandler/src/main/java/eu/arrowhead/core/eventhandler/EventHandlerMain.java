@@ -18,10 +18,10 @@ import java.util.TimerTask;
 
 public class EventHandlerMain extends ArrowheadMain {
 
-  static int PUBLISH_EVENTS_DELAY;
+  static int EVENT_PUBLISHING_TOLERANCE;
 
   {
-    PUBLISH_EVENTS_DELAY = props.getIntProperty("event_publishing_delay", 60);
+    EVENT_PUBLISHING_TOLERANCE = props.getIntProperty("event_publishing_tolerance", 60);
   }
 
   private EventHandlerMain(String[] args) {
