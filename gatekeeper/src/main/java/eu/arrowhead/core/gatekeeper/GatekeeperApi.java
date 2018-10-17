@@ -133,7 +133,6 @@ public class GatekeeperApi {
    */
   @PUT
   @Path("neighborhood")
-  //TODO might not work the merge on the NC object, it should be on the ArrowheadCloud (test needed)
   public Response updateNeighborCloud(@Valid NeighborCloud nc) {
     restrictionMap.put("operator", nc.getCloud().getOperator());
     restrictionMap.put("cloudName", nc.getCloud().getCloudName());
@@ -143,12 +142,13 @@ public class GatekeeperApi {
     restrictionMap.put("cloud", cloud);
     NeighborCloud neighborCloud = dm.get(NeighborCloud.class, restrictionMap);
     if (neighborCloud != null) {
-      neighborCloud.getCloud().setAddress(nc.getCloud().getAddress());
-      neighborCloud.getCloud().setPort(nc.getCloud().getPort());
-      neighborCloud.getCloud().setAuthenticationInfo(nc.getCloud().getAuthenticationInfo());
-      neighborCloud.getCloud().setGatekeeperServiceURI(nc.getCloud().getGatekeeperServiceURI());
+      cloud.setAddress(nc.getCloud().getAddress());
+      cloud.setPort(nc.getCloud().getPort());
+      cloud.setAuthenticationInfo(nc.getCloud().getAuthenticationInfo());
+      cloud.setGatekeeperServiceURI(nc.getCloud().getGatekeeperServiceURI());
 
-      neighborCloud = dm.merge(neighborCloud);
+      cloud = dm.merge(cloud);
+      neighborCloud.setCloud(cloud);
       return Response.status(Status.ACCEPTED).entity(neighborCloud).build();
     } else {
       return Response.noContent().build();
