@@ -40,8 +40,8 @@ case "$1" in
 
         ah_cert_signed_system ${SYSTEM_NAME}
 
-        if [ ! -f "${SYSTEM_DIR}/app.conf" ]; then
-            /bin/cat <<EOF >${SYSTEM_DIR}/app.conf
+        if [ ! -f "${SYSTEM_DIR}/default.conf" ]; then
+            /bin/cat <<EOF >${SYSTEM_DIR}/default.conf
 ############################################
 ###       APPLICATION PARAMETERS         ###
 ############################################
@@ -116,8 +116,8 @@ log4j.appender.FILE.Append=false
 log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
 log4j.appender.FILE.layout.conversionPattern=%d{yyyy-MM-dd HH:mm:ss}, %C, %p, %m%n
 EOF
-            chown root:arrowhead ${SYSTEM_DIR}/app.conf
-            chmod 640 ${SYSTEM_DIR}/app.conf
+            chown root:arrowhead ${SYSTEM_DIR}/default.conf
+            chmod 640 ${SYSTEM_DIR}/default.conf
         fi
 
         #ah_log4j_conf ${SYSTEM_NAME}

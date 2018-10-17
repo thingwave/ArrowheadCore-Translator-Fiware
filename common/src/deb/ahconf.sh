@@ -204,7 +204,7 @@ ah_db_user () {
     fi
 }
 
-#TODO modify the method slightly so it appends the log4j properties to an already existing app.conf
+#TODO modify the method slightly so it appends the log4j properties to an already existing default.conf
 ah_log4j_conf () {
     system_name=${1}
 

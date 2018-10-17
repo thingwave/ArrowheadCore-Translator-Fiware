@@ -65,7 +65,7 @@ mysql -u root arrowhead -e "${db_cmd}"
 
 if [ -z "${SERVICE}" ]; then
     echo "Generating consumer-only properties file" >&2
-    echo "" > "${SYSTEM_DIR}/app.conf"
+    echo "" > "${SYSTEM_DIR}/default.conf"
 else
     echo "Generating full provider properties file" >&2
     echo "
@@ -86,7 +86,7 @@ metadata=unit-celsius
 insecure_system_name=${SYSTEM_NAME}
 secure_system_name=${SYSTEM_NAME}
 fi
-" > "${SYSTEM_DIR}/app.conf"
+" > "${SYSTEM_DIR}/default.conf"
 fi
 
 echo "
@@ -120,11 +120,11 @@ keypass=${AH_PASS_CERT}
 truststore=${SYSTEM_STORE}
 truststorepass=${AH_PASS_CERT}
 authorization_cert=${SYSTEM_DIR}/authorization.crt
-" >> "${SYSTEM_DIR}/app.conf"
+" >> "${SYSTEM_DIR}/default.conf"
 
-chown root:arrowhead "${SYSTEM_DIR}/app.conf"
-chmod 640 "${SYSTEM_DIR}/app.conf"
+chown root:arrowhead "${SYSTEM_DIR}/default.conf"
+chmod 640 "${SYSTEM_DIR}/default.conf"
 
 echo >&2
 echo "System files stored in '${SYSTEM_DIR}'" >&2
-echo "Please verify that 'app.conf' is correct" >&2
+echo "Please verify that 'default.conf' is correct" >&2
