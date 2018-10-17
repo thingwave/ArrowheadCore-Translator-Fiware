@@ -1,13 +1,19 @@
 # Guide to Debian Packages
 
-The following changes are required to add Debian/Ubuntu package generation to a Arrowhead core system.
+## Useful resources:
 
-## File: pom.xml
+Debian New Maintainers' Guide: https://www.debian.org/doc/manuals/maint-guide/index.en.html
+
+How to use jdeb with Maven: https://github.com/tcurdt/jdeb/blob/master/docs/maven.md
+
+The Debconf Programmer's Tutorial: http://www.fifi.org/doc/debconf-doc/tutorial.html
+
+**The following changes and additions are required to add Debian/Ubuntu package generation to an Arrowhead core system.**
+
+### File: pom.xml
 
 - Set `artifactId` to `arrowhead-SYSTEMNAME`, for example: `arrowhead-authorization`. If multiple versions of the same
 core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
-
-- Set `classpathPrefix` to `../lib/`.
 
 - Under `<plugins>` add:
 
@@ -35,7 +41,7 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
           <src>${project.build.directory}/${project.build.finalName}.jar</src>
           <mapper>
             <type>perm</type>
-            <prefix>/usr/share/arrowhead/systems</prefix>
+            <prefix>/usr/share/arrowhead</prefix>
             <user>arrowhead</user>
             <filemode>755</filemode>
           </mapper>
@@ -72,11 +78,11 @@ Sql files to create empty database tables:
 </data>
 ```
 
-Additional libraries:
+Additional libraries specific to a core system (not found in the `pom.xml` of the common module):
 ```xml
 <data>
   <type>file</type>
-  <src>${project.build.directory}/lib/bcprov-jdk15on-1.59.jar</src>
+  <src>${project.build.directory}/lib/bcprov-jdk15on-${bouncy.castle.version}.jar</src>
   <mapper>
     <type>perm</type>
     <prefix>/usr/share/arrowhead/lib</prefix>
@@ -84,21 +90,20 @@ Additional libraries:
 </data>
 ```
 
-## File: src/deb/SYSTEMNAME.service 
+### File: src/deb/SYSTEM-NAME.service 
 
 Service definition file, used to start/stop the daemon. Also contains a list of dependencies, which should be started
 before this system.
 
 ```
 [Unit]
-Description=arrowhead-gatekeeper
-After=network.target mysql.target arrowhead-serviceregistry-sql.service arrowhead-authorization.service arrowhead-gateway.service
-Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service arrowhead-gateway.service
+Description=arrowhead-orchestrator
+After=network.target mysql.target arrowhead-serviceregistry-sql.service
+Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service arrowhead-gatekeeper.service
 
 [Service]
-WorkingDirectory=/etc/arrowhead/systems/gatekeeper
-ExecStart=/usr/bin/java --add-modules java.xml.bind -jar /usr/share/arrowhead/systems/arrowhead-gatekeeper-4.0.jar -d -daemon -tls
-ExecStartPost=/bin/bash -c 'sleep 2; while ! grep -m1 "Startup completed." /var/log/arrowhead/gatekeeper.log; do sleep 2; done'
+WorkingDirectory=/etc/arrowhead/systems/orchestrator
+ExecStart=/usr/bin/java --add-modules java.xml.bind -jar /usr/share/arrowhead/arrowhead-orchestrator-4.0.jar -d -daemon -tls
 TimeoutStopSec=5
 Type=simple
 User=arrowhead
@@ -108,69 +113,44 @@ Group=arrowhead
 WantedBy=default.target
 ```
 
-## File: src/deb/create_SYSTEMNAME_db_empty.sql 
+### File: src/deb/create_SYSTEMNAME_db_empty.sql 
 
 Script to create empty MySQL tables if such is required - can be omitted if not.
 
 Note that 'DROP [...]' statements should be removed and 'IF NOT EXISTS' added to all 'CREATE [...]' statements.
 
 ```mysql
-CREATE DATABASE  IF NOT EXISTS `arrowhead` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE  IF NOT EXISTS `arrowhead`;
 USE `arrowhead`;
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
---
--- Host: localhost    Database: service_registry
--- ------------------------------------------------------
--- Server version	5.7.21-log
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `service_registry`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE  IF NOT EXISTS `service_registry` (
-  `id` int(11) NOT NULL,
-  `end_of_validity` datetime DEFAULT NULL,
-  `metadata` varchar(255) DEFAULT NULL,
-  `port` int(11) DEFAULT NULL,
-  `service_uri` varchar(255) DEFAULT NULL,
-  `udp` char(1) DEFAULT NULL,
-  `version` int(11) DEFAULT NULL,
-  `arrowhead_service_id` int(11) DEFAULT NULL,
-  `provider_system_id` int(11) DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `inter_cloud_authorization` (
+  `id` bigint(20) NOT NULL,
+  `consumer_cloud_id` bigint(20) NOT NULL,
+  `arrowhead_service_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `UK3q3tqiu7f92u946p33plj5fxq` (`arrowhead_service_id`,`provider_system_id`),
-  KEY `FK4lc944mp4x24pr09wuxbb08ky` (`provider_system_id`),
-  CONSTRAINT `FK4lc944mp4x24pr09wuxbb08ky` FOREIGN KEY (`provider_system_id`) REFERENCES `arrowhead_system` (`id`),
-  CONSTRAINT `FKr0x7pvbi16w5b6ao6q43t606p` FOREIGN KEY (`arrowhead_service_id`) REFERENCES `arrowhead_service` (`id`)
+  UNIQUE KEY `UKj4pymxepq7mf82wx7f8e4hd9b` (`consumer_cloud_id`,`arrowhead_service_id`),
+  KEY `FKsh4gbm0vs76weoq1lti6awtwf` (`arrowhead_service_id`),
+  CONSTRAINT `FKsh4gbm0vs76weoq1lti6awtwf` FOREIGN KEY (`arrowhead_service_id`) REFERENCES `arrowhead_service` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FKsw50x8tjybx1jjrkj6aamxt8c` FOREIGN KEY (`consumer_cloud_id`) REFERENCES `arrowhead_cloud` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+CREATE TABLE IF NOT EXISTS `intra_cloud_authorization` (
+  `id` bigint(20) NOT NULL,
+  `consumer_system_id` bigint(20) NOT NULL,
+  `provider_system_id` bigint(20) NOT NULL,
+  `arrowhead_service_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK4ie5ps7a6w40iqdte0u53mw1u` (`consumer_system_id`,`provider_system_id`,`arrowhead_service_id`),
+  KEY `FKt01tq84ypy16yfpt2q9v7qn2b` (`provider_system_id`),
+  KEY `FK1nx371ky16pl2rl0f4hk3puk4` (`arrowhead_service_id`),
+  CONSTRAINT `FK1nx371ky16pl2rl0f4hk3puk4` FOREIGN KEY (`arrowhead_service_id`) REFERENCES `arrowhead_service` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FK58r9imuaq3dy3o96w5xcxkemh` FOREIGN KEY (`consumer_system_id`) REFERENCES `arrowhead_system` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FKt01tq84ypy16yfpt2q9v7qn2b` FOREIGN KEY (`provider_system_id`) REFERENCES `arrowhead_system` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dump completed on 2018-05-24 13:45:03
 ```
 
-## File: src/deb/control 
+### File: src/deb/control 
 
 Description file for the package manager. Contains an description of the system, the maintainer, and which packages
 should be installed before this one. In general, all should depend on arrowhead-common.
@@ -188,7 +168,7 @@ Distribution: development
 Depends: default-jre-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
 ```
 
-## File: src/deb/postinst
+### File: src/deb/postinst
 
 The general structure of the post-installation script:
 
@@ -309,54 +289,82 @@ EOF
 fi
 ```
 
-- Create 'app.properties' file in this dir
+- Create 'default.conf' file in this dir containing all the config values for the core system
 
 ```bash
-if [ ! -f "${SYSTEM_DIR}/app.properties" ]; then
-    /bin/cat <<EOF >${SYSTEM_DIR}/app.properties
-# Database parameters
+if [ ! -f "${SYSTEM_DIR}/default.conf" ]; then
+    /bin/cat <<EOF >${SYSTEM_DIR}/default.conf
+############################################
+###       APPLICATION PARAMETERS         ###
+############################################
+
+# Database parameters (mandatory)
 db_user=arrowhead
 db_password=${AH_PASS_DB}
 db_address=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
 
-##########################################
-# MANDATORY PARAMETERS ONLY IN SECURE MODE
-##########################################
-
-# Certificate related paths and passwords
+# Certificate related paths and passwords (mandatory in secure mode)
 keystore=${SYSTEM_DIR}/${SYSTEM_NAME}.p12
 keystorepass=${AH_PASS_CERT}
 keypass=${AH_PASS_CERT}
 truststore=${AH_CONF_DIR}/truststore.p12
 truststorepass=${AH_PASS_CERT}
 
-################################################
-# NON-MANDATORY PARAMETERS (defaults are showed)
-################################################
-
-# Webserver parameters
+# Authorization web-server parameters
 address=0.0.0.0
 insecure_port=8444
 secure_port=8445
 
-# Service Registry
+# Service Registry web-server parameters (to register the Authorization services)
 sr_address=0.0.0.0
 sr_insecure_port=8442
 sr_secure_port=8443
 
-# Other
+#Allow querying access to the authorization tables for application systems (true/false - only has effect in secure mode)
 enable_auth_for_cloud=false
 
+############################################
+###          LOGGING PARAMETERS          ###
+############################################
+
+# Define the root logger with appender file
+log4j.rootLogger=INFO, DB, FILE
+
+# Database related config
+# Define the DB appender
+log4j.appender.DB=org.apache.log4j.jdbc.JDBCAppender
+# Set Database Driver
+log4j.appender.DB.driver=com.mysql.jdbc.Driver
+# Set Database URL
+log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
+# Set database user name and password
+log4j.appender.DB.user=arrowhead
+log4j.appender.DB.password=${AH_PASS_DB}
+# Set the SQL statement to be executed.
+log4j.appender.DB.sql=INSERT INTO logs VALUES(DEFAULT,'%d{yyyy-MM-dd HH:mm:ss}','%C','%p','%m')
+# Define the layout for file appender
+log4j.appender.DB.layout=org.apache.log4j.PatternLayout
+# Disable Hibernate verbose logging
+log4j.logger.org.hibernate=fatal
+
+# File related config
+# Define the file appender
+log4j.appender.FILE=org.apache.log4j.FileAppender
+# Set the name of the file
+log4j.appender.FILE.File=/var/log/arrowhead/${SYSTEM_NAME}.log
+# Set the immediate flush to true (default)
+log4j.appender.FILE.ImmediateFlush=true
+# Set the threshold to debug mode
+log4j.appender.FILE.Threshold=debug
+# Set the append to false, overwrite
+log4j.appender.FILE.Append=false
+# Define the layout for file appender
+log4j.appender.FILE.layout=org.apache.log4j.PatternLayout
+log4j.appender.FILE.layout.conversionPattern=%d{yyyy-MM-dd HH:mm:ss}, %C, %p, %m%n
 EOF
-    chown root:arrowhead ${SYSTEM_DIR}/app.properties
-    chmod 640 ${SYSTEM_DIR}/app.properties
+    chown root:arrowhead ${SYSTEM_DIR}/default.conf
+    chmod 640 ${SYSTEM_DIR}/default.conf
 fi
-```
-
-- Create log4j conf file in this dir (use 'ah_log4j_conf' function from ahconf.sh)
-
-```bash
-ah_log4j_conf ${SYSTEM_NAME}
 ```
 
 - Reload/restart the daemon
@@ -367,10 +375,7 @@ systemctl daemon-reload
 systemctl restart ${PKG_NAME}.service
 ```
 
-The general thought with the postinst script was that it should support installing the core systems on different
-servers. This is not support by dependencies though, so will not work in practice.
-
-## File: src/deb/postrm 
+### File: src/deb/postrm 
 
 Should delete files and directories created by postinst.
 
@@ -408,8 +413,7 @@ case "$1" in
         
         rm -f \
             /var/log/arrowhead/${SYSTEM_NAME}.log \
-            ${SYSTEM_DIR}/app.properties \
-            ${SYSTEM_DIR}/log4j.properties \
+            ${SYSTEM_DIR}/default.conf \
             ${SYSTEM_DIR}/${SYSTEM_NAME}.p12
         rmdir ${SYSTEM_DIR} 2>/dev/null || true
         rmdir /var/log/arrowhead 2>/dev/null || true
@@ -433,7 +437,7 @@ exit 0
 
 ```
 
-## File: src/deb/preinst 
+### File: src/deb/preinst 
 
 Currently does nothing.
 
@@ -476,7 +480,7 @@ exit 0
 
 ```
 
-## File: src/deb/prerm 
+### File: src/deb/prerm 
 
 Currently only stops the daemon.
 
@@ -526,32 +530,4 @@ esac
 
 exit 0
 
-```
-
-## File: Java source files 
-
-Mostly, no changes are required in these, as `ArrowheadMain.java` covers this. But the gatekeeper does not inherit from
-this class, thus the following changes was necessary:
-
-1. Property files like "log4j.properties" should be loaded from the current directory if they are present here, else
-from 'config/' as before.
-
-```java
-static {
-  if (new File("log4j.properties").exists()) {
-    PropertyConfigurator.configure("log4j.properties");
-  } else {
-    PropertyConfigurator.configure("config" + File.separator + "log4j.properties");
-  }
-  props = Utility.getProp("app.properties");
-  USE_GATEWAY = props.getBooleanProperty("use_gateway", false);
-  TIMEOUT = props.getIntProperty("timeout", 30000);
-}
-```
-
-2. When it is fully started it should execute "log.info("Startup completed.");" to notify the .service script.
-
-```java
-// For Systemd scripts to detect when we're done (do not change)
-log.info("Startup completed.");
 ```

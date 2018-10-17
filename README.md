@@ -6,7 +6,7 @@
 [Arrowhead](http://www.arrowhead.eu/) (and its continuation, [Productive4.0](https://productive40.eu/)) is an ambitious holistic innovation project,
  meant to open the doors to the potentials of Digital Industry and to maintain a leadership position of the industries in Europe. All partners involved will work on creating the capability to efficiently design and integrate hardware and software of Internet of Things (IoT) devices. Linking the real with the digital world takes more than just adding software to the hardware.
  
-### Building and running this project from source
+### Requirements
 
 The project has the following dependencies:
 * JRE/JDK 8
@@ -16,6 +16,7 @@ dependency to use them)
 
 **NOTE:** MySQL server 8 is not supported yet! Be careful, this is the default one downloaded from the MySQL site.
 
+### Configuration
 Each core system module has a `config` folder, and inside this folder a `default.conf` file, containing default values for the environment 
 variables needed to run the core system, such as database username/password, web-server address, logging settings and much more.
 
@@ -33,6 +34,7 @@ Config files are processed the following way:
 All the `app.conf` files are in `.gitignore`, so local environment variables do not get pushed to the Github repository. **The recommended way to 
 configure a local installation is to create `app.conf` files with the values that need to change for each core system.**
 
+### Build and run
 After the config files are inline with the local environment, **use `mvn install` inside the root folder of the repository, to build all the core 
 system JARs.** The build will create a `target` folder inside every module, where there will be the copied `config` folder, a `lib` folder containing
  all the dependencies, and the actual core system JAR.
@@ -59,8 +61,7 @@ Startup bash scripts (Linux & iOS) and batch files (Windows) are provided in the
 
 When the core systems are running, they will log to 2 different places, if the default logging configuration is unchanged:
 * All core systems will log to the same `logs` table inside a `log` database. This log source will contain log 
-messages from all the core systems 
-in one place.
+messages from all the core systems in one place.
 * Each core system will log to a file in its active working directory called `log4j_log.txt`. These text files are separate for each core system, 
 meaning one text file only contains the log messages of one core system.
 
@@ -70,3 +71,7 @@ not exist yet. An SQL script can be found at `common/config/create_arrowhead_log
 
 The project can also be run from an IDE for testing purposes. Just import the multi-module project as a maven project, and the IDE should find all 
 the `pom.xml` files necessary to download the dependencies and start the core systems.
+
+### Debian packages
+An alternative method for setting up a local Arrowhead Cloud on a [Debian based Linux system](https://wiki.debian.org/Derivatives/Census) is to use
+ Debconf!
