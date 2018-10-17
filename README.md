@@ -74,4 +74,10 @@ the `pom.xml` files necessary to download the dependencies and start the core sy
 
 ### Debian packages
 An alternative method for setting up a local Arrowhead Cloud on a [Debian based Linux system](https://wiki.debian.org/Derivatives/Census) is to use
- Debconf!
+ Debconf! 
+ 
+Currently the following core systems have this option: Authorization, Certificate Authority, Event Handler, Gatekeeper, Gateway, 
+Orchestrator and Service Registry.
+ 
+A full setup guide can be read here: [DEBIAN-INSTALL.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-INSTALL.md)
+A guide on how to add new core systems to the package generation: [DEBIAN-DEV.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-DEV.md) 
