@@ -184,6 +184,8 @@ public final class Utility {
     return sendRequest(uri, method, payload, null);
   }
 
+  //TODO option for async request sending which can be used by the event handler
+
   private static void handleException(Response response, String uri) {
     //The response body has to be extracted before the stream closes
     String errorMessageBody = toPrettyJson(null, response.getEntity());
