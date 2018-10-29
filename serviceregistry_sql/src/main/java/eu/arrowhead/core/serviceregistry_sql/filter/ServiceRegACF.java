@@ -40,8 +40,8 @@ public class ServiceRegACF extends AccessControlFilter {
       ServiceRegistryEntry entry = Utility.fromJson(requestJson, ServiceRegistryEntry.class);
       String[] clientFields = clientCN.split("\\.", 2);
 
-      String providerName = entry.getProvider().getSystemName().replaceAll("_", "");
-      if (!providerName.equalsIgnoreCase(clientFields[0])) {
+      String providerName = entry.getProvider().getSystemName();
+      if (!providerName.equalsIgnoreCase(clientFields[0]) && !providerName.replaceAll("_", "").equalsIgnoreCase(clientFields[0])) {
         // BUT a provider system can only register/remove its own services!
         log.error("Provider system name and cert common name do not match! SR registering/removing denied!");
         throw new AuthException("Provider system " + entry.getProvider().getSystemName() + " and cert common name (" + clientCN + ") do not match!",
@@ -50,7 +50,7 @@ public class ServiceRegACF extends AccessControlFilter {
 
       return serverFields[1].equalsIgnoreCase(clientFields[1]);
     } else if (requestTarget.endsWith("query")) {
-      String[] allowedCoreSystems = {"orchestrator", "gatekeeper", "certificateauthority"};
+      String[] allowedCoreSystems = {"orchestrator", "gatekeeper", "certificateauthority", "certificate_authority"};
       for (String coreSystem : allowedCoreSystems) {
         if (clientCN.equalsIgnoreCase(coreSystem + "." + serverFields[1])) {
           return true;
