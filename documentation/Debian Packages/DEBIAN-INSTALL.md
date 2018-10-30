@@ -16,7 +16,11 @@ Check if running:
 
 `sudo netstat -tap | grep mysql`
 
-### 3. Install Java
+### 3a. Install Java (OpenJDK)
+
+`sudo apt install openjdk-11-jre-headless`
+
+### 3b. Install Java (Oracle)
 
 To install Oracle Java, add the repository first:
 
