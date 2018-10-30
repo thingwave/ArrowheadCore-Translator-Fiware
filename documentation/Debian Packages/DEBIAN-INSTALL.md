@@ -139,6 +139,9 @@ use arrowhead;
 show tables;
 ```
 
+To open the MySQL for public access and create an user for this, run: `ah_mysql_public`. Script will output the username
+and password you need to use.
+
 `apt purge` can be used to remove configuration files, database, log files, etc. Use `sudo apt purge arrowhead-\*` to
 remove everything arrowhead related.
 
