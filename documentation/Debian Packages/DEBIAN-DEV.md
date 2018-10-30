@@ -165,7 +165,7 @@ Maintainer: Thomas Pedersen <tp@cs.aau.dk>
 Homepage: http://www.arrowhead.eu
 Description: Arrowhead Gatekeeper System
 Distribution: development
-Depends: default-jre-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
+Depends: java-runtime-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
 ```
 
 ### File: src/deb/postinst
