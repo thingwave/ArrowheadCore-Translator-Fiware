@@ -8,6 +8,10 @@ Do a normal installation of Ubuntu server, remember to update:
 
 ### 2. Install MySQL
 
+Pick one of the options below.
+
+#### 2a. MySQL 5.x (Ubuntu)
+
 Install:
 
 `sudo apt install mysql-server`
@@ -16,9 +20,28 @@ Check if running:
 
 `sudo netstat -tap | grep mysql`
 
+#### 2b. MySQL 8.x (Oracle)
+
+First, get the latest repository package from <https://dev.mysql.com/downloads/repo/apt/>, eg.:
+
+```bash
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
+sudo apt dpkg -i mysql-apt-config_0.8.10-1_all.deb
+sudo apt update
+```
+
+As of writing, please leave an empty root password for the database, when installing it. The MySQL scripts in Arrowhead
+does not (yet) support password protected databases. After Arrowhead is installed and you finished calling any of the
+generation scripts below, it should be safe to set a root password for the database. Arrowhead itself uses its own
+`arrowhead` user, only the scripts requires a non-password `root` user. To install the MySQL server, run:
+
+```bash
+sudo apt install mysql-server
+```
+
 ### 3. Install Java
 
-Pick one of the three options below.
+Pick one of the options below.
 
 #### 3a. Install Java (OpenJDK)
 
@@ -50,7 +73,7 @@ As an alternative to Java 11, you may also use the older Java 8 version:
 
 ### 4. Download/install Arrowhead 
 
-Pick one of the three options below.
+Pick one of the options below.
 
 #### 4a. Download an Arrowhead Debian Packages release
 
