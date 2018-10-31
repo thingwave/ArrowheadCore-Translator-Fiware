@@ -16,13 +16,17 @@ Check if running:
 
 `sudo netstat -tap | grep mysql`
 
-### 3a. Install Java (OpenJDK)
+### 3. Install Java
+
+Pick one of the three options below.
+
+#### 3a. Install Java (OpenJDK)
 
 `sudo apt install openjdk-11-jre-headless`
 
-### 3b. Install Java (Oracle)
+#### 3b. Install Java 11 (Oracle)
 
-To install Oracle Java, add the repository first:
+To install Oracle Java 11, add the repository first:
 
 `sudo add-apt-repository ppa:linuxuprising/java`
 
@@ -34,7 +38,21 @@ Check Java version:
 
 `java -version`
 
-### 4a. Download an Arrowhead Debian Packages release
+#### 3c. Install Java 8 (Oracle)
+
+As an alternative to Java 11, you may also use the older Java 8 version:
+
+`sudo add-apt-repository ppa:webupd8team/java`
+
+`sudo apt-get update`
+
+`sudo apt-get install oracle-java8-installer`
+
+### 4. Download/install Arrowhead 
+
+Pick one of the three options below.
+
+#### 4a. Download an Arrowhead Debian Packages release
 
 Check the GitHub releases site <https://github.com/arrowhead-f/core-java/releases> for the latest release and download
 it: 
@@ -48,7 +66,7 @@ unzip debian_packages.zip
 cd debian_packages/
 ```
 
-### 4b. Build Arrowhead Debian Packages
+#### 4b. Build Arrowhead Debian Packages
 
 To build the Debian packages yourself, start by cloning the repository:
 
