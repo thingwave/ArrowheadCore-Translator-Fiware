@@ -49,11 +49,6 @@
       <version>${bouncy.castle.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>
