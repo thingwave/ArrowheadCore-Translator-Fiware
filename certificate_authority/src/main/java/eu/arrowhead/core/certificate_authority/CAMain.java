@@ -22,7 +22,7 @@ import java.util.TimerTask;
 public class CAMain extends ArrowheadMain {
 
   static KeyStore cloudKeystore;
-  static String trustStorePass;
+  static String cloudStorePass;
   static X509Certificate cloudCert;
   static String cloudCN;
   static String encodedAuthPublicKey;
@@ -33,8 +33,8 @@ public class CAMain extends ArrowheadMain {
     String[] packages = {"eu.arrowhead.common.exception", "eu.arrowhead.common.json", "eu.arrowhead.common.filter"};
     init(CoreSystem.CERTIFICATE_AUTHORITY, args, classes, packages);
 
-    trustStorePass = props.getProperty("truststorepass");
-    cloudKeystore = SecurityUtils.loadKeyStore(props.getProperty("truststore"), trustStorePass);
+    cloudStorePass = props.getProperty("cloudstorepass");
+    cloudKeystore = SecurityUtils.loadKeyStore(props.getProperty("cloudstore"), cloudStorePass);
     cloudCert = SecurityUtils.getFirstCertFromKeyStore(CAMain.cloudKeystore);
     cloudCN = SecurityUtils.getCertCNFromSubject(cloudCert.getSubjectX500Principal().getName());
 
