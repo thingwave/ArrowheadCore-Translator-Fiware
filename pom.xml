@@ -128,7 +128,7 @@
         <scope>import</scope>
       </dependency>
 
-      <!-- Next 2 dependency needed for Java 11 compability -->
+      <!-- Next 2 dependency needed for Java 11 compatibility -->
 
       <dependency>
         <groupId>com.sun.xml.bind</groupId>

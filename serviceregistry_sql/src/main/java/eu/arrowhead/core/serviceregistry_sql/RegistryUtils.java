@@ -29,6 +29,10 @@ class RegistryUtils {
     fetchedList.removeIf(current -> current.getVersion() != targetVersion);
   }
 
+  static void filterOnVersion(List<ServiceRegistryEntry> fetchedList, int minVersion, int maxVersion) {
+    fetchedList.removeIf(current -> current.getVersion() < minVersion || current.getVersion() > maxVersion);
+  }
+
   static void filterOnMeta(List<ServiceRegistryEntry> fetchedList, Map<String, String> metadata) {
     fetchedList.removeIf(current -> !metadata.equals(current.getProvidedService().getServiceMetadata()));
   }

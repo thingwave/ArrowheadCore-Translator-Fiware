@@ -105,8 +105,22 @@ public class ServiceRegistryResource {
       entry.fromDatabase();
     }
 
-    //NOTE add version filter too later, if deemed needed
+    if (queryForm.getVersion() != null) {
+      RegistryUtils.filterOnVersion(providedServices, queryForm.getVersion());
+    } else {
+      String minVersionValue = queryForm.getService().getServiceMetadata().get("minVersion");
+      int minVersion = minVersionValue != null ? Integer.valueOf(minVersionValue) : 0;
+
+      String maxVersionValue = queryForm.getService().getServiceMetadata().get("maxVersion");
+      int maxVersion = maxVersionValue != null ? Integer.valueOf(maxVersionValue) : Integer.MAX_VALUE;
+
+      if (minVersion > 0 || maxVersion < Integer.MAX_VALUE) {
+        RegistryUtils.filterOnVersion(providedServices, minVersion, maxVersion);
+      }
+    }
     if (queryForm.isMetadataSearch()) {
+      queryForm.getService().getServiceMetadata().remove("minVersion");
+      queryForm.getService().getServiceMetadata().remove("maxVersion");
       RegistryUtils.filterOnMeta(providedServices, queryForm.getService().getServiceMetadata());
     }
     if (queryForm.isPingProviders()) {

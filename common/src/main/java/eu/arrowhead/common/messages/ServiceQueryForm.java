@@ -18,7 +18,7 @@ public class ServiceQueryForm {
   private ArrowheadService service;
   private boolean pingProviders;
   private boolean metadataSearch;
-  private int version = 1;
+  private Integer version;
 
   public ServiceQueryForm() {
   }
@@ -59,11 +59,11 @@ public class ServiceQueryForm {
     this.metadataSearch = metadataSearch;
   }
 
-  public int getVersion() {
+  public Integer getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Integer version) {
     this.version = version;
   }
 
