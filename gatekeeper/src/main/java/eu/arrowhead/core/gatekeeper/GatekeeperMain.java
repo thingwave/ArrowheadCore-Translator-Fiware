@@ -47,6 +47,7 @@ import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -221,11 +222,13 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       clientConfig.setKeyPass(gatekeeperKeyPass);
       clientConfig.setTrustStoreFile(cloudKeystorePath);
       clientConfig.setTrustStorePass(cloudKeystorePass);
-      if (!clientConfig.validateConfiguration(true)) {
+      SSLContext clientContext;
+      try {
+        clientContext = clientConfig.createSSLContext(true);
+      } catch (GenericStoreException e) {
         log.fatal("Internal client SSL Context is not valid, check the certificate or the config files!");
-        throw new AuthException("Internal client SSL Context is not valid, check the certificate or the config files!");
+        throw new AuthException("Internal client SSL Context is not valid, check the certificate or the config files!", e);
       }
-      SSLContext clientContext = clientConfig.createSSLContext();
       Utility.setSSLContext(clientContext);
     } else {
       SSLContextConfigurator serverConfig = new SSLContextConfigurator();
@@ -234,11 +237,12 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       serverConfig.setKeyPass(gatekeeperKeyPass);
       serverConfig.setTrustStoreFile(cloudKeystorePath);
       serverConfig.setTrustStorePass(cloudKeystorePass);
-      if (!serverConfig.validateConfiguration(true)) {
+      try {
+        serverContext = serverConfig.createSSLContext(true);
+      } catch (GenericStoreException e) {
         log.fatal("External server SSL Context is not valid, check the certificate or the config files!");
-        throw new AuthException("External server SSL Context is not valid, check the certificate or the config files!");
+        throw new AuthException("External server SSL Context is not valid, check the certificate or the config files!", e);
       }
-      serverContext = serverConfig.createSSLContext();
       outboundServerContext = serverContext;
       config.property("server_common_name", getServerCN(gatekeeperKeystorePath, gatekeeperKeystorePass, false));
 

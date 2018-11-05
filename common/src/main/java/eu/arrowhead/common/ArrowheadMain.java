@@ -40,6 +40,7 @@ import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
+import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -179,12 +180,13 @@ public abstract class ArrowheadMain {
     sslCon.setKeyPass(keyPass);
     sslCon.setTrustStoreFile(truststorePath);
     sslCon.setTrustStorePass(truststorePass);
-    if (!sslCon.validateConfiguration(true)) {
+    SSLContext sslContext;
+    try {
+      sslContext = sslCon.createSSLContext(true);
+    } catch (GenericStoreException e) {
       log.fatal("SSL Context is not valid, check the certificate or the config files!");
-      throw new AuthException("SSL Context is not valid, check the certificate or the config files!");
+      throw new AuthException("SSL Context is not valid, check the certificate or the config files!", e);
     }
-
-    SSLContext sslContext = sslCon.createSSLContext();
     Utility.setSSLContext(sslContext);
 
     KeyStore keyStore = SecurityUtils.loadKeyStore(keystorePath, keystorePass);

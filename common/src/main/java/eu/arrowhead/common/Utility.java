@@ -440,17 +440,17 @@ public final class Utility {
 
     try {
       if (Files.isReadable(Paths.get(DEFAULT_CONF))) {
-        prop.load(new FileInputStream(new File(DEFAULT_CONF)));
+        prop.load(new FileInputStream(DEFAULT_CONF));
       } else if (Files.isReadable(Paths.get(DEFAULT_CONF_DIR))) {
-        prop.load(new FileInputStream(new File(DEFAULT_CONF_DIR)));
+        prop.load(new FileInputStream(DEFAULT_CONF_DIR));
       } else {
         throw new ServiceConfigurationError("default.conf file not found in the working directory! (" + System.getProperty("user.dir") + ")");
       }
 
       if (Files.isReadable(Paths.get(APP_CONF))) {
-        prop.load(new FileInputStream(new File(APP_CONF)));
+        prop.load(new FileInputStream(APP_CONF));
       } else if (Files.isReadable(Paths.get(APP_CONF_DIR))) {
-        prop.load(new FileInputStream(new File(APP_CONF_DIR)));
+        prop.load(new FileInputStream(APP_CONF_DIR));
       }
     } catch (IOException e) {
       throw new AssertionError("File loading failed...", e);
