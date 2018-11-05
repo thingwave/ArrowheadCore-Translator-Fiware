@@ -221,7 +221,7 @@ log4j.appender.DB=org.apache.log4j.jdbc.JDBCAppender
 # Set Database Driver
 log4j.appender.DB.driver=com.mysql.jdbc.Driver
 # Set Database URL
-log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
+log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false&allowPublicKeyRetrieval=true
 # Set database user name and password
 log4j.appender.DB.user=arrowhead
 log4j.appender.DB.password=${AH_PASS_DB}

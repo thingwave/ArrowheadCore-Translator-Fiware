@@ -37,7 +37,8 @@ public class AuthACF extends AccessControlFilter {
       }
     } else {
       if (requestTarget.contains("mgmt")) {
-        return clientCN.equalsIgnoreCase("sysop." + serverFields[1]);
+        return clientCN.equalsIgnoreCase("sysop." + serverFields[1]) ||
+                (clientCN.equalsIgnoreCase("certificate_authority." + serverFields[1]) && requestTarget.endsWith("publickey") && method.equalsIgnoreCase("get"));
       } else {
         return clientCN.equalsIgnoreCase("orchestrator." + serverFields[1]) || clientCN.equalsIgnoreCase("gatekeeper." + serverFields[1]);
       }

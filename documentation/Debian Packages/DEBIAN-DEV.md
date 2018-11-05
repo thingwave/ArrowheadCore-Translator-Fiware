@@ -103,7 +103,7 @@ Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service a
 
 [Service]
 WorkingDirectory=/etc/arrowhead/systems/orchestrator
-ExecStart=/usr/bin/java --add-modules java.xml.bind -jar /usr/share/arrowhead/arrowhead-orchestrator-4.0.jar -d -daemon -tls
+ExecStart=/usr/bin/java -jar /usr/share/arrowhead/arrowhead-orchestrator-4.0.jar -d -daemon -tls
 TimeoutStopSec=5
 Type=simple
 User=arrowhead
@@ -165,7 +165,7 @@ Maintainer: Thomas Pedersen <tp@cs.aau.dk>
 Homepage: http://www.arrowhead.eu
 Description: Arrowhead Gatekeeper System
 Distribution: development
-Depends: default-jre-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
+Depends: java-runtime-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
 ```
 
 ### File: src/deb/postinst
@@ -301,7 +301,7 @@ if [ ! -f "${SYSTEM_DIR}/default.conf" ]; then
 # Database parameters (mandatory)
 db_user=arrowhead
 db_password=${AH_PASS_DB}
-db_address=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
+db_address=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false&allowPublicKeyRetrieval=true
 
 # Certificate related paths and passwords (mandatory in secure mode)
 keystore=${SYSTEM_DIR}/${SYSTEM_NAME}.p12
@@ -336,7 +336,7 @@ log4j.appender.DB=org.apache.log4j.jdbc.JDBCAppender
 # Set Database Driver
 log4j.appender.DB.driver=com.mysql.jdbc.Driver
 # Set Database URL
-log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false
+log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead?useSSL=false&allowPublicKeyRetrieval=true
 # Set database user name and password
 log4j.appender.DB.user=arrowhead
 log4j.appender.DB.password=${AH_PASS_DB}

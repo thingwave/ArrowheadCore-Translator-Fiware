@@ -8,6 +8,10 @@ Do a normal installation of Ubuntu server, remember to update:
 
 ### 2. Install MySQL
 
+Pick one of the options below.
+
+#### 2a. MySQL 5.x (Ubuntu)
+
 Install:
 
 `sudo apt install mysql-server`
@@ -16,21 +20,62 @@ Check if running:
 
 `sudo netstat -tap | grep mysql`
 
+#### 2b. MySQL 8.x (Oracle)
+
+First, get the latest repository package from <https://dev.mysql.com/downloads/repo/apt/>, eg.:
+
+```bash
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
+sudo apt dpkg -i mysql-apt-config_0.8.10-1_all.deb
+sudo apt update
+```
+
+As of writing, please leave an empty root password for the database, when installing it. The MySQL scripts in Arrowhead
+does not (yet) support password protected databases. After Arrowhead is installed and you finished calling any of the
+generation scripts below, it should be safe to set a root password for the database. Arrowhead itself uses its own
+`arrowhead` user, only the scripts requires a non-password `root` user. To install the MySQL server, run:
+
+```bash
+sudo apt install mysql-server
+```
+
 ### 3. Install Java
 
-To install Oracle Java, add the repository first:
+Pick one of the options below.
+
+#### 3a. Install Java (OpenJDK)
+
+`sudo apt install openjdk-11-jre-headless`
+
+#### 3b. Install Java 11 (Oracle)
+
+To install Oracle Java 11, add the repository first:
 
 `sudo add-apt-repository ppa:linuxuprising/java`
 
 `sudo apt update`
 
-`sudo apt install oracle-java10-installer`
+`sudo apt install oracle-java11-installer`
 
 Check Java version:
 
 `java -version`
 
-### 4a. Download an Arrowhead Debian Packages release
+#### 3c. Install Java 8 (Oracle)
+
+As an alternative to Java 11, you may also use the older Java 8 version:
+
+`sudo add-apt-repository ppa:webupd8team/java`
+
+`sudo apt-get update`
+
+`sudo apt-get install oracle-java8-installer`
+
+### 4. Download/install Arrowhead 
+
+Pick one of the options below.
+
+#### 4a. Download an Arrowhead Debian Packages release
 
 Check the GitHub releases site <https://github.com/arrowhead-f/core-java/releases> for the latest release and download
 it: 
@@ -44,7 +89,7 @@ unzip debian_packages.zip
 cd debian_packages/
 ```
 
-### 4b. Build Arrowhead Debian Packages
+#### 4b. Build Arrowhead Debian Packages
 
 To build the Debian packages yourself, start by cloning the repository:
 
@@ -134,6 +179,9 @@ Mysql database: `sudo mysql -u root`, to see the Arrowhead tables:
 use arrowhead;
 show tables;
 ```
+
+To open the MySQL for public access and create an user for this, run: `ah_mysql_public`. Script will output the username
+and password you need to use.
 
 `apt purge` can be used to remove configuration files, database, log files, etc. Use `sudo apt purge arrowhead-\*` to
 remove everything arrowhead related.

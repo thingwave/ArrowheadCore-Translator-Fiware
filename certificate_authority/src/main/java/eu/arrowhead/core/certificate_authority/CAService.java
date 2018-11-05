@@ -110,7 +110,7 @@ final class CAService {
     }
 
     JcaContentSignerBuilder signerBuilder = new JcaContentSignerBuilder("SHA512withRSA").setProvider("BC");
-    PrivateKey cloudPrivateKey = SecurityUtils.getPrivateKey(CAMain.cloudKeystore, CAMain.trustStorePass);
+    PrivateKey cloudPrivateKey = SecurityUtils.getPrivateKey(CAMain.cloudKeystore, CAMain.cloudStorePass);
     String encodedSignedCert;
     Encoder encoder = Base64.getEncoder();
     try {

@@ -4,7 +4,7 @@
 . /usr/share/arrowhead/conf/ahconf.sh
 
 if [ "$#" -lt 2 ]; then
-    echo "Syntax: ${0} SYSTEM_NAME HOST [SERVICE]"
+    echo "Syntax: ${0} SYSTEM_NAME HOST PORT [SERVICE]"
     exit 1
 fi
 
