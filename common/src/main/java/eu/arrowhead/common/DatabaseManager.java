@@ -10,6 +10,7 @@ package eu.arrowhead.common;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,6 +53,15 @@ public class DatabaseManager {
       }
 
       try {
+        if (dbAddress.contains("mysql")) {
+          String timeZoneQueryParam = "serverTimezone=" + ZoneId.systemDefault().getId();
+          if (dbAddress.contains("?")) {
+            dbAddress = dbAddress + "&" + timeZoneQueryParam;
+          } else {
+            dbAddress = dbAddress + "?" + timeZoneQueryParam;
+          }
+        }
+
         Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
                                                          .setProperty("hibernate.connection.password", dbPassword);
         sessionFactory = configuration.buildSessionFactory();
