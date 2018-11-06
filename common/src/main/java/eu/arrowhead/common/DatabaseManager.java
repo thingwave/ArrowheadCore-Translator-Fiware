@@ -54,9 +54,6 @@ public class DatabaseManager {
       try {
         Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
                                                          .setProperty("hibernate.connection.password", dbPassword);
-        if (dbAddress.contains("mysql")) {
-          configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
-        }
         sessionFactory = configuration.buildSessionFactory();
       } catch (Exception e) {
         throw new ServiceConfigurationError("Database connection could not be established, check default.conf/app.conf files!", e);
