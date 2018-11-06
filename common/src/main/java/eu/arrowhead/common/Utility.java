@@ -43,6 +43,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -454,6 +455,30 @@ public final class Utility {
       }
     } catch (IOException e) {
       throw new AssertionError("File loading failed...", e);
+    }
+
+    //If MySQL based JDBC URLs are used, we append the system default time zone to the URL
+    //This is for a bug fix with certain MySQL JDBC driver versions: https://github.com/arrowhead-f/core-java/issues/30
+    String timeZoneQueryParam = "serverTimezone=" + ZoneId.systemDefault().getId();
+
+    String dbAddress = prop.getProperty("db_address");
+    if (dbAddress != null && dbAddress.contains("mysql")) {
+      if (dbAddress.contains("?")) {
+        dbAddress = dbAddress + "&" + timeZoneQueryParam;
+      } else {
+        dbAddress = dbAddress + "?" + timeZoneQueryParam;
+      }
+      prop.setProperty("db_address", dbAddress);
+    }
+
+    String logAddress = prop.getProperty("log4j.appender.DB.URL");
+    if (logAddress != null && logAddress.contains("mysql")) {
+      if (logAddress.contains("?")) {
+        logAddress = logAddress + "&" + timeZoneQueryParam;
+      } else {
+        logAddress = logAddress + "?" + timeZoneQueryParam;
+      }
+      prop.setProperty("log4j.appender.DB.URL", logAddress);
     }
 
     return prop;
