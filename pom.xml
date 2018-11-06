@@ -115,12 +115,6 @@
       </dependency>
 
       <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>${mysql.jdbc.driver}</version>
-      </dependency>
-
-      <dependency>
         <groupId>org.glassfish.jersey</groupId>
         <artifactId>jersey-bom</artifactId>
         <version>${jersey.version}</version>
@@ -160,7 +154,15 @@
         <version>${hibernate.version}</version>
       </dependency>
 
+      <!-- JDBC drivers (MySQL, MariaDB, PostgreSQL), only 1 should not be commented based on which database is actually used -->
+
       <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.jdbc.driver}</version>
+      </dependency>
+
+      <!--<dependency>
         <groupId>org.mariadb.jdbc</groupId>
         <artifactId>mariadb-java-client</artifactId>
         <version>${mariadb.jdbc.driver}</version>
@@ -170,7 +172,7 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgre.jdbc.driver}</version>
-      </dependency>
+      </dependency>-->
 
       <!-- Only used by the HikariCP DB connection pool manager dependency -->
       <dependency>

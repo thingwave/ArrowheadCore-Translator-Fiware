@@ -82,8 +82,6 @@ log4j.rootLogger=INFO, DB, FILE
 # Database related config
 # Define the DB appender
 log4j.appender.DB=org.apache.log4j.jdbc.JDBCAppender
-# Set Database Driver
-log4j.appender.DB.driver=com.mysql.jdbc.Driver
 # Set Database URL
 log4j.appender.DB.URL=jdbc:mysql://127.0.0.1:3306/arrowhead
 # Set database user name and password

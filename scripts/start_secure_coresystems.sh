@@ -5,7 +5,7 @@ cd "$parent_path"
 
 time_to_sleep=10s
 
-echo Starting Core Systems... Service initializations usually need ~ 20 seconds.
+echo Starting Core Systems... Service initializations usually need around 20 seconds.
 
 cd ../serviceregistry_sql/target
 nohup java -jar arrowhead-serviceregistry-sql-4.0.jar -d -daemon -tls &> secure_sr.log &

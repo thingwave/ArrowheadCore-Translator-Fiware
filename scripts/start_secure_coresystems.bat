@@ -5,7 +5,7 @@ cd %parent_path%
 
 SET time_to_sleep=10
 
-echo Starting Core Systems... Service initializations usually need ~ 20 seconds.
+echo Starting Core Systems... Service initializations usually need around 20 seconds.
 
 cd ..\serviceregistry_sql\target
 START "serviceregistry_sql" /B "cmd /c javaw -DarrowheadSystem=serviceregistry_sql -jar arrowhead-serviceregistry-sql-4.0.jar -d -daemon -tls > secure_sr.log 2>&1"

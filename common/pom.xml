@@ -61,11 +61,6 @@
     </dependency>
 
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
       <artifactId>jersey-container-grizzly2-http</artifactId>
     </dependency>
@@ -110,7 +105,14 @@
       <artifactId>hibernate-java8</artifactId>
     </dependency>
 
+    <!-- JDBC drivers (MySQL, MariaDB, PostgreSQL), only 1 should not be commented based on which database is actually used -->
+
     <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <!--<dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
     </dependency>
@@ -118,7 +120,7 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>org.slf4j</groupId>
