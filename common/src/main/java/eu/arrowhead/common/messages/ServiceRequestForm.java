@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * This is what the Orchestrator Core System receives from Arrowhead Systems trying to request services.
@@ -35,6 +36,7 @@ public class ServiceRequestForm {
   private ArrowheadCloud requesterCloud;
   @Valid
   private ArrowheadService requestedService;
+  @Size(max = 9, message = "There are only 9 orchestration flags, map size must not be bigger than 9")
   private Map<@SENotBlank String, Boolean> orchestrationFlags = new HashMap<>();
   @Valid
   private List<PreferredProvider> preferredProviders = new ArrayList<>();
