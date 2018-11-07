@@ -26,7 +26,7 @@ public final class StoreService {
    */
   public static List<OrchestrationStore> getDefaultStoreEntries(ArrowheadSystem consumer) {
     restrictionMap.clear();
-    ArrowheadSystem savedConsumer = getConsumerSystem(consumer.getSystemName());
+    ArrowheadSystem savedConsumer = getConsumerSystem(consumer);
     if (savedConsumer == null) {
       return new ArrayList<>();
     }
@@ -41,7 +41,7 @@ public final class StoreService {
    */
   public static List<OrchestrationStore> getStoreEntries(ArrowheadSystem consumer, ArrowheadService service) {
     restrictionMap.clear();
-    ArrowheadSystem savedConsumer = getConsumerSystem(consumer.getSystemName());
+    ArrowheadSystem savedConsumer = getConsumerSystem(consumer);
     ArrowheadService savedService = getRequestedService(service.getServiceDefinition());
     if (savedConsumer == null || savedService == null) {
       return new ArrayList<>();
@@ -75,9 +75,11 @@ public final class StoreService {
   /**
    * This private method returns an ArrowheadSystem from the database.
    */
-  private static ArrowheadSystem getConsumerSystem(String systemName) {
+  private static ArrowheadSystem getConsumerSystem(ArrowheadSystem system) {
     HashMap<String, Object> rm = new HashMap<>();
-    rm.put("systemName", systemName);
+    rm.put("systemName", system.getSystemName());
+    rm.put("address", system.getAddress());
+    rm.put("port", system.getPort());
     return dm.get(ArrowheadSystem.class, rm);
   }
 
