@@ -12,9 +12,13 @@ import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.DataNotFoundException;
+import eu.arrowhead.common.messages.ServiceQueryByRegex;
 import eu.arrowhead.common.messages.ServiceQueryResult;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,6 +27,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -129,6 +134,29 @@ public class ServiceRegistryApi {
 
     log.info("getAllByService returns " + srList.size() + " entries");
     return srList;
+  }
+
+  @PUT
+  @Path("query")
+  public List<ServiceRegistryEntry> queryByRegex(ServiceQueryByRegex regex, @QueryParam("partial_match") boolean partialMatch) {
+    List<ServiceRegistryEntry> retrievedServices = dm.getAll(ServiceRegistryEntry.class, null);
+
+    Pattern pattern = Pattern.compile(regex.getRegularExpression());
+    List<ServiceRegistryEntry> matches = new ArrayList<>();
+    for (ServiceRegistryEntry entry : retrievedServices) {
+      Matcher matcher = pattern.matcher(entry.getProvidedService().getServiceDefinition());
+      if (partialMatch) {
+        if (matcher.find()) {
+          matches.add(entry);
+        }
+      } else {
+        if (matcher.matches()) {
+          matches.add(entry);
+        }
+      }
+    }
+
+    return matches;
   }
 
   @PUT
