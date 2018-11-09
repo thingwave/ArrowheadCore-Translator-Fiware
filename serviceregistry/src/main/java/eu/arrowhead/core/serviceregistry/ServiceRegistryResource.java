@@ -47,7 +47,7 @@ public class ServiceRegistryResource {
   public Response publishEntriesToRegistry(@Valid ServiceRegistryEntry entry, @Context ContainerRequestContext requestContext) {
     log.debug(
         "SR reg service: " + entry.getProvidedService().getServiceDefinition() + " provider: " + entry.getProvider().getSystemName() + " serviceURI: "
-            + entry.getServiceUri());
+            + entry.getServiceURI());
     try {
       if (ServiceRegistry.register(entry)) {
         return Response.status(Response.Status.OK).build();
@@ -64,7 +64,7 @@ public class ServiceRegistryResource {
   @Path("remove")
   public Response removeEntriesFromRegistry(@Valid ServiceRegistryEntry entry, @Context ContainerRequestContext requestContext) {
     log.debug("SR remove service: " + entry.getProvidedService().getServiceDefinition() + " provider: " + entry.getProvider().getSystemName()
-                  + " serviceURI: " + entry.getServiceUri());
+                  + " serviceURI: " + entry.getServiceURI());
 
     if (ServiceRegistry.unRegister(entry)) {
       return Response.status(Response.Status.OK).build();

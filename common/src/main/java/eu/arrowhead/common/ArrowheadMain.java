@@ -248,7 +248,7 @@ public abstract class ArrowheadMain {
       if (isSecure) {
         providedService.setServiceMetadata(ArrowheadMain.secureServerMetadata);
       }
-      ServiceRegistryEntry srEntry = new ServiceRegistryEntry(providedService, provider, service.getServiceUri());
+      ServiceRegistryEntry srEntry = new ServiceRegistryEntry(providedService, provider, service.getServiceURI());
 
       if (registering) {
         try {

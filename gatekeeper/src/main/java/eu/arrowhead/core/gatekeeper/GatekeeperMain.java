@@ -323,7 +323,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
   }
 
   @Override
-  public void getCoreSystemServiceUris(Map<String, String[]> uriMap) {
+  public void getCoreSystemServiceURIs(Map<String, String[]> uriMap) {
     for (Entry<String, String[]> entry : uriMap.entrySet()) {
       switch (entry.getKey()) {
         case "AuthorizationControl":

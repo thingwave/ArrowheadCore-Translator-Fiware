@@ -188,7 +188,7 @@ public class ServiceRegistryApi {
       log.info("updateServiceRegistryEntry throws DataNotFoundException");
       throw new DataNotFoundException("Requested Service Registry entry not found in the database.");
     }
-    retreivedEntry.setServiceUri(entry.getServiceUri());
+    retreivedEntry.setServiceURI(entry.getServiceURI());
     retreivedEntry.setEndOfValidity(entry.getEndOfValidity());
     retreivedEntry = dm.merge(retreivedEntry);
     retreivedEntry.fromDatabase();

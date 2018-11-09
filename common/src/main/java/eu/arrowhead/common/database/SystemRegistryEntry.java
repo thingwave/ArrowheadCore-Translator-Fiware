@@ -52,7 +52,7 @@ public class SystemRegistryEntry {
 
 	@Column(name = "service_uri")
 	@Size(max = 255, message = "Service URI must be 255 character at max")
-	private String serviceUri;
+	private String serviceURI;
 
 	@Column(name = "end_of_validity")
   @LDTInFuture(message = "End of validity date cannot be in the past")
@@ -64,12 +64,12 @@ public class SystemRegistryEntry {
 	public SystemRegistryEntry(Long id,
                              @Valid @NotNull(message = "Provided ArrowheadSystem cannot be null") ArrowheadSystem providedSystem,
                              @Valid @NotNull(message = "Provider ArrowheadDevice cannot be null") ArrowheadDevice provider,
-                             @Size(max = 255, message = "Service URI must be 255 character at max") String serviceUri,
+                             @Size(max = 255, message = "Service URI must be 255 character at max") String serviceURI,
                              @LDTInFuture(message = "End of validity date cannot be in the past") LocalDateTime endOfValidity) {
 		this.id = id;
 		this.providedSystem = providedSystem;
 		this.provider = provider;
-		this.serviceUri = serviceUri;
+		this.serviceURI = serviceURI;
 		this.endOfValidity = endOfValidity;
 	}
 
@@ -97,12 +97,12 @@ public class SystemRegistryEntry {
 		this.provider = provider;
 	}
 
-	public String getServiceUri() {
-		return serviceUri;
+	public String getServiceURI() {
+		return serviceURI;
 	}
 
-	public void setServiceUri(String serviceUri) {
-		this.serviceUri = serviceUri;
+	public void setServiceURI(String serviceURI) {
+		this.serviceURI = serviceURI;
 	}
 
 	public LocalDateTime getEndOfValidity() {
@@ -115,7 +115,7 @@ public class SystemRegistryEntry {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(provider, providedSystem, serviceUri, endOfValidity);
+		return Objects.hash(provider, providedSystem, serviceURI, endOfValidity);
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class SystemRegistryEntry {
 
 		return Objects.equals(this.provider, other.provider)
 				&& Objects.equals(this.providedSystem, other.providedSystem)
-				&& Objects.equals(this.serviceUri, other.serviceUri)
+				&& Objects.equals(this.serviceURI, other.serviceURI)
 				&& Objects.equals(this.endOfValidity, other.endOfValidity);
 	}
 	
@@ -139,7 +139,7 @@ public class SystemRegistryEntry {
 		builder.append("id=").append(id);
 		builder.append(", providedSystem=").append(providedSystem);
 		builder.append(", provider=").append(provider);
-		builder.append(", serviceUri=").append(serviceUri);
+		builder.append(", serviceURI=").append(serviceURI);
 		builder.append(", endOfValidity=").append(endOfValidity);
 	}
 

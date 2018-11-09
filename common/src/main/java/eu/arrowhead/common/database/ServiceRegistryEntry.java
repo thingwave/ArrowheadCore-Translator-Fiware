@@ -54,7 +54,7 @@ public class ServiceRegistryEntry {
 
   @Column(name = "service_uri")
   @Size(max = 255, message = "Service URI must be 255 character at max")
-  private String serviceUri;
+  private String serviceURI;
 
   @Type(type = "yes_no")
   private Boolean udp = false;
@@ -71,27 +71,27 @@ public class ServiceRegistryEntry {
   public ServiceRegistryEntry() {
   }
 
-  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceUri) {
+  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceURI) {
     this.providedService = providedService;
     this.provider = provider;
-    this.serviceUri = serviceUri;
+    this.serviceURI = serviceURI;
   }
 
-  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceUri, boolean udp, LocalDateTime endOfValidity,
+  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceURI, boolean udp, LocalDateTime endOfValidity,
                               int version) {
     this.providedService = providedService;
     this.provider = provider;
-    this.serviceUri = serviceUri;
+    this.serviceURI = serviceURI;
     this.udp = udp;
     this.endOfValidity = endOfValidity;
     this.version = version;
   }
 
-  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceUri, Boolean udp, LocalDateTime endOfValidity,
+  public ServiceRegistryEntry(ArrowheadService providedService, ArrowheadSystem provider, String serviceURI, Boolean udp, LocalDateTime endOfValidity,
                               Integer version, String metadata) {
     this.providedService = providedService;
     this.provider = provider;
-    this.serviceUri = serviceUri;
+    this.serviceURI = serviceURI;
     this.udp = udp;
     this.endOfValidity = endOfValidity;
     this.version = version;
@@ -122,12 +122,12 @@ public class ServiceRegistryEntry {
     this.provider = provider;
   }
 
-  public String getServiceUri() {
-    return serviceUri;
+  public String getServiceURI() {
+    return serviceURI;
   }
 
-  public void setServiceUri(String serviceUri) {
-    this.serviceUri = serviceUri;
+  public void setServiceURI(String serviceURI) {
+    this.serviceURI = serviceURI;
   }
 
   public Boolean isUdp() {
@@ -164,17 +164,17 @@ public class ServiceRegistryEntry {
     }
     ServiceRegistryEntry that = (ServiceRegistryEntry) o;
     return Objects.equals(providedService, that.providedService) && Objects.equals(provider, that.provider) && Objects
-        .equals(serviceUri, that.serviceUri) && Objects.equals(version, that.version);
+        .equals(serviceURI, that.serviceURI) && Objects.equals(version, that.version);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(providedService, provider, serviceUri, version);
+    return Objects.hash(providedService, provider, serviceURI, version);
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("providedService", providedService).add("provider", provider).add("serviceUri", serviceUri)
+    return MoreObjects.toStringHelper(this).add("providedService", providedService).add("provider", provider).add("serviceURI", serviceURI)
                       .add("version", version).toString();
   }
 

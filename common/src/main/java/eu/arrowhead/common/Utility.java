@@ -245,7 +245,7 @@ public final class Utility {
     }
   }
 
-  public static String getUri(String address, int port, String serviceUri, boolean isSecure, boolean serverStart) {
+  public static String getUri(String address, int port, String serviceURI, boolean isSecure, boolean serverStart) {
     if (address == null) {
       log.error("Address can not be null (Utility:getUri throws NPE)");
       throw new NullPointerException("Address can not be null (Utility:getUri throws NPE)");
@@ -260,8 +260,8 @@ public final class Utility {
     if (port > 0) {
       ub.port(port);
     }
-    if (serviceUri != null) {
-      ub.path(serviceUri);
+    if (serviceURI != null) {
+      ub.path(serviceURI);
     }
 
     String url = ub.toString();
@@ -294,12 +294,12 @@ public final class Utility {
       if (!entry.getProvidedService().getServiceMetadata().isEmpty()) {
         isSecure = entry.getProvidedService().getServiceMetadata().containsKey("security");
       }
-      String serviceUri = getUri(coreSystem.getAddress(), coreSystem.getPort(), entry.getServiceUri(), isSecure, false);
+      String serviceURI = getUri(coreSystem.getAddress(), coreSystem.getPort(), entry.getServiceURI(), isSecure, false);
       if (serviceId.equals(CoreSystemService.GW_CONSUMER_SERVICE.getServiceDef()) || serviceId
           .equals(CoreSystemService.GW_PROVIDER_SERVICE.getServiceDef())) {
-        return Optional.of(new String[]{serviceUri, coreSystem.getSystemName(), coreSystem.getAddress(), coreSystem.getAuthenticationInfo()});
+        return Optional.of(new String[]{serviceURI, coreSystem.getSystemName(), coreSystem.getAddress(), coreSystem.getAuthenticationInfo()});
       }
-      return Optional.of(new String[]{serviceUri});
+      return Optional.of(new String[]{serviceURI});
     }
     return Optional.empty();
   }

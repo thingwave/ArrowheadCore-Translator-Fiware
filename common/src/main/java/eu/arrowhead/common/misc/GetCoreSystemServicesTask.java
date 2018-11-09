@@ -45,7 +45,7 @@ public class GetCoreSystemServicesTask extends TimerTask {
     }
 
     try {
-      Method method = context.getClass().getMethod("getCoreSystemServiceUris", Map.class);
+      Method method = context.getClass().getMethod("getCoreSystemServiceURIs", Map.class);
       method.invoke(context, uriMap);
     } catch (Exception e) {
       throw new AssertionError("Exception occurred with Java reflection!", e);

@@ -22,19 +22,19 @@ public enum CoreSystemService {
   DEVICE_REG_SERVICE("Placeholder2", "deviceregistry/placeholder");
 
   private final String serviceDef;
-  private final String serviceUri;
+  private final String serviceURI;
 
-  CoreSystemService(String serviceDef, String serviceUri) {
+  CoreSystemService(String serviceDef, String serviceURI) {
     this.serviceDef = serviceDef;
-    this.serviceUri = serviceUri;
+    this.serviceURI = serviceURI;
   }
 
   public String getServiceDef() {
     return serviceDef;
   }
 
-  public String getServiceUri() {
-    return serviceUri;
+  public String getServiceURI() {
+    return serviceURI;
   }
 
 }

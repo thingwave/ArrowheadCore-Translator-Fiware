@@ -11,6 +11,6 @@ import java.util.Map;
 
 public interface NeedsCoreSystemService {
 
-  void getCoreSystemServiceUris(Map<String, String[]> uriMap);
+  void getCoreSystemServiceURIs(Map<String, String[]> uriMap);
 
 }

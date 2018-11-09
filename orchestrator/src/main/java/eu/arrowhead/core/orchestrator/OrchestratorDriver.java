@@ -191,7 +191,7 @@ final class OrchestratorDriver {
    * @param srList The list of <tt>ServiceRegistryEntry</tt>s still being considered
    * @param preferredLocalProviders The set of <tt>ArrowheadSystem</tt>s in this Local Cloud preferred by the requester system
    *
-   * @return the chosen ServiceRegistryEntry object, containing the necessary <tt>ArrowheadSystem</tt> and <tt>String</tt> serviceUri information to
+   * @return the chosen ServiceRegistryEntry object, containing the necessary <tt>ArrowheadSystem</tt> and <tt>String</tt> serviceURI information to
    *     contact the provider
    */
   static ServiceRegistryEntry intraCloudMatchmaking(List<ServiceRegistryEntry> srList, Set<ArrowheadSystem> preferredLocalProviders) {
@@ -362,7 +362,7 @@ final class OrchestratorDriver {
           //This will include the service metadata and port, which is only stored in the Service Registry
           storeEntry.setService(srEntry.getProvidedService());
           storeEntry.setProviderSystem(srEntry.getProvider());
-          storeEntry.setServiceURI(srEntry.getServiceUri());
+          storeEntry.setServiceURI(srEntry.getServiceURI());
         }
       }
     }

@@ -154,7 +154,7 @@ public class SystemRegistryApi {
       log.info("updateSystemRegistryEntry throws DataNotFoundException");
       throw new DataNotFoundException("Requested System Registry entry not found in the database.");
     }
-    retreivedEntry.setServiceUri(entry.getServiceUri());
+    retreivedEntry.setServiceURI(entry.getServiceURI());
     retreivedEntry.setEndOfValidity(entry.getEndOfValidity());
     retreivedEntry = databaseManager.merge(retreivedEntry);
 
