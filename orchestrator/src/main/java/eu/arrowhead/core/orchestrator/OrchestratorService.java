@@ -305,7 +305,7 @@ final class OrchestratorService {
     // Create an OrchestrationForm for every provider
     List<OrchestrationForm> ofList = new ArrayList<>();
     for (ServiceRegistryEntry entry : srList) {
-      OrchestrationForm of = new OrchestrationForm(entry.getProvidedService(), entry.getProvider(), entry.getServiceUri());
+      OrchestrationForm of = new OrchestrationForm(entry.getProvidedService(), entry.getProvider(), entry.getServiceURI());
 
       if (srf.getOrchestrationFlags().get("overrideStore")) {
         if (entry.getEndOfValidity() == null) {

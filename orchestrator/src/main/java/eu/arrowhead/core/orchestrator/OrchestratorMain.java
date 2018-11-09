@@ -72,7 +72,7 @@ public class OrchestratorMain extends ArrowheadMain implements NeedsCoreSystemSe
   //NOTE if a service def is changed, it needs to be modified here too!
   //TODO find a way to make the switch/case work without the hardcoded strings
   @Override
-  public void getCoreSystemServiceUris(Map<String, String[]> uriMap) {
+  public void getCoreSystemServiceURIs(Map<String, String[]> uriMap) {
     for (Entry<String, String[]> entry : uriMap.entrySet()) {
       switch (entry.getKey()) {
         case "AuthorizationControl":

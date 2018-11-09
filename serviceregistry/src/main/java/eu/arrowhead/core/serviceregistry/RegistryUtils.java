@@ -62,8 +62,8 @@ class RegistryUtils {
     if (registryEntry.getProvider().getAuthenticationInfo() != null) {
       properties.put("ahsysauth", registryEntry.getProvider().getAuthenticationInfo());
     }
-    if (registryEntry.getServiceUri() != null) {
-      properties.put("path", registryEntry.getServiceUri());
+    if (registryEntry.getServiceURI() != null) {
+      properties.put("path", registryEntry.getServiceURI());
     }
 
     LocalDateTime date = registryEntry.getEndOfValidity();
@@ -177,7 +177,7 @@ class RegistryUtils {
     }
 
     if (properties.containsKey("path")) {
-      providerService.setServiceUri(properties.get("path"));
+      providerService.setServiceURI(properties.get("path"));
     }
 
     if (properties.containsKey("txtvers")) {
