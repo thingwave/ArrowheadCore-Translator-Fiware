@@ -81,7 +81,7 @@ final class OrchestratorService {
       srList.removeAll(temp);
       if (srList.isEmpty()) {
         log.error("None of the providers from the SRlist are authorized!");
-        throw new DataNotFoundException("None of the providers from the Service Registry query are authorized!", Status.NOT_FOUND.getStatusCode());
+        throw new DataNotFoundException("None of the providers from the Service Registry query are authorized!");
       }
       log.debug("dynamicOrchestration SR query and Auth cross-check is done");
 

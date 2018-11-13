@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.LDTInFuture;
 import java.time.LocalDateTime;
@@ -66,6 +67,7 @@ public class ServiceRegistryEntry {
   private Integer version = 1;
 
   //Takes the providedService metadata map
+  @JsonIgnore
   private String metadata;
 
   public ServiceRegistryEntry() {
@@ -194,7 +196,7 @@ public class ServiceRegistryEntry {
     providedService.setServiceDefinition(temp.getServiceDefinition());
     providedService.setInterfaces(temp.getInterfaces());
 
-    if (metadata != null) {
+    if (metadata != null && metadata.trim().length() > 0) {
       String[] parts = metadata.split(",");
       providedService.getServiceMetadata().clear();
       for (String part : parts) {

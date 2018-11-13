@@ -95,7 +95,7 @@ final class OrchestratorDriver {
     }
     if (!serviceQueryResult.isValid()) {
       log.error("queryServiceRegistry DataNotFoundException");
-      throw new DataNotFoundException("ServiceRegistry query came back empty for " + service.toString(), Status.NOT_FOUND.getStatusCode());
+      throw new DataNotFoundException("ServiceRegistry query came back empty for " + service.toString());
     }
 
     log.info("queryServiceRegistry was successful, number of potential providers for" + service.toString() + " is " + serviceQueryResult
@@ -392,7 +392,7 @@ final class OrchestratorDriver {
     GSDResult result = response.readEntity(GSDResult.class);
     if (!result.isValid()) {
       log.error("doGlobalServiceDiscovery DataNotFoundException");
-      throw new DataNotFoundException("GlobalServiceDiscovery yielded no result.", Status.NOT_FOUND.getStatusCode());
+      throw new DataNotFoundException("GlobalServiceDiscovery yielded no result.");
     }
 
     log.info("doGlobalServiceDiscovery returns with " + result.getResponse().size() + " GSDAnswers");
@@ -436,8 +436,7 @@ final class OrchestratorDriver {
     if (onlyPreferred) {
       log.error("interCloudMatchmaking DataNotFoundException, preferredClouds size: " + preferredClouds.size());
       throw new DataNotFoundException(
-          "No preferred Cloud found in the GSD response. Inter-Cloud matchmaking failed, since only preferred providers are allowed.",
-          Status.NOT_FOUND.getStatusCode());
+          "No preferred Cloud found in the GSD response. Inter-Cloud matchmaking failed, since only preferred providers are allowed.");
     }
 
     log.info("interCloudMatchmaking returns the first Cloud entry from the GSD results");
@@ -481,7 +480,7 @@ final class OrchestratorDriver {
     ICNResult result = response.readEntity(ICNResult.class);
     if (!result.isValid()) {
       log.error("doInterCloudNegotiations DataNotFoundException");
-      throw new DataNotFoundException("ICN failed with the remote cloud.", Status.NOT_FOUND.getStatusCode());
+      throw new DataNotFoundException("ICN failed with the remote cloud.");
     }
 
     log.info("doInterCloudNegotiations returns with " + result.getOrchResponse().getResponse().size() + " possible providers");
