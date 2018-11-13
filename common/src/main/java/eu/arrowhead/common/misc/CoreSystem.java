@@ -33,6 +33,7 @@ public enum CoreSystem {
   SERVICE_REGISTRY_DNS(8442, 8443, null, ArrowheadMain.certFields, null),
   SERVICE_REGISTRY_SQL(8442, 8443, ArrowheadMain.dbFields, ArrowheadMain.certFields, null),
   SYSTEM_REGISTRY(8436, 8437, ArrowheadMain.dbFields, ArrowheadMain.certFields, Collections.singletonList(CoreSystemService.SYS_REG_SERVICE)),
+  TRANSLATOR(8462,8463, null, null, Collections.singletonList(CoreSystemService.TRANSLATE_SERVICE)),
   DEVICE_REGISTRY(8438, 8439, ArrowheadMain.dbFields, ArrowheadMain.certFields, Collections.singletonList(CoreSystemService.DEVICE_REG_SERVICE));
 
   private final int insecurePort;

@@ -19,6 +19,7 @@ public enum CoreSystemService {
   GW_SESSION_MGMT("SessionManagement", "gateway/management"),
   ORCH_SERVICE("OrchestrationService", "orchestrator/orchestration"),
   SYS_REG_SERVICE("PlaceHolder", "systemregistry/placeholder"),
+  TRANSLATE_SERVICE("TranslationService", "translator"),
   DEVICE_REG_SERVICE("Placeholder2", "deviceregistry/placeholder");
 
   private final String serviceDef;

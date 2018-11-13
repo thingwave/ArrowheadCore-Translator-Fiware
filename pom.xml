@@ -37,6 +37,7 @@
     <module>serviceregistry</module>
     <module>serviceregistry_sql</module>
     <module>systemregistry</module>
+    <module>translator</module>
   </modules>
 
   <properties>
