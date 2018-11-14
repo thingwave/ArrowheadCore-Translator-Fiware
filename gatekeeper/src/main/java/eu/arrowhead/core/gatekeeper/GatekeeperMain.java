@@ -58,11 +58,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
 
   static boolean IS_SECURE;
   static boolean USE_GATEWAY;
-  static String ORCHESTRATOR_URI;
   static String SERVICE_REGISTRY_URI;
-  static String AUTH_CONTROL_URI;
-  static String[] GATEWAY_CONSUMER_URI;
-  static String[] GATEWAY_PROVIDER_URI;
   static SSLContext outboundClientContext;
   static SSLContext outboundServerContext;
   static final int TIMEOUT;
@@ -72,9 +68,16 @@ public class GatekeeperMain implements NeedsCoreSystemService {
   private static String BASE64_PUBLIC_KEY;
   private static HttpServer inboundServer;
   private static HttpServer outboundServer;
+  private static String ORCHESTRATOR_URI;
+  private static String AUTH_CONTROL_URI;
+  private static String[] GATEWAY_CONSUMER_URI;
+  private static String[] GATEWAY_PROVIDER_URI;
 
   private static final TypeSafeProperties props;
   private static final Logger log = Logger.getLogger(GatekeeperMain.class.getName());
+
+  private static final String GET_CORE_SYSTEM_URLS_ERROR_MESSAGE = "The Gatekeeper core system has not acquireq the addresses of the "
+      + "Authorization, Orchestrator and Gateway core systems yet from the Service Registry. Wait 15 seconds and retry your request";
 
   static {
     props = Utility.getProp();
@@ -379,5 +382,33 @@ public class GatekeeperMain implements NeedsCoreSystemService {
     DatabaseManager.closeSessionFactory();
     System.out.println("Gatekeeper Server stopped");
     System.exit(0);
+  }
+
+  static String getOrchestratorUri() {
+    if (ORCHESTRATOR_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return ORCHESTRATOR_URI;
+  }
+
+  static String getAuthControlUri() {
+    if (AUTH_CONTROL_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return AUTH_CONTROL_URI;
+  }
+
+  static String[] getGatewayConsumerUri() {
+    if (GATEWAY_CONSUMER_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return GATEWAY_CONSUMER_URI;
+  }
+
+  static String[] getGatewayProviderUri() {
+    if (GATEWAY_PROVIDER_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return GATEWAY_PROVIDER_URI;
   }
 }

@@ -117,7 +117,7 @@ final class OrchestratorDriver {
 
   static Set<ArrowheadSystem> queryAuthorization(ArrowheadSystem consumer, ArrowheadService service, Set<ArrowheadSystem> providerSet) {
     // Compiling the URI and the request payload
-    String uri = UriBuilder.fromPath(OrchestratorMain.AUTH_CONTROL_URI).path("intracloud").toString();
+    String uri = UriBuilder.fromPath(OrchestratorMain.getAuthControlUri()).path("intracloud").toString();
     IntraCloudAuthRequest request = new IntraCloudAuthRequest(consumer, providerSet, service);
 
     // Sending the request, parsing the returned result
@@ -388,7 +388,7 @@ final class OrchestratorDriver {
     GSDRequestForm requestForm = new GSDRequestForm(requestedService, preferredClouds, registryFlags);
 
     // Sending the request, sanity check on the returned result
-    Response response = Utility.sendRequest(OrchestratorMain.GSD_SERVICE_URI, "PUT", requestForm);
+    Response response = Utility.sendRequest(OrchestratorMain.getGsdServiceUri(), "PUT", requestForm);
     GSDResult result = response.readEntity(GSDResult.class);
     if (!result.isValid()) {
       log.error("doGlobalServiceDiscovery DataNotFoundException");
@@ -476,7 +476,7 @@ final class OrchestratorDriver {
                                                     negotiationFlags);
 
     // Sending the request, doing sanity check on the returned result
-    Response response = Utility.sendRequest(OrchestratorMain.ICN_SERVICE_URI, "PUT", requestForm);
+    Response response = Utility.sendRequest(OrchestratorMain.getIcnServiceUri(), "PUT", requestForm);
     ICNResult result = response.readEntity(ICNResult.class);
     if (!result.isValid()) {
       log.error("doInterCloudNegotiations DataNotFoundException");
@@ -541,7 +541,7 @@ final class OrchestratorDriver {
       TokenGenerationRequest tokenRequest = new TokenGenerationRequest(srf.getRequesterSystem(), srf.getRequesterCloud(), helper.getProviders(),
                                                                        helper.getService(), 0);
       // Sending the token generation request, parsing the response
-      Response authResponse = Utility.sendRequest(OrchestratorMain.TOKEN_GEN_URI, "PUT", tokenRequest);
+      Response authResponse = Utility.sendRequest(OrchestratorMain.getTokenGenUri(), "PUT", tokenRequest);
       TokenGenerationResponse tokenResponse = authResponse.readEntity(TokenGenerationResponse.class);
 
       if (tokenResponse != null && tokenResponse.getTokenData() != null && tokenResponse.getTokenData().size() > 0) {

@@ -64,10 +64,10 @@ public class ArrowheadSystem {
   public ArrowheadSystem(String json) {
     String[] fields = json.split(",");
     this.systemName = fields[0].equals("null") ? null : fields[0];
+    this.address = fields[1].equals("null") ? null : fields[1];
+    this.port = Integer.valueOf(fields[2]);
 
     if (fields.length == 4) {
-      this.address = fields[1].equals("null") ? null : fields[1];
-      this.port = Integer.valueOf(fields[2]);
       this.authenticationInfo = fields[3].equals("null") ? null : fields[3];
     }
   }

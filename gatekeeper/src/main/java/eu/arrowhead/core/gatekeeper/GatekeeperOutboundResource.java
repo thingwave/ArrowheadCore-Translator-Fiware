@@ -157,7 +157,7 @@ public class GatekeeperOutboundResource {
       Map<String, Object> restrictionMap = new HashMap<>();
       restrictionMap.put("secure", GatekeeperMain.IS_SECURE);
       icnProposal.setPreferredBrokers(dm.getAll(Broker.class, restrictionMap));
-      icnProposal.setGatewayPublicKey(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
+      icnProposal.setGatewayPublicKey(GatekeeperMain.getGatewayConsumerUri()[3]);
     }
 
     String icnUri = Utility.getUri(requestForm.getTargetCloud().getAddress(), requestForm.getTargetCloud().getPort(),
@@ -189,14 +189,14 @@ public class GatekeeperOutboundResource {
 
     // Sending the gateway request and parsing the response
     Response gatewayResponse = Utility
-        .sendRequest(GatekeeperMain.GATEWAY_CONSUMER_URI[0], "PUT", connectionRequest, GatekeeperMain.outboundServerContext);
+        .sendRequest(GatekeeperMain.getGatewayConsumerUri()[0], "PUT", connectionRequest, GatekeeperMain.outboundServerContext);
     ConnectToConsumerResponse connectToConsumerResponse = gatewayResponse.readEntity(ConnectToConsumerResponse.class);
 
     ArrowheadSystem gatewaySystem = new ArrowheadSystem();
-    gatewaySystem.setSystemName(GatekeeperMain.GATEWAY_CONSUMER_URI[1]);
-    gatewaySystem.setAddress(GatekeeperMain.GATEWAY_CONSUMER_URI[2]);
+    gatewaySystem.setSystemName(GatekeeperMain.getGatewayConsumerUri()[1]);
+    gatewaySystem.setAddress(GatekeeperMain.getGatewayConsumerUri()[2]);
     gatewaySystem.setPort(connectToConsumerResponse.getServerSocketPort());
-    gatewaySystem.setAuthenticationInfo(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
+    gatewaySystem.setAuthenticationInfo(GatekeeperMain.getGatewayConsumerUri()[3]);
     icnEnd.getOrchestrationForm().setProvider(gatewaySystem);
     List<OrchestrationForm> orchResponse = new ArrayList<>();
     orchResponse.add(icnEnd.getOrchestrationForm());
