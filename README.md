@@ -70,9 +70,9 @@ not exist yet. An SQL script can be found at `common/config/create_arrowhead_log
 The project can also be run from an IDE for testing purposes. Just import the multi-module project as a maven project, and the IDE should find all 
 the `pom.xml` files necessary to download the dependencies and start the core systems.
 
-### Debian packages
-An alternative method for setting up a local Arrowhead Cloud on a [Debian based Linux system](https://wiki.debian.org/Derivatives/Census) is to use
-Debconf! 
+### Ubuntu, Raspbian and other Debian based Linux distriutions
+An alternative method for installing a local Arrowhead Cloud on a
+[Debian based Linux](https://wiki.debian.org/Derivatives/Census) is to use your package manager.
  
 Currently the following core systems have this option: Authorization, Certificate Authority, Event Handler, Gatekeeper, Gateway, 
 Orchestrator and Service Registry.

@@ -1,8 +1,14 @@
-## Installing Arrowhead on a Ubuntu Server using Debian Packages
+## Installing Arrowhead on a Debian based Linux distribution
 
-### 1. Install Ubuntu Server (18.04)
+Currently, this guide is known to work on Ubuntu Server 18.04 and Rasbian 2018-11-13, but it will likely work on other
+version and Debian based Linux distribution also. The following is a quick guide on the essentials.
 
-Do a normal installation of Ubuntu server, remember to update:
+Note Rasbian installation has only been attempted with the included mysql-server and openjdk-9-jre-headless packages so
+far. Also you should use Arrowhead packages after 19.11.2018, due to a bug with logname in earlier versions. 
+
+### 1. Install Linux
+
+Do a normal installation of Linux, and remember to update afterwards:
 
 `sudo apt update && sudo apt dist-upgrade`
 
@@ -15,6 +21,8 @@ Pick one of the options below.
 Install:
 
 `sudo apt install mysql-server`
+
+(Note that on Rasbian, this is actually a MariaDB behind the scenes but it should not be an issue.)
 
 Check if running:
 
@@ -45,7 +53,13 @@ Pick one of the options below.
 
 #### 3a. Install Java (OpenJDK)
 
+Ubuntu users (and others?):
+
 `sudo apt install openjdk-11-jre-headless`
+
+Rasbian users do not have this newer version yet, so until then this will do:
+
+`sudo apt install openjdk-9-jre-headless`
 
 #### 3b. Install Java 11 (Oracle)
 
