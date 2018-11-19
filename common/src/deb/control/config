@@ -3,8 +3,13 @@
 . /usr/share/debconf/confmodule
 . /usr/share/arrowhead/conf/ahconf.sh
 
-USER=$(logname)
-HOME=$(eval echo "~$USER")
+if logname 2>/dev/null; then
+    USER=$(logname)
+    HOME=$(eval echo "~$USER")
+else
+    USER="root"
+    HOME="/root"
+fi
 
 # Get installation type
 db_input high arrowhead-common/install_type || true
