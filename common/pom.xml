@@ -91,6 +91,11 @@
     </dependency>
 
     <dependency>
+      <groupId>com.sun.xml.txw2</groupId>
+      <artifactId>txw2</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
