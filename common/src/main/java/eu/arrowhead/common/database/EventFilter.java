@@ -10,7 +10,7 @@ package eu.arrowhead.common.database;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.LDTInFuture;
 import eu.arrowhead.common.json.constraint.SENotBlank;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -65,11 +65,11 @@ public class EventFilter {
   private Set<ArrowheadSystem> sources = new HashSet<>();
 
   @Column(name = "start_date")
-  private LocalDateTime startDate;
+  private ZonedDateTime startDate;
 
   @Column(name = "end_date")
   @LDTInFuture(message = "Filter end date must be in the future")
-  private LocalDateTime endDate;
+  private ZonedDateTime endDate;
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapKeyColumn(name = "metadata_key")
@@ -88,7 +88,7 @@ public class EventFilter {
   public EventFilter() {
   }
 
-  public EventFilter(String eventType, ArrowheadSystem consumer, Set<ArrowheadSystem> sources, LocalDateTime startDate, LocalDateTime endDate,
+  public EventFilter(String eventType, ArrowheadSystem consumer, Set<ArrowheadSystem> sources, ZonedDateTime startDate, ZonedDateTime endDate,
                      Map<String, String> filterMetadata, String notifyUri, boolean matchMetadata) {
     this.eventType = eventType;
     this.consumer = consumer;
@@ -132,19 +132,19 @@ public class EventFilter {
     this.sources = sources;
   }
 
-  public LocalDateTime getStartDate() {
+  public ZonedDateTime getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(LocalDateTime startDate) {
+  public void setStartDate(ZonedDateTime startDate) {
     this.startDate = startDate;
   }
 
-  public LocalDateTime getEndDate() {
+  public ZonedDateTime getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(LocalDateTime endDate) {
+  public void setEndDate(ZonedDateTime endDate) {
     this.endDate = endDate;
   }
 

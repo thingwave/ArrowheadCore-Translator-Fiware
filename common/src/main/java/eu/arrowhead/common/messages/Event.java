@@ -7,7 +7,7 @@
 
 package eu.arrowhead.common.messages;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.Size;
@@ -19,13 +19,13 @@ public class Event {
   @Size(max = 255, message = "Event type must be 255 character at max")
   private String type;
   private String payload;
-  private LocalDateTime timestamp;
+  private ZonedDateTime timestamp;
   private Map<String, String> eventMetadata = new HashMap<>();
 
   public Event() {
   }
 
-  public Event(String type, String payload, LocalDateTime timestamp, Map<String, String> eventMetadata) {
+  public Event(String type, String payload, ZonedDateTime timestamp, Map<String, String> eventMetadata) {
     this.type = type;
     this.payload = payload;
     this.timestamp = timestamp;
@@ -48,11 +48,11 @@ public class Event {
     this.payload = payload;
   }
 
-  public LocalDateTime getTimestamp() {
+  public ZonedDateTime getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(LocalDateTime timestamp) {
+  public void setTimestamp(ZonedDateTime timestamp) {
     this.timestamp = timestamp;
   }
 

@@ -150,7 +150,7 @@ class UnicastDnsSDRegistrator implements DnsSDRegistrator {
       names.add(InetAddress.getLocalHost().getCanonicalHostName());
       names.add(InetAddress.getLocalHost().getHostName());
       for (String name : names) {
-        if (!name.startsWith("localhost") && !name.matches("^([0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+        if (!name.startsWith("localhost") && !name. ("^([0-9]{1,3}\\.){3}[0-9]{1,3}$")){
           localHostname = name.endsWith(".") ? name : (name + ".");
           break;
         }

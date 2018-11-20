@@ -11,7 +11,7 @@ import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.database.EventFilter;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.messages.PublishEvent;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.concurrent.CompletableFuture;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -49,14 +49,14 @@ public class EventHandlerResource {
   @Path("publish")
   public Response publishEvent(@Valid PublishEvent eventPublished, @Context ContainerRequestContext requestContext) {
     if (eventPublished.getEvent().getTimestamp() == null) {
-      eventPublished.getEvent().setTimestamp(LocalDateTime.now());
+      eventPublished.getEvent().setTimestamp(ZonedDateTime.now());
     }
     if (EventHandlerMain.EVENT_PUBLISHING_TOLERANCE > 0) {
-      if (eventPublished.getEvent().getTimestamp().isBefore(LocalDateTime.now().minusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
+      if (eventPublished.getEvent().getTimestamp().isBefore(ZonedDateTime.now().minusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
         throw new BadPayloadException(
             "This event is too old to publish. Maximum allowed delay before publishing the event: " + EventHandlerMain.EVENT_PUBLISHING_TOLERANCE);
       }
-      if (eventPublished.getEvent().getTimestamp().isAfter(LocalDateTime.now().plusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
+      if (eventPublished.getEvent().getTimestamp().isAfter(ZonedDateTime.now().plusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
         throw new BadPayloadException(
             "This event is too far in the future. Maximum allowed timestamp tolerance for events: " + EventHandlerMain.EVENT_PUBLISHING_TOLERANCE);
       }
