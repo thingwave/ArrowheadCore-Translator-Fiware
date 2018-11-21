@@ -61,6 +61,10 @@ Rasbian users do not have this newer version yet, so until then this will do:
 
 `sudo apt install openjdk-9-jre-headless`
 
+**NOTE:** Install JDK versions instead of JRE versions, if you plan to build the latest Debian Packages from source, using Maven. You just need to 
+change the "-jre-" part to "-jdk-" in the package names. JDK needs more disk space. JRE versions can only run packaged Java applications, but can 
+not build them from source code.
+
 #### 3b. Install Java 11 (Oracle)
 
 To install Oracle Java 11, add the repository first:
