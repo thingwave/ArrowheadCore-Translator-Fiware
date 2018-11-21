@@ -94,7 +94,7 @@ Pick one of the options below.
 Check the GitHub releases site <https://github.com/arrowhead-f/core-java/releases> for the latest release and download
 it: 
 
-`wget -c https://github.com/arrowhead-f/core-java/releases/download/4.0-debian/debian_packages.zip`
+`wget -c https://github.com/arrowhead-f/core-java/releases/download/4.2-debian/debian_packages.zip`
 
 Unpack it:
 
@@ -107,7 +107,7 @@ cd debian_packages/
 
 To build the Debian packages yourself, start by cloning the repository:
 
-`git clone https://github.com/arrowhead-f/core-java.git -b feature/debian`
+`git clone https://github.com/arrowhead-f/core-java.git -b develop`
 
 Build them with:
 
