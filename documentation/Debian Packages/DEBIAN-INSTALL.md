@@ -204,8 +204,9 @@ and password you need to use.
 `apt purge` can be used to remove configuration files, database, log files, etc. Use `sudo apt purge arrowhead-\*` to
 remove everything arrowhead related.
 
-For the provider and consumer example in the client skeletons, the script `sudo ah_gen_quickstart` can be used to
-generate the necessary certificates and database entries. It will also output the certificate/keystore password. Note,
+For the provider and consumer example in the client skeletons, the script `sudo ah_gen_quickstart HOST` can be used to
+generate the necessary certificates and database entries. `HOST` should be the IP address of where you intend to run
+the systems. It will also output the certificate/keystore password. Note,
 this script should only be used for test clouds on a clean installation.
 
 To switch to insecure mode of all core services, remove `-tls` in the service files and restart them, e.g.:
