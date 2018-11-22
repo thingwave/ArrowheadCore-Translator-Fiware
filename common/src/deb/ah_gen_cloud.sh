@@ -12,6 +12,7 @@ CLOUD_NAME=${1}
 CLOUD_HOST=${2}
 
 CLOUD_STORE="${AH_CLOUDS_DIR}/${CLOUD_NAME}.p12"
+CLOUD_INIT="${AH_CLOUDS_DIR}/${CLOUD_NAME}.sh"
 
 if [ ! -f "${AH_CONF_DIR}/master.p12" ]; then
     echo "Keystore for master certificate not found." >&2
@@ -49,6 +50,15 @@ OWN_64PUB=$(\
     | sed '1d;$d' \
     | tr -d '\n'\
 )
+
+echo "!/bin/sh" > "${CLOUD_INIT}"
+echo "ah_add_neighbor ${AH_OPERATOR} ${AH_CLOUD_NAME} ${OWN_HOST} ${OWN_64PUB}" > "${CLOUD_INIT}"
+chown :arrowhead ${CLOUD_INIT}
+chmod 640 ${CLOUD_INIT}
+
 echo >&2
-echo "On the new cloud, you should call:" >&2
-echo "ah_add_neighbor ${AH_OPERATOR} ${AH_CLOUD_NAME} ${OWN_HOST} ${OWN_64PUB}" >&2
+echo "You should call '${CLOUD_INIT}' on your new cloud, after it is installed" >&2
+
+echo >&2
+echo "Helper to copy required files:" >&2
+echo "sudo scp \"${CLOUD_STORE}\" \"${AH_CONF_DIR}/master.crt\" \"${CLOUD_INIT}\" ${CLOUD_HOST}:~" >&2
