@@ -28,7 +28,8 @@ public class VerificationInfo {
   public VerificationInfo() {
   }
 
-  public VerificationInfo(Map<String, String> providerDeviceCapabilities, Map<String, String> consumerDeviceCapabilities, List<ResourceReservation> providerDeviceQoSReservations, List<ResourceReservation> consumerDeviceQoSReservations,
+  public VerificationInfo(Map<String, String> providerDeviceCapabilities, Map<String, String> consumerDeviceCapabilities,
+                          List<ResourceReservation> providerDeviceQoSReservations, List<ResourceReservation> consumerDeviceQoSReservations,
                           Map<String, String> requestedQoS, Map<String, String> commands) {
     this.providerDeviceCapabilities = providerDeviceCapabilities;
     this.consumerDeviceCapabilities = consumerDeviceCapabilities;

@@ -16,7 +16,8 @@ public class TypeSafeProperties extends Properties {
     try {
       return (val == null) ? defaultValue : Integer.valueOf(val);
     } catch (NumberFormatException e) {
-      System.out.println(val + " is not a valid number! Please fix the \"" + key + "\" property! Using default value (" + defaultValue + ") instead!");
+      System.out
+          .println(val + " is not a valid number! Please fix the \"" + key + "\" property! Using default value (" + defaultValue + ") instead!");
       return defaultValue;
     }
   }

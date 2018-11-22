@@ -39,7 +39,8 @@ public class OldOrchResource {
       preferredProviders.add(new PreferredProvider(supportProvider));
     }
     ServiceRequestForm srf = new ServiceRequestForm.Builder(system).requesterCloud(srfSupport.getRequesterCloud()).requestedService(service)
-        .orchestrationFlags(srfSupport.getOrchestrationFlags()).preferredProviders(preferredProviders).build();
+                                                                   .orchestrationFlags(srfSupport.getOrchestrationFlags())
+                                                                   .preferredProviders(preferredProviders).build();
 
     OrchestratorResource orchResource = new OrchestratorResource();
     Response response = orchResource.orchestrationProcess(srf);

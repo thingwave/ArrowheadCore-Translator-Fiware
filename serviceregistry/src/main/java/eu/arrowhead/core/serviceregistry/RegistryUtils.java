@@ -67,7 +67,8 @@ class RegistryUtils {
     }
 
     LocalDateTime date = registryEntry.getEndOfValidity();
-    String encodedDate = String.valueOf(date.getYear()).concat(".").concat(String.valueOf(date.getMonthValue())).concat(".").concat(String.valueOf(date.getDayOfMonth())).concat(".").concat(String.valueOf(date.getHour())).concat(".")
+    String encodedDate = String.valueOf(date.getYear()).concat(".").concat(String.valueOf(date.getMonthValue())).concat(".")
+                               .concat(String.valueOf(date.getDayOfMonth())).concat(".").concat(String.valueOf(date.getHour())).concat(".")
                                .concat(String.valueOf(date.getMinute())).concat(".").concat(String.valueOf(date.getSecond()));
     properties.put("eovdate", encodedDate);
 

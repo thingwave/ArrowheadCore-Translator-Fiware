@@ -122,7 +122,6 @@ Copy all the packages to one location:
 ```bash
 scp common/target/arrowhead-common_4.1.0_all.deb \
     authorization/target/arrowhead-authorization_4.1.0_all.deb \
-    certificate_authority/target/arrowhead-certificate_authority_4.1.0_all.deb \
     serviceregistry_sql/target/arrowhead-serviceregistry-sql_4.1.0_all.deb \
     gateway/target/arrowhead-gateway_4.1.0_all.deb \
     eventhandler/target/arrowhead-eventhandler_4.1.0_all.deb \

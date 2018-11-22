@@ -182,10 +182,11 @@ public class ServiceRequestForm {
 
     if (orchestrationFlags.get("onlyPreferred")) {
       List<PreferredProvider> tmp = new ArrayList<>();
-      for (PreferredProvider provider : preferredProviders)
+      for (PreferredProvider provider : preferredProviders) {
         if (!provider.isValid()) {
           tmp.add(provider);
         }
+      }
       preferredProviders.removeAll(tmp);
       if (preferredProviders.isEmpty()) {
         throw new BadPayloadException("There is no valid PreferredProvider, but \"onlyPreferred\" is set to true");
