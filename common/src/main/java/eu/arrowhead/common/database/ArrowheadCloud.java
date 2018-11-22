@@ -1,71 +1,67 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
-import com.google.common.base.MoreObjects;
-import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import eu.arrowhead.common.exception.BadPayloadException;
+import eu.arrowhead.common.messages.ArrowheadBase;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * Entity class for storing Arrowhead Clouds in the database. The "operator" and "cloud_name" columns must be unique together.
+ */
 @Entity
+@JsonIgnoreProperties({"alwaysMandatoryFields"})
 @Table(name = "arrowhead_cloud", uniqueConstraints = {@UniqueConstraint(columnNames = {"operator", "cloud_name"})})
-public class ArrowheadCloud {
+public class ArrowheadCloud extends ArrowheadBase {
 
+  @Transient
+  private static final Set<String> alwaysMandatoryFields = new HashSet<>(Arrays.asList("operator", "cloudName"));
+
+  @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  private int id;
 
-  @NotBlank
-  @Length(max = 255, message = "Cloud operator must be 255 character at max")
-  @Pattern(regexp = "[A-Za-z0-9-_:]+", message = "Cloud operator can only contain alphanumerical characters and some special characters (dash, "
-      + "underscore and colon)")
+  @Column(name = "operator")
   private String operator;
 
-  @NotBlank
   @Column(name = "cloud_name")
-  @Size(max = 255, message = "Cloud name must be 255 character at max")
-  @Pattern(regexp = "[A-Za-z0-9-_:]+", message = "Cloud name can only contain alphanumerical characters and some special characters (dash, "
-      + "underscore and colon)")
   private String cloudName;
 
-  @NotBlank
-  @Size(min = 3, max = 255, message = "Cloud address must be between 3 and 255 characters")
+  @Column(name = "address")
   private String address;
 
-  @NotNull
-  @Min(value = 1, message = "Port can not be less than 1")
-  @Max(value = 65535, message = "Port can not be greater than 65535")
+  @Column(name = "port")
   private Integer port;
 
-  @NotBlank
   @Column(name = "gatekeeper_service_uri")
   private String gatekeeperServiceURI;
 
-  @Column(name = "authentication_info")
-  @Size(max = 2047, message = "Authentication information must be 2047 character at max")
+  @Column(name = "authentication_info", length = 2047)
   private String authenticationInfo;
 
   @Column(name = "is_secure")
   @Type(type = "yes_no")
-  private Boolean secure = false;
+  private Boolean secure;
 
   public ArrowheadCloud() {
   }
@@ -81,11 +77,11 @@ public class ArrowheadCloud {
     this.secure = secure;
   }
 
-  public Long getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -145,37 +141,73 @@ public class ArrowheadCloud {
     this.secure = secure;
   }
 
+  public Set<String> missingFields(boolean throwException, Set<String> mandatoryFields) {
+    Set<String> mf = new HashSet<>(alwaysMandatoryFields);
+    if (mandatoryFields != null) {
+      mf.addAll(mandatoryFields);
+    }
+    Set<String> nonNullFields = getFieldNamesWithNonNullValue();
+    for (final String field : mf) {
+      if (field.startsWith(getClass().getSimpleName())) {
+        nonNullFields = prefixFieldNames(nonNullFields);
+        break;
+      }
+    }
+    mf.removeAll(nonNullFields);
+
+    if (throwException && !mf.isEmpty()) {
+      throw new BadPayloadException("Missing mandatory fields for " + getClass().getSimpleName() + ": " + String.join(", ", mf));
+    }
+    return mf;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof ArrowheadCloud)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
+
     ArrowheadCloud that = (ArrowheadCloud) o;
-    return Objects.equals(operator, that.operator) && Objects.equals(cloudName, that.cloudName) && Objects.equals(address, that.address) && Objects
-        .equals(port, that.port) && Objects.equals(gatekeeperServiceURI, that.gatekeeperServiceURI) && Objects.equals(secure, that.secure);
+
+    if (!operator.equals(that.operator)) {
+      return false;
+    }
+    if (!cloudName.equals(that.cloudName)) {
+      return false;
+    }
+    if (address != null ? !address.equals(that.address) : that.address != null) {
+      return false;
+    }
+    if (port != null ? !port.equals(that.port) : that.port != null) {
+      return false;
+    }
+    if (gatekeeperServiceURI != null ? !gatekeeperServiceURI.equals(that.gatekeeperServiceURI) : that.gatekeeperServiceURI != null) {
+      return false;
+    }
+    if (authenticationInfo != null ? !authenticationInfo.equals(that.authenticationInfo) : that.authenticationInfo != null) {
+      return false;
+    }
+    return secure != null ? secure.equals(that.secure) : that.secure == null;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(operator, cloudName, address, port, gatekeeperServiceURI, secure);
+    int result = operator.hashCode();
+    result = 31 * result + cloudName.hashCode();
+    result = 31 * result + (address != null ? address.hashCode() : 0);
+    result = 31 * result + (port != null ? port.hashCode() : 0);
+    result = 31 * result + (gatekeeperServiceURI != null ? gatekeeperServiceURI.hashCode() : 0);
+    result = 31 * result + (authenticationInfo != null ? authenticationInfo.hashCode() : 0);
+    result = 31 * result + (secure != null ? secure.hashCode() : 0);
+    return result;
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("operator", operator).add("cloudName", cloudName).add("address", address).add("port", port)
-                      .add("gatekeeperServiceURI", gatekeeperServiceURI).add("secure", secure).toString();
+    return "(" + operator + ":" + cloudName + ")";
   }
 
-  public void partialUpdate(ArrowheadCloud other) {
-    this.operator = other.getOperator() != null ? other.getOperator() : this.operator;
-    this.cloudName = other.getCloudName() != null ? other.getCloudName() : this.cloudName;
-    this.address = other.getAddress() != null ? other.getAddress() : this.address;
-    this.port = other.getPort() != null ? other.getPort() : this.port;
-    this.gatekeeperServiceURI = other.getGatekeeperServiceURI() != null ? other.getGatekeeperServiceURI() : this.gatekeeperServiceURI;
-    this.authenticationInfo = other.getAuthenticationInfo() != null ? other.getAuthenticationInfo() : this.authenticationInfo;
-    this.secure = other.isSecure() != null ? other.isSecure() : this.secure;
-  }
 }

@@ -1,3 +1,0 @@
-Template: arrowhead-gateway/address
-Type: string
-Description: On which IP address should the gateway bind?

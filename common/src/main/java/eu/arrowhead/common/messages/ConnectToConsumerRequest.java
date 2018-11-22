@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.messages;
@@ -13,7 +15,7 @@ import eu.arrowhead.common.database.ArrowheadSystem;
 
 public class ConnectToConsumerRequest {
 
-  private String brokerHost;
+  private String brokerName;
   private int brokerPort;
   private String queueName;
   private String controlQueueName;
@@ -29,10 +31,10 @@ public class ConnectToConsumerRequest {
   public ConnectToConsumerRequest() {
   }
 
-  public ConnectToConsumerRequest(String brokerHost, int brokerPort, String queueName, String controlQueueName, ArrowheadSystem consumer,
+  public ConnectToConsumerRequest(String brokerName, int brokerPort, String queueName, String controlQueueName, ArrowheadSystem consumer,
                                   ArrowheadSystem provider, ArrowheadCloud consumerCloud, ArrowheadCloud providerCloud, ArrowheadService service,
                                   Boolean isSecure, int timeout, String providerGWPublicKey) {
-    this.brokerHost = brokerHost;
+    this.brokerName = brokerName;
     this.brokerPort = brokerPort;
     this.queueName = queueName;
     this.controlQueueName = controlQueueName;
@@ -46,12 +48,12 @@ public class ConnectToConsumerRequest {
     this.providerGWPublicKey = providerGWPublicKey;
   }
 
-  public String getBrokerHost() {
-    return brokerHost;
+  public String getBrokerName() {
+    return brokerName;
   }
 
-  public void setBrokerHost(String brokerHost) {
-    this.brokerHost = brokerHost;
+  public void setBrokerName(String brokerName) {
+    this.brokerName = brokerName;
   }
 
   public int getBrokerPort() {

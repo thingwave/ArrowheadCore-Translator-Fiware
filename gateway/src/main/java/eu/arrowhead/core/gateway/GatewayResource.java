@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.gateway;
@@ -59,14 +61,14 @@ public class GatewayResource {
 
     ActiveSession activeSession = new ActiveSession(connectionRequest.getConsumer(), connectionRequest.getConsumerCloud(),
                                                     connectionRequest.getProvider(), connectionRequest.getProviderCloud(),
-                                                    connectionRequest.getService(), connectionRequest.getBrokerHost(),
+                                                    connectionRequest.getService(), connectionRequest.getBrokerName(),
                                                     connectionRequest.getBrokerPort(), null, queueName, controlQueueName,
                                                     connectionRequest.getIsSecure(), LocalDateTime.now());
     // Add the session to the management queue
     GatewayService.activeSessions.put(queueName, activeSession);
 
     GatewaySession gatewaySession = GatewayService
-        .createChannel(connectionRequest.getBrokerHost(), connectionRequest.getBrokerPort(), queueName, controlQueueName,
+        .createChannel(connectionRequest.getBrokerName(), connectionRequest.getBrokerPort(), queueName, controlQueueName,
                        connectionRequest.getIsSecure());
 
     if (connectionRequest.getIsSecure()) {
@@ -89,14 +91,14 @@ public class GatewayResource {
 
     ActiveSession activeSession = new ActiveSession(connectionRequest.getConsumer(), connectionRequest.getConsumerCloud(),
                                                     connectionRequest.getProvider(), connectionRequest.getProviderCloud(),
-                                                    connectionRequest.getService(), connectionRequest.getBrokerHost(),
+                                                    connectionRequest.getService(), connectionRequest.getBrokerName(),
                                                     connectionRequest.getBrokerPort(), serverSocketPort, connectionRequest.getQueueName(),
                                                     connectionRequest.getControlQueueName(), connectionRequest.getIsSecure(), LocalDateTime.now());
     // Add the session to the management queue
     GatewayService.activeSessions.put(connectionRequest.getQueueName(), activeSession);
 
     GatewaySession gatewaySession = GatewayService
-        .createChannel(connectionRequest.getBrokerHost(), connectionRequest.getBrokerPort(), connectionRequest.getQueueName(),
+        .createChannel(connectionRequest.getBrokerName(), connectionRequest.getBrokerPort(), connectionRequest.getQueueName(),
                        connectionRequest.getControlQueueName(), connectionRequest.getIsSecure());
 
     if (connectionRequest.getIsSecure()) {

@@ -1,7 +1,0 @@
-# Set line endings to \n
-* text eol=lf
-
-*.png binary
-*.docx binary
-*.pptx binary
-*.pdf binary

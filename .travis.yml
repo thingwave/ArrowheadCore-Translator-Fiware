@@ -1,13 +1,2 @@
 language: java
 jdk: oraclejdk8
-
-deploy:
-  provider: releases
-  api_key: $github_api_key
-  file: "arrowhead_release.zip"
-  skip_cleanup: true
-  on:
-    condition: "$artifacts = publish"
-
-env:
-- artifacts=publish

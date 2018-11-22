@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.serviceregistry;
@@ -15,18 +17,16 @@ import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.DnsException;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.log4j.Logger;
 
-class RegistryUtils {
+public class RegistryUtils {
 
   private static final Logger log = Logger.getLogger(RegistryUtils.class.getName());
 
@@ -118,7 +118,7 @@ class RegistryUtils {
       serviceName = serviceName.substring(0, serviceNameLength);
       String[] array = serviceName.split("_");
       if (serviceName.startsWith("_") && array.length == 3) {
-        Set<String> intf = new HashSet<>();
+        List<String> intf = new ArrayList<>();
         intf.add(array[2]);
         if (array[1].contains("ahf-")) {
           arrowheadService.setServiceDefinition(array[1].substring(4));
@@ -181,7 +181,7 @@ class RegistryUtils {
     }
 
     if (properties.containsKey("txtvers")) {
-      providerService.setVersion(Integer.valueOf(properties.get("txtvers")));
+      providerService.setVersion(new Integer(properties.get("txtvers")));
     } else {
       providerService.setVersion(1);
     }
@@ -206,7 +206,7 @@ class RegistryUtils {
     try (Socket socket = new Socket()) {
       socket.connect(new InetSocketAddress(host, port), timeout);
       return true;
-    } catch (IOException e) {
+    } catch (Exception e) {
       return false; // Either timeout or unreachable or failed DNS lookup.
     }
   }

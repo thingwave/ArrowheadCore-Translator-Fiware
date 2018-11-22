@@ -1,14 +1,15 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.serviceregistry_sql;
 
 import eu.arrowhead.common.database.ServiceRegistryEntry;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
@@ -20,17 +21,13 @@ class RegistryUtils {
     try (Socket socket = new Socket()) {
       socket.connect(new InetSocketAddress(host, port), timeout);
       return true;
-    } catch (IOException e) {
+    } catch (Exception e) {
       return false; // Either timeout or unreachable or failed DNS lookup.
     }
   }
 
   static void filterOnVersion(List<ServiceRegistryEntry> fetchedList, int targetVersion) {
     fetchedList.removeIf(current -> current.getVersion() != targetVersion);
-  }
-
-  static void filterOnVersion(List<ServiceRegistryEntry> fetchedList, int minVersion, int maxVersion) {
-    fetchedList.removeIf(current -> current.getVersion() < minVersion || current.getVersion() > maxVersion);
   }
 
   static void filterOnMeta(List<ServiceRegistryEntry> fetchedList, Map<String, String> metadata) {

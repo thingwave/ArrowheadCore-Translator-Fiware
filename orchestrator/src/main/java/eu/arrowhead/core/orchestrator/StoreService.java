@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.orchestrator;
@@ -26,7 +28,7 @@ public final class StoreService {
    */
   public static List<OrchestrationStore> getDefaultStoreEntries(ArrowheadSystem consumer) {
     restrictionMap.clear();
-    ArrowheadSystem savedConsumer = getConsumerSystem(consumer);
+    ArrowheadSystem savedConsumer = getConsumerSystem(consumer.getSystemName());
     if (savedConsumer == null) {
       return new ArrayList<>();
     }
@@ -41,7 +43,7 @@ public final class StoreService {
    */
   public static List<OrchestrationStore> getStoreEntries(ArrowheadSystem consumer, ArrowheadService service) {
     restrictionMap.clear();
-    ArrowheadSystem savedConsumer = getConsumerSystem(consumer);
+    ArrowheadSystem savedConsumer = getConsumerSystem(consumer.getSystemName());
     ArrowheadService savedService = getRequestedService(service.getServiceDefinition());
     if (savedConsumer == null || savedService == null) {
       return new ArrayList<>();
@@ -75,11 +77,9 @@ public final class StoreService {
   /**
    * This private method returns an ArrowheadSystem from the database.
    */
-  private static ArrowheadSystem getConsumerSystem(ArrowheadSystem system) {
+  private static ArrowheadSystem getConsumerSystem(String systemName) {
     HashMap<String, Object> rm = new HashMap<>();
-    rm.put("systemName", system.getSystemName());
-    rm.put("address", system.getAddress());
-    rm.put("port", system.getPort());
+    rm.put("systemName", systemName);
     return dm.get(ArrowheadSystem.class, rm);
   }
 

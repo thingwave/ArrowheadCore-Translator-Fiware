@@ -3,7 +3,6 @@
  * Released under a simplified BSD license,
  * see README.txt for details.
  */
-
 package com.github.danieln.dnssdjava.browser;
 
 import com.github.danieln.dnssdjava.DnsSDBrowser;

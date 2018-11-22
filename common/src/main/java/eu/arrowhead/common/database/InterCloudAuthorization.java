@@ -1,15 +1,16 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
-import com.google.common.base.MoreObjects;
-import java.util.Objects;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -19,10 +20,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * JPA entity class for storing inter-cloud authorization rights in the database. The <i>consumer_cloud_id</i> and <i>arrowhead_service_id</i> columns
@@ -36,22 +33,17 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "inter_cloud_authorization", uniqueConstraints = {@UniqueConstraint(columnNames = {"consumer_cloud_id", "arrowhead_service_id"})})
 public class InterCloudAuthorization {
 
+  @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  private int id;
 
-  @Valid
-  @NotNull
   @JoinColumn(name = "consumer_cloud_id")
-  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
   private ArrowheadCloud cloud;
 
-  @Valid
-  @NotNull
   @JoinColumn(name = "arrowhead_service_id")
-  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
   private ArrowheadService service;
 
   public InterCloudAuthorization() {
@@ -62,11 +54,11 @@ public class InterCloudAuthorization {
     this.service = service;
   }
 
-  public Long getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -86,25 +78,4 @@ public class InterCloudAuthorization {
     this.service = service;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof InterCloudAuthorization)) {
-      return false;
-    }
-    InterCloudAuthorization that = (InterCloudAuthorization) o;
-    return Objects.equals(cloud, that.cloud) && Objects.equals(service, that.service);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(cloud, service);
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this).add("cloud", cloud).add("service", service).toString();
-  }
 }

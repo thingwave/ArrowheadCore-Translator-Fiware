@@ -1,20 +1,24 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
-import com.google.common.base.MoreObjects;
-import eu.arrowhead.common.json.constraint.LDTInFuture;
-import eu.arrowhead.common.json.constraint.SENotBlank;
-import java.time.ZonedDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import eu.arrowhead.common.exception.BadPayloadException;
+import eu.arrowhead.common.messages.ArrowheadBase;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -29,83 +33,75 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
+@JsonIgnoreProperties({"alwaysMandatoryFields"})
 @Table(name = "event_filter", uniqueConstraints = {@UniqueConstraint(columnNames = {"event_type", "consumer_system_id"})})
-public class EventFilter {
+public class EventFilter extends ArrowheadBase {
 
+  @Transient
+  private static final Set<String> alwaysMandatoryFields = new HashSet<>(Arrays.asList("eventType", "consumer"));
+
+  @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  private int id;
 
-  @NotBlank
   @Column(name = "event_type")
-  @Size(max = 255, message = "Event type must be 255 character at max")
   private String eventType;
 
-  @Valid
-  @NotNull(message = "Consumer ArrowheadSystem cannot be null")
   @JoinColumn(name = "consumer_system_id")
-  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @OnDelete(action = OnDeleteAction.CASCADE)
+  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
   private ArrowheadSystem consumer;
 
-  @Valid
-  @Size(max = 100, message = "Event filter can only have 100 sources at max")
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
+  @LazyCollection(LazyCollectionOption.FALSE)
   @CollectionTable(name = "event_filter_sources_list", joinColumns = @JoinColumn(name = "filter_id"))
-  private Set<ArrowheadSystem> sources = new HashSet<>();
+  private List<ArrowheadSystem> sources = new ArrayList<>();
 
   @Column(name = "start_date")
-  private ZonedDateTime startDate;
+  private LocalDateTime startDate;
 
   @Column(name = "end_date")
-  @LDTInFuture(message = "Filter end date must be in the future")
-  private ZonedDateTime endDate;
+  private LocalDateTime endDate;
 
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
+  @LazyCollection(LazyCollectionOption.FALSE)
   @MapKeyColumn(name = "metadata_key")
   @Column(name = "metadata_value", length = 2047)
   @CollectionTable(name = "event_filter_metadata", joinColumns = @JoinColumn(name = "filter_id"))
-  private Map<@SENotBlank String, @SENotBlank String> filterMetadata = new HashMap<>();
+  private Map<String, String> filterMetadata = new HashMap<>();
+
+  @Column(name = "port")
+  private Integer port;
 
   @Column(name = "notify_uri")
   private String notifyUri;
 
-  //TODO provide a REST interface to easily switch this
   @Column(name = "match_metadata")
   @Type(type = "yes_no")
-  private Boolean matchMetadata = false;
+  //TODO provide a REST interface to easily switch this
+  private boolean matchMetadata;
 
   public EventFilter() {
   }
 
-  public EventFilter(String eventType, ArrowheadSystem consumer, Set<ArrowheadSystem> sources, ZonedDateTime startDate, ZonedDateTime endDate,
-                     Map<String, String> filterMetadata, String notifyUri, boolean matchMetadata) {
+  public EventFilter(String eventType, ArrowheadSystem consumer, List<ArrowheadSystem> sources, LocalDateTime startDate, LocalDateTime endDate,
+                     Map<String, String> filterMetadata, Integer port, String notifyUri, boolean matchMetadata) {
     this.eventType = eventType;
     this.consumer = consumer;
     this.sources = sources;
     this.startDate = startDate;
     this.endDate = endDate;
     this.filterMetadata = filterMetadata;
+    this.port = port;
     this.notifyUri = notifyUri;
     this.matchMetadata = matchMetadata;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
   }
 
   public String getEventType() {
@@ -124,27 +120,27 @@ public class EventFilter {
     this.consumer = consumer;
   }
 
-  public Set<ArrowheadSystem> getSources() {
+  public List<ArrowheadSystem> getSources() {
     return sources;
   }
 
-  public void setSources(Set<ArrowheadSystem> sources) {
+  public void setSources(List<ArrowheadSystem> sources) {
     this.sources = sources;
   }
 
-  public ZonedDateTime getStartDate() {
+  public LocalDateTime getStartDate() {
     return startDate;
   }
 
-  public void setStartDate(ZonedDateTime startDate) {
+  public void setStartDate(LocalDateTime startDate) {
     this.startDate = startDate;
   }
 
-  public ZonedDateTime getEndDate() {
+  public LocalDateTime getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(ZonedDateTime endDate) {
+  public void setEndDate(LocalDateTime endDate) {
     this.endDate = endDate;
   }
 
@@ -156,6 +152,14 @@ public class EventFilter {
     this.filterMetadata = filterMetadata;
   }
 
+  public Integer getPort() {
+    return port;
+  }
+
+  public void setPort(Integer port) {
+    this.port = port;
+  }
+
   public String getNotifyUri() {
     return notifyUri;
   }
@@ -164,12 +168,45 @@ public class EventFilter {
     this.notifyUri = notifyUri;
   }
 
-  public Boolean isMatchMetadata() {
+  public boolean getMatchMetadata() {
     return matchMetadata;
   }
 
-  public void setMatchMetadata(Boolean matchMetadata) {
+  public void setMatchMetadata(boolean matchMetadata) {
     this.matchMetadata = matchMetadata;
+  }
+
+  public Set<String> missingFields(boolean throwException, Set<String> mandatoryFields) {
+    Set<String> mf = new HashSet<>(alwaysMandatoryFields);
+    if (mandatoryFields != null) {
+      mf.addAll(mandatoryFields);
+    }
+    Set<String> nonNullFields = getFieldNamesWithNonNullValue();
+    mf.removeAll(nonNullFields);
+    if (consumer != null) {
+      mf = consumer.missingFields(false, mf);
+    }
+    if (sources != null && !sources.isEmpty()) {
+      for (ArrowheadSystem source : sources) {
+        mf.addAll(source.missingFields(false, null));
+      }
+    }
+    if (throwException && !mf.isEmpty()) {
+      throw new BadPayloadException("Missing mandatory fields for " + getClass().getSimpleName() + ": " + String.join(", ", mf));
+    }
+    return mf;
+  }
+
+  public void toDatabase() {
+    if (consumer.getPort() != null && (port == null || port == 0)) {
+      port = consumer.getPort();
+    }
+  }
+
+  public void fromDatabase() {
+    if (port != null && consumer.getPort() == null) {
+      consumer.setPort(port);
+    }
   }
 
   @Override
@@ -177,20 +214,40 @@ public class EventFilter {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof EventFilter)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    EventFilter that = (EventFilter) o;
-    return Objects.equals(eventType, that.eventType) && Objects.equals(consumer, that.consumer);
+
+    EventFilter eventFilter = (EventFilter) o;
+
+    if (eventType != null ? !eventType.equals(eventFilter.eventType) : eventFilter.eventType != null) {
+      return false;
+    }
+    if (consumer != null ? !consumer.equals(eventFilter.consumer) : eventFilter.consumer != null) {
+      return false;
+    }
+    if (startDate != null ? !startDate.equals(eventFilter.startDate) : eventFilter.startDate != null) {
+      return false;
+    }
+    return endDate != null ? endDate.equals(eventFilter.endDate) : eventFilter.endDate == null;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(eventType, consumer);
+    int result = eventType != null ? eventType.hashCode() : 0;
+    result = 31 * result + (consumer != null ? consumer.hashCode() : 0);
+    result = 31 * result + (startDate != null ? startDate.hashCode() : 0);
+    result = 31 * result + (endDate != null ? endDate.hashCode() : 0);
+    return result;
   }
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("eventType", eventType).add("consumer", consumer).toString();
+    final StringBuffer sb = new StringBuffer("EventFilter{");
+    sb.append("eventType='").append(eventType).append('\'');
+    sb.append(", consumer=").append(consumer);
+    sb.append('}');
+    return sb.toString();
   }
+
 }

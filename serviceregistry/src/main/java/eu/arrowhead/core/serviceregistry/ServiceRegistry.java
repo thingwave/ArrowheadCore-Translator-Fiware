@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.serviceregistry;
@@ -19,8 +21,6 @@ import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.DnsException;
 import eu.arrowhead.common.messages.ServiceQueryForm;
 import eu.arrowhead.common.messages.ServiceQueryResult;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,9 +55,8 @@ class ServiceRegistry {
 
       try {
         DnsSDRegistrator registrator = RegistryUtils.createRegistrator();
-        if (entry.getEndOfValidity().isAfter(LocalDateTime.now())) {
-          long timeToLive = Duration.between(LocalDateTime.now(), entry.getEndOfValidity()).getSeconds();
-          registrator.setTimeToLive(Math.toIntExact(timeToLive));
+        if (entry.getTtl() > 0) {
+          registrator.setTimeToLive(Math.toIntExact(entry.getTtl()));
         }
         ServiceName name = registrator.makeServiceName(providerInstance, ServiceType.valueOf(serviceType));
 

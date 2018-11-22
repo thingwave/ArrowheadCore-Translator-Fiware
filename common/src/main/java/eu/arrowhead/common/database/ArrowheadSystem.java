@@ -1,54 +1,56 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.database;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.json.support.ArrowheadSystemSupport;
-import java.util.Objects;
+import eu.arrowhead.common.messages.ArrowheadBase;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * Entity class for storing Arrowhead Systems in the database. The "system_name" column must be unique.
+ */
 @Entity
-@Table(name = "arrowhead_system", uniqueConstraints = {@UniqueConstraint(columnNames = {"system_name", "address", "port"})})
-public class ArrowheadSystem {
+@JsonIgnoreProperties({"alwaysMandatoryFields"})
+@Table(name = "arrowhead_system", uniqueConstraints = {@UniqueConstraint(columnNames = {"system_name"})})
+public class ArrowheadSystem extends ArrowheadBase {
 
+  @Transient
+  private static final Set<String> alwaysMandatoryFields = new HashSet<>(Collections.singleton("systemName"));
+
+  @Column(name = "id")
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  private int id;
 
-  @NotBlank
-  @Size(max = 255, message = "System name must be 255 character at max")
-  @Pattern(regexp = "[A-Za-z0-9-_:]+", message = "System name can only contain alphanumerical characters and some special characters (dash, "
-      + "underscore and colon)")
   @Column(name = "system_name")
   private String systemName;
 
-  @NotBlank
-  @Size(min = 3, max = 255, message = "Address must be between 3 and 255 characters")
+  @Column(name = "address")
   private String address;
 
-  @NotNull
-  @Min(value = 1, message = "Port can not be less than 1")
-  @Max(value = 65535, message = "Port can not be greater than 65535")
+  @Transient
   private Integer port;
 
-  @Column(name = "authentication_info")
-  @Size(max = 2047, message = "Authentication information must be 2047 character at max")
+  @Column(name = "authentication_info", length = 2047)
   private String authenticationInfo;
 
   public ArrowheadSystem() {
@@ -64,10 +66,10 @@ public class ArrowheadSystem {
   public ArrowheadSystem(String json) {
     String[] fields = json.split(",");
     this.systemName = fields[0].equals("null") ? null : fields[0];
-    this.address = fields[1].equals("null") ? null : fields[1];
-    this.port = Integer.valueOf(fields[2]);
 
     if (fields.length == 4) {
+      this.address = fields[1].equals("null") ? null : fields[1];
+      this.port = fields[2].equals("null") ? null : Integer.valueOf(fields[2]);
       this.authenticationInfo = fields[3].equals("null") ? null : fields[3];
     }
   }
@@ -87,11 +89,11 @@ public class ArrowheadSystem {
     this.authenticationInfo = system.authenticationInfo;
   }
 
-  public Long getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -127,6 +129,26 @@ public class ArrowheadSystem {
     this.authenticationInfo = authenticationInfo;
   }
 
+  public Set<String> missingFields(boolean throwException, Set<String> mandatoryFields) {
+    Set<String> mf = new HashSet<>(alwaysMandatoryFields);
+    if (mandatoryFields != null) {
+      mf.addAll(mandatoryFields);
+    }
+    Set<String> nonNullFields = getFieldNamesWithNonNullValue();
+    for (final String field : mf) {
+      if (field.startsWith(getClass().getSimpleName())) {
+        nonNullFields = prefixFieldNames(nonNullFields);
+        break;
+      }
+    }
+    mf.removeAll(nonNullFields);
+
+    if (throwException && !mf.isEmpty()) {
+      throw new BadPayloadException("Missing mandatory fields for " + getClass().getSimpleName() + ": " + String.join(", ", mf));
+    }
+    return mf;
+  }
+
   public String toArrowheadCommonName(String operator, String cloudName) {
     if (systemName.contains(".") || operator.contains(".") || cloudName.contains(".")) {
       throw new IllegalArgumentException("The string fields can not contain dots!");
@@ -140,29 +162,33 @@ public class ArrowheadSystem {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof ArrowheadSystem)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
+
     ArrowheadSystem that = (ArrowheadSystem) o;
-    return Objects.equals(systemName, that.systemName) && Objects.equals(address, that.address) && Objects.equals(port, that.port);
+
+    if (!systemName.equals(that.systemName)) {
+      return false;
+    }
+    if (address != null ? !address.equals(that.address) : that.address != null) {
+      return false;
+    }
+    return authenticationInfo != null ? authenticationInfo.equals(that.authenticationInfo) : that.authenticationInfo == null;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(systemName, address, port);
+    int result = systemName.hashCode();
+    result = 31 * result + (address != null ? address.hashCode() : 0);
+    result = 31 * result + (authenticationInfo != null ? authenticationInfo.hashCode() : 0);
+    return result;
   }
 
   //NOTE ArrowheadSystemKeyDeserializer relies on this implementation, do not change it without changing the (String json) constructor
   @Override
   public String toString() {
     return systemName + "," + address + "," + port + "," + authenticationInfo;
-  }
-
-  public void partialUpdate(ArrowheadSystem other) {
-    this.systemName = other.getSystemName() != null ? other.getSystemName() : this.systemName;
-    this.address = other.getAddress() != null ? other.getAddress() : this.address;
-    this.port = other.getPort() != null ? other.getPort() : this.port;
-    this.authenticationInfo = other.getAuthenticationInfo() != null ? other.getAuthenticationInfo() : this.authenticationInfo;
   }
 
 }

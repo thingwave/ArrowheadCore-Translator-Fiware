@@ -11,11 +11,11 @@
 
   <parent>
     <groupId>eu.arrowhead</groupId>
-    <artifactId>core</artifactId>
-    <version>${revision}</version>
+    <artifactId>arrowhead</artifactId>
+    <version>4.0</version>
   </parent>
 
-  <artifactId>arrowhead-dnssd</artifactId>
+  <artifactId>dnssd</artifactId>
 
   <dependencies>
 

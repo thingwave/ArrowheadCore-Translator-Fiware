@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.eventhandler;
@@ -11,9 +13,10 @@ import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.database.EventFilter;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.messages.PublishEvent;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
-import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -47,20 +50,17 @@ public class EventHandlerResource {
 
   @POST
   @Path("publish")
-  public Response publishEvent(@Valid PublishEvent eventPublished, @Context ContainerRequestContext requestContext) {
+  public Response publishEvent(PublishEvent eventPublished, @Context ContainerRequestContext requestContext) {
+    eventPublished.missingFields(true, null);
     if (eventPublished.getEvent().getTimestamp() == null) {
-      eventPublished.getEvent().setTimestamp(ZonedDateTime.now());
+      eventPublished.getEvent().setTimestamp(LocalDateTime.now());
     }
-    if (EventHandlerMain.EVENT_PUBLISHING_TOLERANCE > 0) {
-      if (eventPublished.getEvent().getTimestamp().isBefore(ZonedDateTime.now().minusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
-        throw new BadPayloadException(
-            "This event is too old to publish. Maximum allowed delay before publishing the event: " + EventHandlerMain.EVENT_PUBLISHING_TOLERANCE);
-      }
-      if (eventPublished.getEvent().getTimestamp().isAfter(ZonedDateTime.now().plusMinutes(EventHandlerMain.EVENT_PUBLISHING_TOLERANCE))) {
-        throw new BadPayloadException(
-            "This event is too far in the future. Maximum allowed timestamp tolerance for events: " + EventHandlerMain.EVENT_PUBLISHING_TOLERANCE);
-      }
+    if (EventHandlerMain.PUBLISH_EVENTS_DELAY > 0 && eventPublished.getEvent().getTimestamp().isBefore(
+        LocalDateTime.now().minusMinutes(EventHandlerMain.PUBLISH_EVENTS_DELAY))) {
+      throw new BadPayloadException(
+          "This event is too old to publish. Maximum allowed delay before publishing the event: " + EventHandlerMain.PUBLISH_EVENTS_DELAY);
     }
+    //TODO should timestamps in the future be allowed?
     boolean isSecure = requestContext.getSecurityContext().isSecure();
 
     /* First the event will be propagated to consumers, then the results will be sent back to the publisher, summarizing which consumers received the
@@ -85,10 +85,13 @@ public class EventHandlerResource {
 
   @POST
   @Path("subscription")
-  public Response subscribe(@Valid EventFilter filter) {
+  public Response subscribe(EventFilter filter) {
+    filter.missingFields(true, new HashSet<>(Arrays.asList("ArrowheadSystem:port", "notifyUri")));
+    filter.toDatabase();
     EventFilter savedFilter = EventHandlerService.saveEventFilter(filter);
     if (savedFilter != null) {
       log.info("EventFilter was saved.");
+      savedFilter.fromDatabase();
       return Response.status(Status.CREATED.getStatusCode()).entity(savedFilter).build();
     } else {
       log.info("EventFilter was already in the database, nothing happened.");
@@ -106,7 +109,8 @@ public class EventHandlerResource {
 
   @PUT
   @Path("subscription")
-  public Response unsubscribe(@Valid EventFilter filter) {
+  public Response unsubscribe(EventFilter filter) {
+    filter.missingFields(true, null);
     int statusCode = EventHandlerService.deleteEventFilter(filter.getEventType(), filter.getConsumer().getSystemName());
     log.info("deleteEventFilter returned with status code: " + statusCode);
     return Response.status(statusCode).build();

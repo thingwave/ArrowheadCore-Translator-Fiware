@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.gatekeeper;
@@ -13,9 +15,10 @@ import eu.arrowhead.common.database.Broker;
 import eu.arrowhead.common.database.NeighborCloud;
 import eu.arrowhead.common.exception.DataNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -98,26 +101,28 @@ public class GatekeeperApi {
    */
   @POST
   @Path("neighborhood")
-  public Response addNeighborClouds(@Valid List<NeighborCloud> neighborCloudList) {
+  public Response addNeighborClouds(List<NeighborCloud> neighborCloudList) {
 
     List<NeighborCloud> savedNeighborClouds = new ArrayList<>();
     for (NeighborCloud nc : neighborCloudList) {
-      restrictionMap.clear();
-      restrictionMap.put("operator", nc.getCloud().getOperator());
-      restrictionMap.put("cloudName", nc.getCloud().getCloudName());
-      ArrowheadCloud cloud = dm.get(ArrowheadCloud.class, restrictionMap);
-      if (cloud == null) {
-        dm.save(nc.getCloud());
-      } else {
-        nc.setCloud(cloud);
-      }
+      if (nc.missingFields(false, new HashSet<>(Arrays.asList("address", "gatekeeperServiceURI"))).isEmpty()) {
+        restrictionMap.clear();
+        restrictionMap.put("operator", nc.getCloud().getOperator());
+        restrictionMap.put("cloudName", nc.getCloud().getCloudName());
+        ArrowheadCloud cloud = dm.get(ArrowheadCloud.class, restrictionMap);
+        if (cloud == null) {
+          dm.save(nc.getCloud());
+        } else {
+          nc.setCloud(cloud);
+        }
 
-      restrictionMap.clear();
-      restrictionMap.put("cloud", cloud);
-      NeighborCloud neighborCloud = dm.get(NeighborCloud.class, restrictionMap);
-      if (neighborCloud == null) {
-        dm.save(nc);
-        savedNeighborClouds.add(nc);
+        restrictionMap.clear();
+        restrictionMap.put("cloud", cloud);
+        NeighborCloud neighborCloud = dm.get(NeighborCloud.class, restrictionMap);
+        if (neighborCloud == null) {
+          dm.save(nc);
+          savedNeighborClouds.add(nc);
+        }
       }
     }
 
@@ -133,7 +138,9 @@ public class GatekeeperApi {
    */
   @PUT
   @Path("neighborhood")
-  public Response updateNeighborCloud(@Valid NeighborCloud nc) {
+  public Response updateNeighborCloud(NeighborCloud nc) {
+    nc.missingFields(true, null);
+
     restrictionMap.put("operator", nc.getCloud().getOperator());
     restrictionMap.put("cloudName", nc.getCloud().getCloudName());
     ArrowheadCloud cloud = dm.get(ArrowheadCloud.class, restrictionMap);
@@ -142,13 +149,12 @@ public class GatekeeperApi {
     restrictionMap.put("cloud", cloud);
     NeighborCloud neighborCloud = dm.get(NeighborCloud.class, restrictionMap);
     if (neighborCloud != null) {
-      cloud.setAddress(nc.getCloud().getAddress());
-      cloud.setPort(nc.getCloud().getPort());
-      cloud.setAuthenticationInfo(nc.getCloud().getAuthenticationInfo());
-      cloud.setGatekeeperServiceURI(nc.getCloud().getGatekeeperServiceURI());
+      neighborCloud.getCloud().setAddress(nc.getCloud().getAddress());
+      neighborCloud.getCloud().setPort(nc.getCloud().getPort());
+      neighborCloud.getCloud().setAuthenticationInfo(nc.getCloud().getAuthenticationInfo());
+      neighborCloud.getCloud().setGatekeeperServiceURI(nc.getCloud().getGatekeeperServiceURI());
 
-      cloud = dm.merge(cloud);
-      neighborCloud.setCloud(cloud);
+      neighborCloud = dm.merge(neighborCloud);
       return Response.status(Status.ACCEPTED).entity(neighborCloud).build();
     } else {
       return Response.noContent().build();
@@ -239,18 +245,18 @@ public class GatekeeperApi {
 
   @POST
   @Path("brokers")
-  public Response addBrokers(@Valid List<Broker> brokerList) {
+  public Response addBrokers(List<Broker> brokerList) {
 
     List<Broker> savedBrokers = new ArrayList<>();
     for (Broker broker : brokerList) {
-      restrictionMap.clear();
-      restrictionMap.put("address", broker.getAddress());
-      restrictionMap.put("port", broker.getPort());
-      restrictionMap.put("secure", broker.isSecure());
-      Broker retrievedBroker = dm.get(Broker.class, restrictionMap);
-      if (retrievedBroker == null) {
-        dm.save(broker);
-        savedBrokers.add(broker);
+      if (broker.missingFields(false, null).isEmpty()) {
+        restrictionMap.clear();
+        restrictionMap.put("brokerName", broker.getBrokerName());
+        Broker retrievedBroker = dm.get(Broker.class, restrictionMap);
+        if (retrievedBroker == null) {
+          dm.save(broker);
+          savedBrokers.add(broker);
+        }
       }
     }
 
@@ -262,28 +268,35 @@ public class GatekeeperApi {
   }
 
   @PUT
-  @Path("brokers/{brokerId}")
-  public Response updateBroker(@PathParam("brokerId") long brokerId, @Valid Broker broker) {
-    Broker retrievedBroker = dm.get(Broker.class, brokerId)
-                               .orElseThrow(() -> new DataNotFoundException("Broker entry not found with id: " + brokerId));
-    retrievedBroker.setAddress(broker.getAddress());
-    retrievedBroker.setPort(broker.getPort());
-    retrievedBroker.setSecure(broker.isSecure());
-    retrievedBroker = dm.merge(retrievedBroker);
-    return Response.status(Status.ACCEPTED).entity(retrievedBroker).build();
+  @Path("brokers")
+  public Response updateBroker(Broker broker) {
+    broker.missingFields(true, null);
+    restrictionMap.put("brokerName", broker.getBrokerName());
+    Broker retrievedBroker = dm.get(Broker.class, restrictionMap);
+    if (retrievedBroker != null) {
+      retrievedBroker.setAddress(broker.getAddress());
+      retrievedBroker.setPort(broker.getPort());
+      retrievedBroker.setAuthenticationInfo(broker.getAuthenticationInfo());
+      retrievedBroker.setSecure(broker.isSecure());
+      retrievedBroker = dm.merge(retrievedBroker);
+      return Response.status(Status.ACCEPTED).entity(retrievedBroker).build();
+    } else {
+      return Response.noContent().build();
+    }
   }
 
   @DELETE
-  @Path("brokers/{brokerId}")
-  public Response deleteBroker(@PathParam("brokerId") long brokerId) {
-    return dm.get(Broker.class, brokerId).map(broker -> {
+  @Path("brokers/brokername/{brokerName}")
+  public Response deleteBroker(@PathParam("brokerName") String brokerName) {
+
+    restrictionMap.put("brokerName", brokerName);
+    Broker broker = dm.get(Broker.class, restrictionMap);
+    if (broker == null) {
+      return Response.noContent().build();
+    } else {
       dm.delete(broker);
-      log.info("deleteBroker successfully returns.");
       return Response.ok().build();
-    }).<DataNotFoundException>orElseThrow(() -> {
-      log.info("deleteBroker had no effect.");
-      throw new DataNotFoundException("Broker entry not found with id: " + brokerId);
-    });
+    }
   }
 
 }

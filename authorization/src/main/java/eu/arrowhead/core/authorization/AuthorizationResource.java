@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.core.authorization;
@@ -25,7 +27,6 @@ import eu.arrowhead.common.messages.TokenGenerationResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -44,8 +45,9 @@ import org.apache.log4j.Logger;
 @Produces(MediaType.APPLICATION_JSON)
 public class AuthorizationResource {
 
+  static final DatabaseManager dm = DatabaseManager.getInstance();
+
   private final HashMap<String, Object> restrictionMap = new HashMap<>();
-  private static final DatabaseManager dm = DatabaseManager.getInstance();
   private static final Logger log = Logger.getLogger(AuthorizationResource.class.getName());
 
   @GET
@@ -64,10 +66,10 @@ public class AuthorizationResource {
    */
   @PUT
   @Path("intracloud")
-  public Response isSystemAuthorized(@Valid IntraCloudAuthRequest request) {
+  public Response isSystemAuthorized(IntraCloudAuthRequest request) {
+    request.missingFields(true, null);
+
     restrictionMap.put("systemName", request.getConsumer().getSystemName());
-    restrictionMap.put("address", request.getConsumer().getAddress());
-    restrictionMap.put("port", request.getConsumer().getPort());
     ArrowheadSystem consumer = dm.get(ArrowheadSystem.class, restrictionMap);
     if (consumer == null) {
       log.error("Consumer is not in the database. isSystemAuthorized DataNotFoundException");
@@ -94,8 +96,6 @@ public class AuthorizationResource {
     for (ArrowheadSystem provider : request.getProviders()) {
       restrictionMap.clear();
       restrictionMap.put("systemName", provider.getSystemName());
-      restrictionMap.put("address", provider.getAddress());
-      restrictionMap.put("port", provider.getPort());
       ArrowheadSystem retrievedSystem = dm.get(ArrowheadSystem.class, restrictionMap);
 
       restrictionMap.clear();
@@ -127,7 +127,9 @@ public class AuthorizationResource {
    */
   @PUT
   @Path("intercloud")
-  public Response isCloudAuthorized(@Valid InterCloudAuthRequest request) {
+  public Response isCloudAuthorized(InterCloudAuthRequest request) {
+    request.missingFields(true, null);
+
     restrictionMap.put("operator", request.getCloud().getOperator());
     restrictionMap.put("cloudName", request.getCloud().getCloudName());
     ArrowheadCloud cloud = dm.get(ArrowheadCloud.class, restrictionMap);
@@ -167,7 +169,9 @@ public class AuthorizationResource {
    */
   @PUT
   @Path("token")
-  public Response tokenGeneration(@Valid TokenGenerationRequest request) {
+  public Response tokenGeneration(TokenGenerationRequest request) {
+    request.missingFields(true, null);
+
     // Get the tokens from the service class (can throw run time exceptions)
     List<ArrowheadToken> tokens = TokenGenerationService.generateTokens(request);
     List<TokenData> tokenDataList = new ArrayList<>();

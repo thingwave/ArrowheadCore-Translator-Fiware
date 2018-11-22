@@ -1,8 +1,10 @@
 /*
- * This work is part of the Productive 4.0 innovation project, which receives grants from the
- * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- * national funding authorities from involved countries.
+ *  Copyright (c) 2018 AITIA International Inc.
+ *
+ *  This work is part of the Productive 4.0 innovation project, which receives grants from the
+ *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ *  national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common.misc;
@@ -17,24 +19,22 @@ public enum CoreSystemService {
   GW_CONSUMER_SERVICE("ConnectToConsumer", "gateway/connectToConsumer"),
   GW_PROVIDER_SERVICE("ConnectToProvider", "gateway/connectToProvider"),
   GW_SESSION_MGMT("SessionManagement", "gateway/management"),
-  ORCH_SERVICE("OrchestrationService", "orchestrator/orchestration"),
-  SYS_REG_SERVICE("PlaceHolder", "systemregistry/placeholder"),
-  DEVICE_REG_SERVICE("Placeholder2", "deviceregistry/placeholder");
+  ORCH_SERVICE("OrchestrationService", "orchestrator/orchestration");
 
   private final String serviceDef;
-  private final String serviceURI;
+  private final String serviceUri;
 
-  CoreSystemService(String serviceDef, String serviceURI) {
+  CoreSystemService(String serviceDef, String serviceUri) {
     this.serviceDef = serviceDef;
-    this.serviceURI = serviceURI;
+    this.serviceUri = serviceUri;
   }
 
   public String getServiceDef() {
     return serviceDef;
   }
 
-  public String getServiceURI() {
-    return serviceURI;
+  public String getServiceUri() {
+    return serviceUri;
   }
 
 }
