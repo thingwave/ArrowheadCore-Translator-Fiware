@@ -21,7 +21,7 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
 <plugin>
 <artifactId>jdeb</artifactId>
 <groupId>org.vafer</groupId>
-<version>1.5</version>
+<version>1.7</version>
 <executions>
   <execution>
     <phase>package</phase>
@@ -29,9 +29,9 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
       <goal>jdeb</goal>
     </goals>
     <configuration>
-      <!--<snapshotExpand>true</snapshotExpand>-->
-      <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
-      <!--<snapshotEnv>USER</snapshotEnv>-->
+      <snapshotExpand>true</snapshotExpand>
+      <snapshotTemplate>[YYMMddHHmm].${git.commit.id.abbrev}</snapshotTemplate>
+      <deb>target/${artifactId}_${revision}.deb</deb>
       <verbose>true</verbose>
       <controlDir>${basedir}/src/deb/control</controlDir>
       <dataSet>

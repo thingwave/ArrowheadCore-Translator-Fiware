@@ -120,14 +120,7 @@ Build them with:
 Copy all the packages to one location:
 
 ```bash
-scp common/target/arrowhead-common_4.1.0_all.deb \
-    authorization/target/arrowhead-authorization_4.1.0_all.deb \
-    serviceregistry_sql/target/arrowhead-serviceregistry-sql_4.1.0_all.deb \
-    gateway/target/arrowhead-gateway_4.1.0_all.deb \
-    eventhandler/target/arrowhead-eventhandler_4.1.0_all.deb \
-    gatekeeper/target/arrowhead-gatekeeper_4.1.0_all.deb \
-    orchestrator/target/arrowhead-orchestrator_4.1.0_all.deb \
-    X.X.X.X:~/
+scp target/arrowhead-*.deb X.X.X.X:~/
 ```
 
 ### 5. Install Arrowhead Core Debian Packages
