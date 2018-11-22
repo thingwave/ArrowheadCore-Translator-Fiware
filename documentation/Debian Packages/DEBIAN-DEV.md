@@ -46,6 +46,12 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
             <filemode>755</filemode>
           </mapper>
         </data>
+        
+        <data>
+          <type>link</type>
+          <linkName>/usr/share/arrowhead/${artifactId}.jar</linkName>
+          <linkTarget>/usr/share/arrowhead/${project.build.finalName}.jar</linkTarget>
+        </data>
 
       </dataSet>
     </configuration>
