@@ -11,7 +11,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.arrowhead</groupId>
   <artifactId>core</artifactId>
-  <version>4.0</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
 
   <url>https://github.com/arrowhead-f/core-java</url>
@@ -40,6 +40,7 @@
   </modules>
 
   <properties>
+    <revision>4.1.0</revision>
     <mvn.compiler.version>3.8.0</mvn.compiler.version>
     <mvn.compile.target>1.8</mvn.compile.target>
     <dnsjava.version>2.1.8</dnsjava.version>

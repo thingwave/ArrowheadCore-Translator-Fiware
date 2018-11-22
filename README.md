@@ -10,7 +10,7 @@
 
 The project has the following dependencies:
 * JRE/JDK 8+
-* Maven 3
+* Maven 3.5+
 * MySQL server 5.7+ (other SQL databases can work with Hibernate ORM, but the `common module pom.xml` has to include the appropriate connector 
 dependency to use them)
 
@@ -80,3 +80,9 @@ Orchestrator and Service Registry.
 A full setup guide can be read here: [DEBIAN-INSTALL.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-INSTALL.md)
 
 A guide on how to add new core systems to the package generation: [DEBIAN-DEV.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-DEV.md) 
+
+### REST interfaces
+
+Each core system offers [Swagger UI](https://swagger.io/tools/swagger-ui/) to discover its REST interfaces. This UI is available at the `/api/` 
+root path. So for example the REST interfaces of the Service Registry is available at http://localhost:8442/api/ by default. In insecure mode, all 
+the requests can be tested by clicking on the "Try it out" button.

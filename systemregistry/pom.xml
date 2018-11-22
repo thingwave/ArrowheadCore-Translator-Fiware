@@ -14,7 +14,7 @@
   <parent>
     <groupId>eu.arrowhead</groupId>
     <artifactId>core</artifactId>
-    <version>4.0</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>arrowhead-systemregistry</artifactId>
