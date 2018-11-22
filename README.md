@@ -1,20 +1,20 @@
-[![Build Status](https://api.travis-ci.com/arrowhead-f/core-java.svg?branch=master)](https://travis-ci.com/arrowhead-f/core-java)
+[![Build Status](https://api.travis-ci.com/arrowhead-f/core-java.svg?branch=develop)](https://travis-ci.com/arrowhead-f/core-java)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?colorB=green)](https://github.com/arrowhead-f/core-java/blob/master/LICENSE)
 
-# Arrowhead Framework 4.2
+# Arrowhead Framework 4.1
 
 [Arrowhead](http://www.arrowhead.eu/) (and its continuation, [Productive4.0](https://productive40.eu/)) is an ambitious holistic innovation project,
  meant to open the doors to the potentials of Digital Industry and to maintain a leadership position of the industries in Europe. All partners involved will work on creating the capability to efficiently design and integrate hardware and software of Internet of Things (IoT) devices. Linking the real with the digital world takes more than just adding software to the hardware.
  
-### Building and running this project from source
+### Requirements
 
 The project has the following dependencies:
-* JRE/JDK 8
-* Maven 3
-* MySQL server 5.7 (other SQL databases can work with Hibernate ORM, but the `common module pom.xml` has to include the appropriate connector dependency to use them)
+* JRE/JDK 8+
+* Maven 3.5+
+* MySQL server 5.7+ (other SQL databases can work with Hibernate ORM, but the `common module pom.xml` has to include the appropriate connector 
+dependency to use them)
 
-**NOTE:** MySQL server 8 is not supported yet! Be careful, this is the default one downloaded from the MySQL site.
-
+### Configuration
 Each core system module has a `config` folder, and inside this folder a `default.conf` file, containing default values for the environment 
 variables needed to run the core system, such as database username/password, web-server address, logging settings and much more.
 
@@ -32,6 +32,7 @@ Config files are processed the following way:
 All the `app.conf` files are in `.gitignore`, so local environment variables do not get pushed to the Github repository. **The recommended way to 
 configure a local installation is to create `app.conf` files with the values that need to change for each core system.**
 
+### Build and run
 After the config files are inline with the local environment, **use `mvn install` inside the root folder of the repository, to build all the core 
 system JARs.** The build will create a `target` folder inside every module, where there will be the copied `config` folder, a `lib` folder containing
  all the dependencies, and the actual core system JAR.
@@ -51,15 +52,14 @@ The Orchestrator core system also has a **`-nogk`** argument. When used, the Orc
  for the Gatekeeper services in the Service Registry, but can only do intra-cloud orchestration (with the help of the Authorization and Service 
  Registry core systems).
 
-Startup bash scripts are provided in the `scripts` folder:
+Startup bash scripts (Linux & iOS) and batch files (Windows) are provided in the `scripts` folder:
 * `start_insecure_coresystems.sh`: starts the core systems without using certificates, with plain HTTP
 * `start_secure_coresystems.sh`: starts the core systems using certificates, with HTTPS
 * `stop_coresystems.sh`: stops all running core systems
 
 When the core systems are running, they will log to 2 different places, if the default logging configuration is unchanged:
 * All core systems will log to the same `logs` table inside a `log` database. This log source will contain log 
-messages from all the core systems 
-in one place.
+messages from all the core systems in one place.
 * Each core system will log to a file in its active working directory called `log4j_log.txt`. These text files are separate for each core system, 
 meaning one text file only contains the log messages of one core system.
 
@@ -69,3 +69,20 @@ not exist yet. An SQL script can be found at `common/config/create_arrowhead_log
 
 The project can also be run from an IDE for testing purposes. Just import the multi-module project as a maven project, and the IDE should find all 
 the `pom.xml` files necessary to download the dependencies and start the core systems.
+
+### Ubuntu, Raspbian and other Debian based Linux distriutions
+An alternative method for installing a local Arrowhead Cloud on a
+[Debian based Linux](https://wiki.debian.org/Derivatives/Census) is to use your package manager.
+ 
+Currently the following core systems have this option: Authorization, Certificate Authority, Event Handler, Gatekeeper, Gateway, 
+Orchestrator and Service Registry.
+ 
+A full setup guide can be read here: [DEBIAN-INSTALL.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-INSTALL.md)
+
+A guide on how to add new core systems to the package generation: [DEBIAN-DEV.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-DEV.md) 
+
+### REST interfaces
+
+Each core system offers [Swagger UI](https://swagger.io/tools/swagger-ui/) to discover its REST interfaces. This UI is available at the `/api/` 
+root path. So for example the REST interfaces of the Service Registry is available at http://localhost:8442/api/ by default. In insecure mode, all 
+the requests can be tested by clicking on the "Try it out" button.
