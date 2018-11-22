@@ -1,25 +1,24 @@
 /*
- *  Copyright (c) 2018 AITIA International Inc.
- *
- *  This work is part of the Productive 4.0 innovation project, which receives grants from the
- *  European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
- *  (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
- *  national funding authorities from involved countries.
+ * This work is part of the Productive 4.0 innovation project, which receives grants from the
+ * European Commissions H2020 research and innovation programme, ECSEL Joint Undertaking
+ * (project no. 737459), the free state of Saxony, the German Federal Ministry of Education and
+ * national funding authorities from involved countries.
  */
 
 package eu.arrowhead.common;
 
+import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.ServiceConfigurationError;
+import javax.persistence.PersistenceException;
 import javax.ws.rs.core.Response.Status;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -27,10 +26,12 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
+//NOTE should move to EntityManager from Sessions, using the JPA criteria API (Hibernate criteria will be removed in Hibernate 6)
 public class DatabaseManager {
 
-  private static DatabaseManager instance;
+  private static volatile DatabaseManager instance;
   private static SessionFactory sessionFactory;
   private static TypeSafeProperties prop = Utility.getProp();
   private static String dbAddress;
@@ -51,20 +52,11 @@ public class DatabaseManager {
       }
 
       try {
-        if (sessionFactory == null) {
-          Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
-                                                           .setProperty("hibernate.connection.username", dbUser)
-                                                           .setProperty("hibernate.connection.password", dbPassword);
-          sessionFactory = configuration.buildSessionFactory();
-        }
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
+                                                         .setProperty("hibernate.connection.password", dbPassword);
+        sessionFactory = configuration.buildSessionFactory();
       } catch (Exception e) {
-        if (!prop.containsKey("db_address")) {
-          e.printStackTrace();
-          System.out.println("Database connection could not be established, logging may not work! Check log4j.properties!");
-          Logger.getRootLogger().setLevel(Level.OFF);
-        } else {
-          throw new ServiceConfigurationError("Database connection could not be established, check config files!", e);
-        }
+        throw new ServiceConfigurationError("Database connection could not be established, check default.conf/app.conf files!", e);
       }
     }
   }
@@ -72,27 +64,36 @@ public class DatabaseManager {
   private DatabaseManager() {
   }
 
-  public static void init() {
+  public static synchronized void init() {
     if (instance == null) {
       instance = new DatabaseManager();
     }
   }
 
-  public static DatabaseManager getInstance() {
+  public static synchronized DatabaseManager getInstance() {
     if (instance == null) {
       instance = new DatabaseManager();
     }
     return instance;
   }
 
-  public static void closeSessionFactory() {
+  private synchronized SessionFactory getSessionFactory() {
+    if (sessionFactory == null) {
+      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
+                                                       .setProperty("hibernate.connection.password", dbPassword);
+      sessionFactory = configuration.buildSessionFactory();
+    }
+    return sessionFactory;
+  }
+
+  public static synchronized void closeSessionFactory() {
     if (sessionFactory != null) {
       sessionFactory.close();
     }
     instance = null;
   }
 
-  public <T> T get(Class<T> queryClass, int id) {
+  public <T> Optional<T> get(Class<T> queryClass, long id) {
     T object;
     Transaction transaction = null;
 
@@ -107,17 +108,7 @@ public class DatabaseManager {
       throw e;
     }
 
-    return object;
-  }
-
-  private SessionFactory getSessionFactory() {
-    if (sessionFactory == null) {
-      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
-                                                       .setProperty("hibernate.connection.username", dbUser)
-                                                       .setProperty("hibernate.connection.password", dbPassword);
-      sessionFactory = configuration.buildSessionFactory();
-    }
-    return sessionFactory;
+    return Optional.ofNullable(object);
   }
 
   @SuppressWarnings("unchecked")
@@ -127,6 +118,8 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         for (Entry<String, Object> entry : restrictionMap.entrySet()) {
@@ -136,8 +129,7 @@ public class DatabaseManager {
       object = (T) criteria.uniqueResult();
       transaction.commit();
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error("get throws exception: " + e.getMessage());
+      log.error("get throws exception: " + e.getMessage(), e);
       if (transaction != null) {
         transaction.rollback();
       }
@@ -154,17 +146,18 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         for (Entry<String, Object> entry : restrictionMap.entrySet()) {
           criteria.add(Restrictions.eq(entry.getKey(), entry.getValue()));
         }
       }
-      retrievedList = (List<T>) criteria.list();
+      retrievedList = (List<T>) criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
       transaction.commit();
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error("getAll throws exception: " + e.getMessage());
+      log.error("getAll throws exception: " + e.getMessage(), e);
       if (transaction != null) {
         transaction.rollback();
       }
@@ -181,6 +174,8 @@ public class DatabaseManager {
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
+      //NOTE session.createCriteria will be removed in Hibernate 6
+      //noinspection deprecation
       Criteria criteria = session.createCriteria(queryClass);
       if (restrictionMap != null && !restrictionMap.isEmpty()) {
         Disjunction disjunction = Restrictions.disjunction();
@@ -189,7 +184,7 @@ public class DatabaseManager {
         }
         criteria.add(disjunction);
       }
-      retrievedList = (List<T>) criteria.list();
+      retrievedList = (List<T>) criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
       transaction.commit();
     } catch (Exception e) {
       if (transaction != null) {
@@ -209,14 +204,13 @@ public class DatabaseManager {
       transaction = session.beginTransaction();
       session.save(object);
       transaction.commit();
-    } catch (ConstraintViolationException e) {
+    } catch (PersistenceException e) {
       if (transaction != null) {
         transaction.rollback();
       }
-      log.error("DatabaseManager:save throws DuplicateEntryException");
-      throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-          Status.BAD_REQUEST.getStatusCode(), e);
+      log.error("DatabaseManager:save throws DuplicateEntryException", e);
+      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+                                        Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
@@ -235,14 +229,13 @@ public class DatabaseManager {
       transaction = session.beginTransaction();
       session.merge(object);
       transaction.commit();
-    } catch (ConstraintViolationException e) {
+    } catch (PersistenceException e) {
       if (transaction != null) {
         transaction.rollback();
       }
-      log.error("DatabaseManager:merge throws DuplicateEntryException");
-      throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-          Status.BAD_REQUEST.getStatusCode(), e);
+      log.error("DatabaseManager:merge throws DuplicateEntryException", e);
+      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+                                        Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
@@ -265,7 +258,7 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:delete throws ConstraintViolationException");
-      throw new DuplicateEntryException(
+      throw new ArrowheadException(
           "There is a reference to this object in another table, which prevents the delete operation. (" + object.getClass() + ")",
           Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
@@ -280,7 +273,7 @@ public class DatabaseManager {
   @SuppressWarnings("unused")
   public void deleteAll(String tableName) {
     Session session = getSessionFactory().openSession();
-    String stringQuery = "DELETE FROM " + tableName;
+    String stringQuery = "DELETE * FROM " + tableName;
     Query query = session.createQuery(stringQuery);
     query.executeUpdate();
   }

@@ -3,6 +3,7 @@
  * Released under a simplified BSD license,
  * see README.txt for details.
  */
+
 package com.github.danieln.dnssdjava;
 
 import java.util.HashMap;
