@@ -28,128 +28,126 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "system_registry", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "arrowhead_system_id", "provider_device_id" }) })
+@Table(name = "system_registry", uniqueConstraints = {@UniqueConstraint(columnNames = {"arrowhead_system_id", "provider_device_id"})})
 public class SystemRegistryEntry {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
 
-	@Valid
-	@NotNull(message = "Provided ArrowheadSystem cannot be null")
-	@JoinColumn(name = "arrowhead_system_id")
-	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private ArrowheadSystem providedSystem;
+  @Valid
+  @NotNull(message = "Provided ArrowheadSystem cannot be null")
+  @JoinColumn(name = "arrowhead_system_id")
+  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private ArrowheadSystem providedSystem;
 
-	@Valid
-	@NotNull(message = "Provider ArrowheadDevice cannot be null")
-	@JoinColumn(name = "provider_device_id")
-	@ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@OnDelete(action = OnDeleteAction.CASCADE)
-	private ArrowheadDevice provider;
+  @Valid
+  @NotNull(message = "Provider ArrowheadDevice cannot be null")
+  @JoinColumn(name = "provider_device_id")
+  @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private ArrowheadDevice provider;
 
-	@Column(name = "service_uri")
-	@Size(max = 255, message = "Service URI must be 255 character at max")
-	private String serviceURI;
+  @Column(name = "service_uri")
+  @Size(max = 255, message = "Service URI must be 255 character at max")
+  private String serviceURI;
 
-	@Column(name = "end_of_validity")
+  @Column(name = "end_of_validity")
   @LDTInFuture(message = "End of validity date cannot be in the past")
-	private LocalDateTime endOfValidity;
+  private LocalDateTime endOfValidity;
 
-	public SystemRegistryEntry() {
-	}
+  public SystemRegistryEntry() {
+  }
 
-	public SystemRegistryEntry(Long id,
-                             @Valid @NotNull(message = "Provided ArrowheadSystem cannot be null") ArrowheadSystem providedSystem,
+  public SystemRegistryEntry(Long id, @Valid @NotNull(message = "Provided ArrowheadSystem cannot be null") ArrowheadSystem providedSystem,
                              @Valid @NotNull(message = "Provider ArrowheadDevice cannot be null") ArrowheadDevice provider,
                              @Size(max = 255, message = "Service URI must be 255 character at max") String serviceURI,
                              @LDTInFuture(message = "End of validity date cannot be in the past") LocalDateTime endOfValidity) {
-		this.id = id;
-		this.providedSystem = providedSystem;
-		this.provider = provider;
-		this.serviceURI = serviceURI;
-		this.endOfValidity = endOfValidity;
-	}
+    this.id = id;
+    this.providedSystem = providedSystem;
+    this.provider = provider;
+    this.serviceURI = serviceURI;
+    this.endOfValidity = endOfValidity;
+  }
 
-	public Long getId() {
-		return id;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public ArrowheadSystem getProvidedSystem() {
-		return providedSystem;
-	}
+  public ArrowheadSystem getProvidedSystem() {
+    return providedSystem;
+  }
 
-	public void setProvidedSystem(ArrowheadSystem providedSystem) {
-		this.providedSystem = providedSystem;
-	}
+  public void setProvidedSystem(ArrowheadSystem providedSystem) {
+    this.providedSystem = providedSystem;
+  }
 
-	public ArrowheadDevice getProvider() {
-		return provider;
-	}
+  public ArrowheadDevice getProvider() {
+    return provider;
+  }
 
-	public void setProvider(ArrowheadDevice provider) {
-		this.provider = provider;
-	}
+  public void setProvider(ArrowheadDevice provider) {
+    this.provider = provider;
+  }
 
-	public String getServiceURI() {
-		return serviceURI;
-	}
+  public String getServiceURI() {
+    return serviceURI;
+  }
 
-	public void setServiceURI(String serviceURI) {
-		this.serviceURI = serviceURI;
-	}
+  public void setServiceURI(String serviceURI) {
+    this.serviceURI = serviceURI;
+  }
 
-	public LocalDateTime getEndOfValidity() {
-		return endOfValidity;
-	}
+  public LocalDateTime getEndOfValidity() {
+    return endOfValidity;
+  }
 
-	public void setEndOfValidity(LocalDateTime endOfValidity) {
-		this.endOfValidity = endOfValidity;
-	}
+  public void setEndOfValidity(LocalDateTime endOfValidity) {
+    this.endOfValidity = endOfValidity;
+  }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(provider, providedSystem, serviceURI, endOfValidity);
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hash(provider, providedSystem, serviceURI, endOfValidity);
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SystemRegistryEntry other = (SystemRegistryEntry) obj;
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SystemRegistryEntry other = (SystemRegistryEntry) obj;
 
-		return Objects.equals(this.provider, other.provider)
-				&& Objects.equals(this.providedSystem, other.providedSystem)
-				&& Objects.equals(this.serviceURI, other.serviceURI)
-				&& Objects.equals(this.endOfValidity, other.endOfValidity);
-	}
-	
-	protected void append(final StringBuilder builder)
-	{
-		builder.append("id=").append(id);
-		builder.append(", providedSystem=").append(providedSystem);
-		builder.append(", provider=").append(provider);
-		builder.append(", serviceURI=").append(serviceURI);
-		builder.append(", endOfValidity=").append(endOfValidity);
-	}
+    return Objects.equals(this.provider, other.provider) && Objects.equals(this.providedSystem, other.providedSystem) && Objects
+        .equals(this.serviceURI, other.serviceURI) && Objects.equals(this.endOfValidity, other.endOfValidity);
+  }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append(getClass().getSimpleName());
-		builder.append(" [");
-		append(builder);
-		builder.append("]");
-		return builder.toString();
-	}
+  protected void append(final StringBuilder builder) {
+    builder.append("id=").append(id);
+    builder.append(", providedSystem=").append(providedSystem);
+    builder.append(", provider=").append(provider);
+    builder.append(", serviceURI=").append(serviceURI);
+    builder.append(", endOfValidity=").append(endOfValidity);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append(getClass().getSimpleName());
+    builder.append(" [");
+    append(builder);
+    builder.append("]");
+    return builder.toString();
+  }
 }

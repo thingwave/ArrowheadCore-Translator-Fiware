@@ -152,8 +152,9 @@ final class QoSManagerService {
     //Generate commands
     Map<String, String> commands = new HashMap<>();
     try {
-      commands = driverFactory.generateCommands(network.getNetworkType(), network.getNetworkConfigurations(), provider, consumer, message.getService(),
-                                                message.getCommands(), message.getRequestedQoS());
+      commands = driverFactory
+          .generateCommands(network.getNetworkType(), network.getNetworkConfigurations(), provider, consumer, message.getService(),
+                            message.getCommands(), message.getRequestedQoS());
     } catch (Exception e) {
       e.printStackTrace();
     }

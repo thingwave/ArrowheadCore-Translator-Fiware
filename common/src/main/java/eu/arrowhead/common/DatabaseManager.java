@@ -52,7 +52,8 @@ public class DatabaseManager {
       }
 
       try {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
+        Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
+                                                         .setProperty("hibernate.connection.username", dbUser)
                                                          .setProperty("hibernate.connection.password", dbPassword);
         sessionFactory = configuration.buildSessionFactory();
       } catch (Exception e) {
@@ -79,7 +80,8 @@ public class DatabaseManager {
 
   private synchronized SessionFactory getSessionFactory() {
     if (sessionFactory == null) {
-      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress).setProperty("hibernate.connection.username", dbUser)
+      Configuration configuration = new Configuration().configure("hibernate.cfg.xml").setProperty("hibernate.connection.url", dbAddress)
+                                                       .setProperty("hibernate.connection.username", dbUser)
                                                        .setProperty("hibernate.connection.password", dbPassword);
       sessionFactory = configuration.buildSessionFactory();
     }
@@ -209,8 +211,9 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:save throws DuplicateEntryException", e);
-      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-                                        Status.BAD_REQUEST.getStatusCode(), e);
+      throw new DuplicateEntryException(
+          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+          Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
@@ -234,8 +237,9 @@ public class DatabaseManager {
         transaction.rollback();
       }
       log.error("DatabaseManager:merge throws DuplicateEntryException", e);
-      throw new DuplicateEntryException("There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-                                        Status.BAD_REQUEST.getStatusCode(), e);
+      throw new DuplicateEntryException(
+          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+          Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();

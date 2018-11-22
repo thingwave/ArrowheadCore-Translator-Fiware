@@ -54,8 +54,10 @@ public class DriversFactory {
    */
 
   public Map<String, String> generateCommands(String communicationProtocol, Map<String, String> networkConfiguration, ArrowheadSystem provider,
-                                              ArrowheadSystem consumer, ArrowheadService service, Map<String, String> commands, Map<String, String> requestedQoS)
-      throws ReservationException, DriverNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+                                              ArrowheadSystem consumer, ArrowheadService service, Map<String, String> commands,
+                                              Map<String, String> requestedQoS)
+      throws ReservationException, DriverNotFoundException, ClassNotFoundException, InstantiationException, IllegalAccessException,
+             NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
 
     // Class Invoking
     Class cls = findClass(communicationProtocol);
@@ -64,7 +66,9 @@ public class DriversFactory {
     Method method = findMethod(cls);
 
     Map<String, String> streamConfiguration = (Map<String, String>) method.
-                                                                              invoke(obj, new ReservationInfo(networkConfiguration, provider, consumer, service, commands, requestedQoS));
+                                                                              invoke(obj,
+                                                                                     new ReservationInfo(networkConfiguration, provider, consumer,
+                                                                                                         service, commands, requestedQoS));
 
     if (streamConfiguration == null) {
       throw new ReservationException();
