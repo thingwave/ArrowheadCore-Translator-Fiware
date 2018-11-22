@@ -56,9 +56,3 @@ Description: Password for the certificates and stores (leave empty for random). 
 Template: arrowhead-common/reconf_warning
 Type: note
 Description: You have to manually reconfigure all Arrowhead systems when changing passwords
-
-Template: arrowhead-common/public_mysql
-Type: select
-Choices: Yes, No
-Default: No
-Description: Open MySQL for remote access?
