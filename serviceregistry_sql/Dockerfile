@@ -34,7 +34,7 @@ WORKDIR /usr/src/arrowhead/common
 RUN mvn clean install -X
 
 WORKDIR /usr/src/arrowhead/serviceregistry
-RUN mvn clean install -X #fails to find common-4.1.0.jar :(
+RUN mvn clean install -X #fails to find common-4.1.1-SNAPSHOT.jar :(
 
 #WORKDIR /usr/src/arrowhead/serviceregistry/target
 #CMD ["java", "-jar", "serviceregistry_sql-4.0", "-d", "-daemon", ">", "insecure_eventhandler.log", "&"]

@@ -109,7 +109,7 @@ Requires=arrowhead-serviceregistry-sql.service arrowhead-authorization.service a
 
 [Service]
 WorkingDirectory=/etc/arrowhead/systems/orchestrator
-ExecStart=/usr/bin/java -jar /usr/share/arrowhead/arrowhead-orchestrator-4.1.0.jar -d -daemon -tls
+ExecStart=/usr/bin/java -jar /usr/share/arrowhead/arrowhead-orchestrator-4.1.1-SNAPSHOT.jar -d -daemon -tls
 TimeoutStopSec=5
 Type=simple
 User=arrowhead
