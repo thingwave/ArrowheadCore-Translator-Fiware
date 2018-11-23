@@ -25,6 +25,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -83,7 +84,7 @@ public class GatewayService {
       channel.queueDeclare(controlQueueName.concat("_resp"), false, false, false, null);
       gatewaySession.setConnection(connection);
       gatewaySession.setChannel(channel);
-    } catch (IOException | NullPointerException e) {
+    } catch (IOException | NullPointerException | TimeoutException e) {
       log.error("Creating the channel to the Broker failed");
       throw new ArrowheadException(e.getClass().getSimpleName() + ": " + e.getMessage(), e);
     }
@@ -234,7 +235,7 @@ public class GatewayService {
       }
       serverSocket.close();
       log.info("ConsumerSocket closed");
-    } catch (AlreadyClosedException | IOException e) {
+    } catch (AlreadyClosedException | IOException | TimeoutException e) {
       log.error("Channel already closed");
     }
   }
@@ -248,7 +249,7 @@ public class GatewayService {
       gatewaySession.getChannel().close();
       gatewaySession.getConnection().close();
       log.info("ProviderSocket closed");
-    } catch (AlreadyClosedException | IOException e) {
+    } catch (AlreadyClosedException | IOException | TimeoutException e) {
       log.error("Channel already closed");
     }
   }
