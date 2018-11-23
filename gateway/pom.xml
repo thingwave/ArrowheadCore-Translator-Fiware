@@ -26,7 +26,7 @@
     <maven.dependency.version>2.10</maven.dependency.version>
     <maven.jar.version>3.0.2</maven.jar.version>
     <maven.resources.version>2.7</maven.resources.version>
-    <rabbitmq.version>4.8.0</rabbitmq.version>
+    <rabbitmq.version>3.0.4</rabbitmq.version>
   </properties>
 
   <dependencies>
