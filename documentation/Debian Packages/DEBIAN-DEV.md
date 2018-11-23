@@ -31,7 +31,7 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
     <configuration>
       <snapshotExpand>true</snapshotExpand>
       <snapshotTemplate>[YYMMddHHmm].${git.commit.id.abbrev}</snapshotTemplate>
-      <deb>target/${artifactId}_${revision}.deb</deb>
+      <deb>target/${project.artifactId}_${revision}.deb</deb>
       <verbose>true</verbose>
       <controlDir>${basedir}/src/deb/control</controlDir>
       <dataSet>
@@ -49,7 +49,7 @@ core system exist add a postfix, like `arrowhead-serviceregistry-sql`.
         
         <data>
           <type>link</type>
-          <linkName>/usr/share/arrowhead/${artifactId}.jar</linkName>
+          <linkName>/usr/share/arrowhead/${project.artifactId}.jar</linkName>
           <linkTarget>/usr/share/arrowhead/${project.build.finalName}.jar</linkTarget>
         </data>
 
