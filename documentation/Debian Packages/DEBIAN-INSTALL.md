@@ -109,6 +109,8 @@ cd debian_packages/
 
 #### 4b. Build Arrowhead Debian Packages
 
+**NOTE:** To compile Arrowhead yourself, you should have both the JDK and Maven installed. Raspbian users should probably do this on their PC and then copy the files to their Raspberry Pi.
+
 To build the Debian packages yourself, start by cloning the repository:
 
 `git clone https://github.com/arrowhead-f/core-java.git -b develop`
@@ -117,7 +119,7 @@ Build them with:
 
 `mvn package`
 
-Copy all the packages to one location:
+Copy all the packages to your Arrowhead server/Raspberry Pi (you may have to start SSH server on it first with `sudo systemctl start ssh`:
 
 ```bash
 scp target/arrowhead-*.deb X.X.X.X:~/
