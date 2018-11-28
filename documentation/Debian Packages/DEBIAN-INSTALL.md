@@ -127,6 +127,8 @@ scp target/arrowhead-*.deb X.X.X.X:~/
 
 ### 5. Install Arrowhead Core Debian Packages
 
+**NOTE:** Currently, we do not support password protected MySQL root accounts. The installer (and scripts mentioned below), expects `sudo mysql -u root` to execute without a password dialog. When the installer finished, and you no longer need to call any of the scripts, it should be safe to set a root password again. This is a known issue and will be fixed in a future release, see https://github.com/arrowhead-f/core-java/issues/20.
+
 Go to the folder where you copied the packages and then:
 
 `sudo dpkg -i arrowhead-*.deb`
