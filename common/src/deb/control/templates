@@ -43,10 +43,15 @@ Type: string
 Default: eu
 Description: The name of your country
 
+Template: arrowhead-common/mysql_password_root
+Type: password
+Default:
+Description: Password for the MySQL root user. Note that password is stored by debconf in '/var/cache/debconf/passwords.dat'.
+
 Template: arrowhead-common/mysql_password
 Type: password
 Default:
-Description: Password for the MySQL database (leave empty for random). Note that password is stored by debconf in '/var/cache/debconf/passwords.dat'.
+Description: Password for the generated MySQL arrowhead user (leave empty for random). Note that password is stored by debconf in '/var/cache/debconf/passwords.dat'.
 
 Template: arrowhead-common/cert_password
 Type: password

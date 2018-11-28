@@ -28,8 +28,8 @@ case "$1" in
         SYSTEM_DIR="${AH_SYSTEMS_DIR}/${SYSTEM_NAME}"
 
         echo "Configuring MySQL database..." >&2
-        ah_db_logs
         ah_db_user
+        ah_db_logs
 
         if [ ! -d "${SYSTEM_DIR}" ]; then
             mkdir -p ${SYSTEM_DIR}

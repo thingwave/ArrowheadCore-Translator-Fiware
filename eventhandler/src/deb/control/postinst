@@ -28,11 +28,11 @@ case "$1" in
         SYSTEM_DIR="${AH_SYSTEMS_DIR}/${SYSTEM_NAME}"
 
         echo "Configuring MySQL database..." >&2
+        ah_db_user
         ah_db_logs
         ah_db_arrowhead_system
-        mysql -u root < /usr/share/arrowhead/db/create_event_handler_db_empty.sql
+        mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_event_handler_db_empty.sql
         ah_db_hibernate_sequence
-        ah_db_user
 
         if [ ! -d "${SYSTEM_DIR}" ]; then
             mkdir -p ${SYSTEM_DIR}

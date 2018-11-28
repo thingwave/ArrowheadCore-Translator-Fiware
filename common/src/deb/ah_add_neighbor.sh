@@ -14,7 +14,7 @@ CLOUD_HOST=${3}
 CLOUD_64PUB=${4}
 
 echo "Registering cloud '${CLOUD_NAME}' in database" >&2
-mysql -u root arrowhead <<EOF
+mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
     LOCK TABLES arrowhead_cloud WRITE, hibernate_sequence WRITE, neighbor_cloud WRITE;
     INSERT INTO arrowhead_cloud
         (id, address, authentication_info, cloud_name, gatekeeper_service_uri, operator, port, is_secure)

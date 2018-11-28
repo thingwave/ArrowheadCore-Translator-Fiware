@@ -230,24 +230,20 @@ The following sections should be added under configure:
 
 - Creation of MySQL databases. Functions in ahconf.sh from arrowhead-common package can be used to generate default
   tables. Default tables (like the 'system' and 'service') should be created by all systems that need them - if they
-  already exist, nothing will be done.
+  already exist, nothing will be done. If database is used, it must start by creating the DB user by calling ah_db_user 
+  function from ahconf.sh
   
 ```bash
 echo "Configuring MySQL database..." >&2
+ah_db_user
 ah_db_logs
 ah_db_arrowhead_cloud
 ah_db_arrowhead_service
 ah_db_arrowhead_service_interface_list
 ah_db_arrowhead_system
 ah_db_hibernate_sequence
-mysql -u root < /usr/share/arrowhead/db/create_authorization_db_empty.sql
+mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_authorization_db_empty.sql
 ah_db_own_cloud
-```
-  
-- If database is used, it should also create DB user by calling ah_db_user function from ahconf.sh
-
-```bash
-ah_db_user
 ```
 
 - Create a directory for configuration under `/etc/arrowhead/systems`
@@ -267,7 +263,7 @@ ah_cert_signed_system ${SYSTEM_NAME}
 - Insert data into MySQL database if required (Gatekeeper currently does this)
 
 ```bash
-if [ $(mysql -u root arrowhead -sse "SELECT COUNT(*) FROM arrowhead_cloud;") -eq 0 ]; then
+if [ $(mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead -sse "SELECT COUNT(*) FROM arrowhead_cloud;") -eq 0 ]; then
     pubkey64=$(\
         keytool -export \
             -alias ${SYSTEM_NAME} \
@@ -279,15 +275,15 @@ if [ $(mysql -u root arrowhead -sse "SELECT COUNT(*) FROM arrowhead_cloud;") -eq
             -noout \
         | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
 
-    mysql -u root arrowhead <<EOF
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
 LOCK TABLES arrowhead_cloud WRITE;
 INSERT INTO arrowhead_cloud VALUES (1,'localhost','${pubkey64}','${AH_CLOUD_NAME}','${SYSTEM_NAME}','${AH_OPERATOR}',8447,'Y');
 UNLOCK TABLES;
 EOF
 fi
 
-if [ $(mysql -u root arrowhead -sse "SELECT COUNT(*) FROM own_cloud;") -eq 0 ]; then
-    mysql -u root arrowhead <<EOF
+if [ $(mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead -sse "SELECT COUNT(*) FROM own_cloud;") -eq 0 ]; then
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
 LOCK TABLES own_cloud WRITE;
 INSERT INTO own_cloud VALUES (1);
 UNLOCK TABLES;

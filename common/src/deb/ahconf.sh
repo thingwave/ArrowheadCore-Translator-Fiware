@@ -3,6 +3,7 @@
 AH_CONF_DIR="/etc/arrowhead"
 AH_CLOUDS_DIR="${AH_CONF_DIR}/clouds"
 AH_SYSTEMS_DIR="${AH_CONF_DIR}/systems"
+AH_MYSQL_CONF="${AH_CONF_DIR}/mysql.cnf"
 
 db_get arrowhead-common/mysql_password; AH_PASS_DB=$RET
 db_get arrowhead-common/cert_password; AH_PASS_CERT=$RET
@@ -169,38 +170,71 @@ ah_cert_trust () {
 }
 
 ah_db_arrowhead_cloud () {
-    mysql -u root < /usr/share/arrowhead/db/create_arrowhead_cloud_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_cloud_tbl_empty.sql
 }
 
 ah_db_arrowhead_service () {
-    mysql -u root < /usr/share/arrowhead/db/create_arrowhead_service_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_service_tbl_empty.sql
 }
 
 ah_db_arrowhead_service_interface_list () {
-    mysql -u root < /usr/share/arrowhead/db/create_arrowhead_service_interface_list_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_service_interface_list_tbl_empty.sql
 }
 
 ah_db_arrowhead_system () {
-    mysql -u root < /usr/share/arrowhead/db/create_arrowhead_system_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_system_tbl_empty.sql
 }
 
 ah_db_hibernate_sequence () {
-    mysql -u root < /usr/share/arrowhead/db/create_hibernate_sequence_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_hibernate_sequence_tbl_empty.sql
 }
 
 ah_db_logs () {
-    mysql -u root < /usr/share/arrowhead/db/create_logs_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_logs_tbl_empty.sql
 }
 
 ah_db_own_cloud () {
-    mysql -u root < /usr/share/arrowhead/db/create_own_cloud_tbl_empty.sql
+    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_own_cloud_tbl_empty.sql
 }
 
 ah_db_user () {
-    if [ $(mysql -u root -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'arrowhead')") != 1 ]; then
-        mysql -e "CREATE USER arrowhead@localhost IDENTIFIED BY '${AH_PASS_DB}';"
-        mysql -e "GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';"
-        mysql -e "FLUSH PRIVILEGES;"
+    if [ ! -f "${AH_MYSQL_CONF}" ]; then
+        touch "${AH_MYSQL_CONF}"
+        chmod 0600 "${AH_MYSQL_CONF}"
+        cat >"${AH_MYSQL_CONF}" <<EOF
+[client]
+password="${AH_PASS_DB}"
+EOF
+    fi
+
+    if ! mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead -e "SHOW DATABASES" >/dev/null 2>/dev/null; then
+        if mysql -u root -e "SHOW DATABASES" >/dev/null 2>/dev/null; then
+            mysql -u root <<EOF
+CREATE USER IF NOT EXISTS arrowhead@localhost IDENTIFIED BY '${AH_PASS_DB}';
+GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';
+FLUSH PRIVILEGES;
+EOF
+        else
+            db_input critical arrowhead-common/mysql_password_root || true
+            db_go || true
+            db_get arrowhead-common/mysql_password_root; AH_MYSQL_ROOT=$RET
+            db_unregister arrowhead-common/mysql_password_root
+
+            OPT_FILE="$(mktemp -q --tmpdir "arrowhead-common.XXXXXX")"
+            trap 'rm -f "${OPT_FILE}"' EXIT
+            chmod 0600 "${OPT_FILE}"
+
+            cat >"${OPT_FILE}" <<EOF
+[client]
+password="${AH_MYSQL_ROOT}"
+EOF
+
+            mysql --defaults-extra-file="${OPT_FILE}" -u root <<EOF
+CREATE USER IF NOT EXISTS arrowhead@localhost IDENTIFIED BY '${AH_PASS_DB}';
+GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';
+FLUSH PRIVILEGES;
+EOF
+        fi
     fi
 }
 

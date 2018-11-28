@@ -26,7 +26,7 @@ elif [[ -r "${MARIADB_CONF_PI}" ]]; then
     do_mysql_conf "${MARIADB_CONF_PI}"
 fi
 
-if [ $(mysql -u root -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'arrowhead' AND host = '%')") != 1 ]; then
+if [ $(mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead -sse "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = 'arrowhead' AND host = '%')") != 1 ]; then
     mysql -e "CREATE USER arrowhead@'%' IDENTIFIED BY '${AH_PASS_DB}';"
     mysql -e "GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'%';"
     mysql -e "FLUSH PRIVILEGES;"
