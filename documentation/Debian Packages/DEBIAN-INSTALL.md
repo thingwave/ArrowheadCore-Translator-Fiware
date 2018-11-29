@@ -38,10 +38,7 @@ sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
 sudo apt update
 ```
 
-As of writing, please leave an empty root password for the database, when installing it. The MySQL scripts in Arrowhead
-does not (yet) support password protected databases. After Arrowhead is installed and you finished calling any of the
-generation scripts below, it should be safe to set a root password for the database. Arrowhead itself uses its own
-`arrowhead` user, only the scripts requires a non-password `root` user. To install the MySQL server, run:
+To install the MySQL server, run:
 
 ```bash
 sudo apt install mysql-server
@@ -126,8 +123,6 @@ scp target/arrowhead-*.deb X.X.X.X:~/
 ```
 
 ### 5. Install Arrowhead Core Debian Packages
-
-**NOTE:** Currently, we do not support password protected MySQL root accounts. The installer (and scripts mentioned below), expects `sudo mysql -u root` to execute without a password dialog. When the installer finished, and you no longer need to call any of the scripts, it should be safe to set a root password again. This is a known issue and will be fixed in a future release, see https://github.com/arrowhead-f/core-java/issues/20.
 
 Go to the folder where you copied the packages and then:
 
