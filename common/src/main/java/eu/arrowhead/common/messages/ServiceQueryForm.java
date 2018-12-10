@@ -31,8 +31,8 @@ public class ServiceQueryForm {
 
   public ServiceQueryForm(ServiceRequestForm srf) {
     this.service = srf.getRequestedService();
-    this.pingProviders = srf.getOrchestrationFlags().get("pingProvider");
-    this.metadataSearch = srf.getOrchestrationFlags().get("metadataSearch");
+    this.pingProviders = srf.getOrchestrationFlags().getOrDefault("pingProvider", false);
+    this.metadataSearch = srf.getOrchestrationFlags().getOrDefault("metadataSearch", false);
   }
 
   public ArrowheadService getService() {

@@ -41,7 +41,7 @@ public class OrchestratorACF extends AccessControlFilter {
       ServiceRequestForm srf = Utility.fromJson(requestJson, ServiceRequestForm.class);
 
       // If this is an external service request, only the local Gatekeeper can send this method
-      if (srf.getOrchestrationFlags().get("externalServiceRequest")) {
+      if (srf.getOrchestrationFlags().getOrDefault("externalServiceRequest", false)) {
         return clientFields[0].equalsIgnoreCase("gatekeeper") && serverFields[1].equalsIgnoreCase(clientFields[1]);
       } else {
         // Otherwise all request from the local cloud are allowed

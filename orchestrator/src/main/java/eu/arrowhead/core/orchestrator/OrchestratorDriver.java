@@ -466,9 +466,9 @@ final class OrchestratorDriver {
 
     // Passing through the relevant orchestration flags to the ICNRequestForm
     Map<String, Boolean> negotiationFlags = new HashMap<>();
-    negotiationFlags.put("metadataSearch", srf.getOrchestrationFlags().get("metadataSearch"));
-    negotiationFlags.put("pingProviders", srf.getOrchestrationFlags().get("pingProviders"));
-    negotiationFlags.put("onlyPreferred", srf.getOrchestrationFlags().get("onlyPreferred"));
+    negotiationFlags.put("metadataSearch", srf.getOrchestrationFlags().getOrDefault("metadataSearch", false));
+    negotiationFlags.put("pingProviders", srf.getOrchestrationFlags().getOrDefault("pingProviders", false));
+    negotiationFlags.put("onlyPreferred", srf.getOrchestrationFlags().getOrDefault("onlyPreferred", false));
     negotiationFlags.put("externalServiceRequest", true);
 
     // Creating the ICNRequestForm object, which is the payload of the request sent to the Gatekeeper
