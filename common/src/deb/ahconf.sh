@@ -59,6 +59,30 @@ ah_cert_export () {
     fi
 }
 
+ah_cert_export_pub () {
+    src_path=${1}
+    dst_name=${2}
+    dst_path=${3}
+
+    src_file="${src_path}/${dst_name}.p12"
+    dst_file="${dst_path}/${dst_name}.crt"
+
+    if [ ! -f "${dst_file}" ]; then
+        keytool -exportcert \
+            -rfc \
+            -alias ${dst_name} \
+            -storepass ${AH_PASS_CERT} \
+            -keystore ${src_file} \
+        | openssl x509 \
+            -out ${dst_file} \
+            -noout \
+            -pubkey
+
+        chown :arrowhead ${dst_file}
+        chmod 640 ${dst_file}
+    fi
+}
+
 ah_cert_import () {
     src_path=${1}
     src_name=${2}

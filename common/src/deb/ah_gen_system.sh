@@ -28,7 +28,7 @@ echo "Generating certificate for '${SYSTEM_NAME}'" >&2
 ah_cert_signed_system ${SYSTEM_NAME}
 
 if [ ! -z "${SERVICE}" ]; then
-    ah_cert_export "${AH_SYSTEMS_DIR}/authorization" "authorization" "${SYSTEM_DIR}"
+    ah_cert_export_pub "${AH_SYSTEMS_DIR}/authorization" "authorization" "${SYSTEM_DIR}"
 fi
 
 SYSTEM_64PUB=$(\
