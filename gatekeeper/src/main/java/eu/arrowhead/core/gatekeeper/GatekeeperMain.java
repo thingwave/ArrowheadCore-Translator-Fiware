@@ -16,31 +16,8 @@ import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.AuthException;
 import eu.arrowhead.common.exception.ExceptionType;
-import eu.arrowhead.common.misc.CoreSystemService;
-import eu.arrowhead.common.misc.GetCoreSystemServicesTask;
-import eu.arrowhead.common.misc.NeedsCoreSystemService;
-import eu.arrowhead.common.misc.SecurityUtils;
-import eu.arrowhead.common.misc.TypeSafeProperties;
+import eu.arrowhead.common.misc.*;
 import eu.arrowhead.common.web.ArrowheadCloudApi;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.ServiceConfigurationError;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
@@ -51,6 +28,18 @@ import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.UriBuilder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class GatekeeperMain implements NeedsCoreSystemService {
 
@@ -81,6 +70,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
 
   static {
     props = Utility.getProp();
+    DatabaseManager.init();
     PropertyConfigurator.configure(props);
     USE_GATEWAY = props.getBooleanProperty("use_gateway", false);
     TIMEOUT = props.getIntProperty("timeout", 30000);

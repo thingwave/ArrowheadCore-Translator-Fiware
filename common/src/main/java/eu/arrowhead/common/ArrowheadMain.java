@@ -17,23 +17,6 @@ import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.common.misc.TypeSafeProperties;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceConfigurationError;
-import java.util.Set;
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
@@ -44,6 +27,17 @@ import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.UriBuilder;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 public abstract class ArrowheadMain {
 
@@ -65,6 +59,7 @@ public abstract class ArrowheadMain {
   private static final Logger log = Logger.getLogger(ArrowheadMain.class.getName());
 
   {
+    DatabaseManager.init();
     PropertyConfigurator.configure(props);
   }
 
