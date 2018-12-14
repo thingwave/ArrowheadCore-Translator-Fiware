@@ -14,37 +14,20 @@ import eu.arrowhead.common.database.Broker;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.AuthException;
 import eu.arrowhead.common.exception.DataNotFoundException;
-import eu.arrowhead.common.messages.ConnectToProviderRequest;
-import eu.arrowhead.common.messages.ConnectToProviderResponse;
-import eu.arrowhead.common.messages.GSDAnswer;
-import eu.arrowhead.common.messages.GSDPoll;
-import eu.arrowhead.common.messages.GatewayConnectionInfo;
-import eu.arrowhead.common.messages.ICNEnd;
-import eu.arrowhead.common.messages.ICNProposal;
-import eu.arrowhead.common.messages.ICNResult;
-import eu.arrowhead.common.messages.InterCloudAuthRequest;
-import eu.arrowhead.common.messages.InterCloudAuthResponse;
-import eu.arrowhead.common.messages.OrchestrationResponse;
-import eu.arrowhead.common.messages.PreferredProvider;
-import eu.arrowhead.common.messages.ServiceQueryForm;
-import eu.arrowhead.common.messages.ServiceQueryResult;
-import eu.arrowhead.common.messages.ServiceRequestForm;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import eu.arrowhead.common.messages.*;
+import org.apache.log4j.Logger;
+
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
-import org.apache.log4j.Logger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@Path("gatekeeper")
+@Path(GatekeeperMain.GATEKEEPER_SERVICE_URI)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GatekeeperInboundResource {
