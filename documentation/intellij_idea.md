@@ -52,6 +52,7 @@ You can skip this and do a normal _Checkout from Version Control_, to have them 
 
     ```bash
     cd .idea
+    ln -s ../../core-java/.idea/codeStyles
     mkdir runConfigurations
     cd runConfigurations
     ln -s ../../core-java/.idea/runConfigurations/* .
