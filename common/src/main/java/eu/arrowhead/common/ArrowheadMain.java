@@ -17,6 +17,23 @@ import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.SecurityUtils;
 import eu.arrowhead.common.misc.TypeSafeProperties;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceConfigurationError;
+import java.util.Set;
+import javax.net.ssl.SSLContext;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
@@ -27,17 +44,6 @@ import org.glassfish.grizzly.ssl.SSLContextConfigurator.GenericStoreException;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import javax.net.ssl.SSLContext;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.core.UriBuilder;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-import java.util.*;
 
 public abstract class ArrowheadMain {
 
@@ -67,7 +73,6 @@ public abstract class ArrowheadMain {
     System.out.println("Working directory: " + System.getProperty("user.dir"));
     packages = addSwaggerToPackages(packages);
     this.coreSystem = coreSystem;
-    DatabaseManager.init();
 
     boolean isSecure = false;
     //Read in command line arguments
@@ -253,9 +258,9 @@ public abstract class ArrowheadMain {
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("register").build().toString(), "POST", srEntry);
           } else if (e.getExceptionType() == ExceptionType.UNAVAILABLE) {
-            System.out.println("Service Registry is unavailable at the moment, retrying in 10 seconds...");
+            System.out.println("Service Registry is unavailable at the moment, retrying in 15 seconds...");
             try {
-              Thread.sleep(10000);
+              Thread.sleep(15000);
               if (registeringTries == 3) {
                 throw e;
               } else {
