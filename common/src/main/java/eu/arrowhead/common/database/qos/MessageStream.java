@@ -9,11 +9,24 @@ package eu.arrowhead.common.database.qos;
 
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "message_stream", uniqueConstraints = {

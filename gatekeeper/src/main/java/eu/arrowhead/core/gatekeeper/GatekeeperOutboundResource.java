@@ -13,20 +13,35 @@ import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.Broker;
 import eu.arrowhead.common.exception.ArrowheadException;
-import eu.arrowhead.common.messages.*;
-import org.apache.log4j.Logger;
-
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
+import eu.arrowhead.common.messages.ConnectToConsumerRequest;
+import eu.arrowhead.common.messages.ConnectToConsumerResponse;
+import eu.arrowhead.common.messages.GSDAnswer;
+import eu.arrowhead.common.messages.GSDPoll;
+import eu.arrowhead.common.messages.GSDRequestForm;
+import eu.arrowhead.common.messages.GSDResult;
+import eu.arrowhead.common.messages.GatewayConnectionInfo;
+import eu.arrowhead.common.messages.ICNEnd;
+import eu.arrowhead.common.messages.ICNProposal;
+import eu.arrowhead.common.messages.ICNRequestForm;
+import eu.arrowhead.common.messages.ICNResult;
+import eu.arrowhead.common.messages.OrchestrationForm;
+import eu.arrowhead.common.messages.OrchestrationResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
+import org.apache.log4j.Logger;
 
 /**
  * This is the REST resource for the Gatekeeper Core System.
