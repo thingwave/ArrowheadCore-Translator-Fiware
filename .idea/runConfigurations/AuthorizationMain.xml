@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="AuthorizationMain" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="01-Authorization" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="eu.arrowhead.core.authorization.AuthorizationMain" />
     <module name="arrowhead-authorization" />
     <option name="PROGRAM_PARAMETERS" value="-d" />

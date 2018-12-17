@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GatekeeperMain" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="01-Gatekeeper" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="eu.arrowhead.core.gatekeeper.GatekeeperMain" />
     <module name="arrowhead-gatekeeper" />
     <option name="PROGRAM_PARAMETERS" value="-d" />

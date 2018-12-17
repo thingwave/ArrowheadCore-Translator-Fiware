@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="EventHandlerMain" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="01-EventHandler" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="eu.arrowhead.core.eventhandler.EventHandlerMain" />
     <module name="arrowhead-eventhandler" />
     <option name="PROGRAM_PARAMETERS" value="-d" />

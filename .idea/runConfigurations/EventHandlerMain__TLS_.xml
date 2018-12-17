@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="EventHandlerMain (TLS)" type="Application" factoryName="Application">
+  <configuration default="false" name="01-EventHandler (TLS)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="eu.arrowhead.core.eventhandler.EventHandlerMain" />
     <module name="arrowhead-eventhandler" />
     <option name="PROGRAM_PARAMETERS" value="-tls" />

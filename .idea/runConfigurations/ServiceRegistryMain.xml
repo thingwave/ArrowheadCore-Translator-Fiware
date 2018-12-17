@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ServiceRegistryMain" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="00-ServiceRegistry" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="eu.arrowhead.core.serviceregistry_sql.ServiceRegistryMain" />
     <module name="arrowhead-serviceregistry-sql" />
     <option name="PROGRAM_PARAMETERS" value="-d" />
