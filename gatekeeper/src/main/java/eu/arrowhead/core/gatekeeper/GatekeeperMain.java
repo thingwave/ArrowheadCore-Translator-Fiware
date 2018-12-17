@@ -140,7 +140,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       String gatekeeperKeystorePath = props.getProperty("gatekeeper_keystore");
       String gatekeeperKeystorePass = props.getProperty("gatekeeper_keystore_pass");
       final String[] serverCN = getServerCN(gatekeeperKeystorePath, gatekeeperKeystorePass, false).split("\\.");
-      final ArrowheadCloud cloud = new ArrowheadCloud(serverCN[2], serverCN[3] + (IS_SECURE ? "" : "-insecure"), address,
+      final ArrowheadCloud cloud = new ArrowheadCloud(serverCN[2], serverCN[1] + (IS_SECURE ? "" : "-insecure"), address,
                                                       IS_SECURE ? externalSecurePort : externalInsecurePort, GATEKEEPER_SERVICE_URI,
                                                       IS_SECURE ? getAuthBase64(gatekeeperKeystorePath, gatekeeperKeystorePass) : null, IS_SECURE);
       final OwnCloud ownCloud = new OwnCloud(cloud);
