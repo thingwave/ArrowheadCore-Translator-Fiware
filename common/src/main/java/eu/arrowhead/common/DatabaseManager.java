@@ -10,13 +10,6 @@ package eu.arrowhead.common;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.ServiceConfigurationError;
-import javax.persistence.PersistenceException;
-import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -27,6 +20,14 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
+
+import javax.persistence.PersistenceException;
+import javax.ws.rs.core.Response.Status;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.ServiceConfigurationError;
 
 //NOTE should move to EntityManager from Sessions, using the JPA criteria API (Hibernate criteria will be removed in Hibernate 6)
 public class DatabaseManager {
@@ -199,12 +200,13 @@ public class DatabaseManager {
   }
 
 
-  public <T> T save(T object) {
+  public <T> T save(T... objects) {
     Transaction transaction = null;
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
-      session.save(object);
+      for (T object : objects)
+        session.save(object);
       transaction.commit();
     } catch (PersistenceException e) {
       if (transaction != null) {
@@ -212,8 +214,8 @@ public class DatabaseManager {
       }
       log.error("DatabaseManager:save throws DuplicateEntryException", e);
       throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
-          Status.BAD_REQUEST.getStatusCode(), e);
+              "There is already an entry in the database with these parameters. Please check the unique fields of the " + objects.getClass(),
+              Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
         transaction.rollback();
@@ -221,7 +223,7 @@ public class DatabaseManager {
       throw e;
     }
 
-    return object;
+    return objects[0];
   }
 
 

@@ -10,11 +10,14 @@ package eu.arrowhead.core.gatekeeper;
 import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.Utility;
+import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
+import eu.arrowhead.common.database.OwnCloud;
 import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.AuthException;
+import eu.arrowhead.common.exception.DataNotFoundException;
 import eu.arrowhead.common.exception.ExceptionType;
 import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.GetCoreSystemServicesTask;
@@ -62,6 +65,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
   static SSLContext outboundClientContext;
   static SSLContext outboundServerContext;
   static final int TIMEOUT;
+  static final String GATEKEEPER_SERVICE_URI = "gatekeeper";
 
   private static String INBOUND_BASE_URI;
   private static String OUTBOUND_BASE_URI;
@@ -81,6 +85,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
 
   static {
     props = Utility.getProp();
+    DatabaseManager.init();
     PropertyConfigurator.configure(props);
     USE_GATEWAY = props.getBooleanProperty("use_gateway", false);
     TIMEOUT = props.getIntProperty("timeout", 30000);
@@ -123,21 +128,37 @@ public class GatekeeperMain implements NeedsCoreSystemService {
           System.out.println("Starting server in debug mode!");
           break;
         case "-tls":
-          List<String> allMandatoryProperties = new ArrayList<>(alwaysMandatoryProperties);
-          allMandatoryProperties.addAll(Arrays.asList("gatekeeper_keystore", "gatekeeper_keystore_pass", "gatekeeper_keypass", "cloud_keystore",
-                                                      "cloud_keystore_pass", "cloud_keypass", "master_arrowhead_cert"));
-          Utility.checkProperties(props.stringPropertyNames(), allMandatoryProperties);
-          INBOUND_BASE_URI = Utility.getUri(address, internalSecurePort, null, true, true);
-          OUTBOUND_BASE_URI = Utility.getUri(address, externalSecurePort, null, true, true);
-          SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srSecurePort, "serviceregistry", true, true);
-          inboundServer = startSecureServer(INBOUND_BASE_URI, true);
-          outboundServer = startSecureServer(OUTBOUND_BASE_URI, false);
-          useSRService(true);
           IS_SECURE = true;
           break;
       }
     }
-    if (inboundServer == null) {
+
+    try {
+      Utility.getOwnCloud(IS_SECURE);
+    } catch (DataNotFoundException e) {
+      System.out.println("Own cloud not found, creating it...");
+      String gatekeeperKeystorePath = props.getProperty("gatekeeper_keystore");
+      String gatekeeperKeystorePass = props.getProperty("gatekeeper_keystore_pass");
+      final String[] serverCN = getServerCN(gatekeeperKeystorePath, gatekeeperKeystorePass, false).split("\\.");
+      final ArrowheadCloud cloud = new ArrowheadCloud(serverCN[2], serverCN[1] + (IS_SECURE ? "" : "-insecure"), address,
+                                                      IS_SECURE ? externalSecurePort : externalInsecurePort, GATEKEEPER_SERVICE_URI,
+                                                      IS_SECURE ? getAuthBase64(gatekeeperKeystorePath, gatekeeperKeystorePass) : null, IS_SECURE);
+      final OwnCloud ownCloud = new OwnCloud(cloud);
+      DatabaseManager.getInstance().save(cloud, ownCloud);
+    }
+
+    if (IS_SECURE) {
+      List<String> allMandatoryProperties = new ArrayList<>(alwaysMandatoryProperties);
+      allMandatoryProperties.addAll(Arrays.asList("gatekeeper_keystore", "gatekeeper_keystore_pass", "gatekeeper_keypass", "cloud_keystore",
+                                                  "cloud_keystore_pass", "cloud_keypass", "master_arrowhead_cert"));
+      Utility.checkProperties(props.stringPropertyNames(), allMandatoryProperties);
+      INBOUND_BASE_URI = Utility.getUri(address, internalSecurePort, null, true, true);
+      OUTBOUND_BASE_URI = Utility.getUri(address, externalSecurePort, null, true, true);
+      SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srSecurePort, "serviceregistry", true, true);
+      inboundServer = startSecureServer(INBOUND_BASE_URI, true);
+      outboundServer = startSecureServer(OUTBOUND_BASE_URI, false);
+      useSRService(true);
+    } else {
       Utility.checkProperties(props.stringPropertyNames(), alwaysMandatoryProperties);
       INBOUND_BASE_URI = Utility.getUri(address, internalInsecurePort, null, false, true);
       OUTBOUND_BASE_URI = Utility.getUri(address, externalInsecurePort, null, false, true);
@@ -165,6 +186,12 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       br.close();
       shutdown();
     }
+  }
+
+  private static String getAuthBase64(String keystorePath, String keystorePass) {
+    KeyStore keyStore = SecurityUtils.loadKeyStore(keystorePath, keystorePass);
+    X509Certificate serverCert = SecurityUtils.getFirstCertFromKeyStore(keyStore);
+    return Base64.getEncoder().encodeToString(serverCert.getPublicKey().getEncoded());
   }
 
   private static HttpServer startServer(final String url, final boolean inbound) {
@@ -349,6 +376,10 @@ public class GatekeeperMain implements NeedsCoreSystemService {
   }
 
   private static String getServerCN(String certPath, String certPass, boolean inbound) {
+    if (certPath == null || certPass == null) {
+      throw new ArrowheadException("Server certificate path or password is missing, can not acquire server common name!");
+    }
+
     KeyStore keyStore = SecurityUtils.loadKeyStore(certPath, certPass);
     X509Certificate serverCert = SecurityUtils.getFirstCertFromKeyStore(keyStore);
     BASE64_PUBLIC_KEY = Base64.getEncoder().encodeToString(serverCert.getPublicKey().getEncoded());

@@ -82,11 +82,11 @@ public final class SecurityUtils {
     }
   }
 
-  public static String getCertCNFromSubject(String subjectname) {
+  public static String getCertCNFromSubject(String subjectName) {
     String cn = null;
     try {
       // Subject is in LDAP format, we can use the LdapName object for parsing
-      LdapName ldapname = new LdapName(subjectname);
+      LdapName ldapname = new LdapName(subjectName);
       for (Rdn rdn : ldapname.getRdns()) {
         // Find the data after the CN field
         if (rdn.getType().equalsIgnoreCase("CN")) {

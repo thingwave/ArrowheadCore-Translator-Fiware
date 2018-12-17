@@ -65,6 +65,7 @@ public abstract class ArrowheadMain {
   private static final Logger log = Logger.getLogger(ArrowheadMain.class.getName());
 
   {
+    DatabaseManager.init();
     PropertyConfigurator.configure(props);
   }
 
@@ -72,7 +73,6 @@ public abstract class ArrowheadMain {
     System.out.println("Working directory: " + System.getProperty("user.dir"));
     packages = addSwaggerToPackages(packages);
     this.coreSystem = coreSystem;
-    DatabaseManager.init();
 
     boolean isSecure = false;
     //Read in command line arguments
@@ -258,9 +258,9 @@ public abstract class ArrowheadMain {
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("remove").build().toString(), "PUT", srEntry);
             Utility.sendRequest(UriBuilder.fromUri(srBaseUri).path("register").build().toString(), "POST", srEntry);
           } else if (e.getExceptionType() == ExceptionType.UNAVAILABLE) {
-            System.out.println("Service Registry is unavailable at the moment, retrying in 10 seconds...");
+            System.out.println("Service Registry is unavailable at the moment, retrying in 15 seconds...");
             try {
-              Thread.sleep(10000);
+              Thread.sleep(15000);
               if (registeringTries == 3) {
                 throw e;
               } else {

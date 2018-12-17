@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Core Systems" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun type="Application" name="AuthorizationMain" />
+    <toRun type="Application" name="EventHandlerMain" />
+    <toRun type="Application" name="GatekeeperMain" />
+    <toRun type="Application" name="GatewayMain" />
+    <toRun type="Application" name="OrchestratorMain" />
+    <toRun type="Application" name="ServiceRegistryMain" />
+    <method v="2" />
+  </configuration>
+</component>
