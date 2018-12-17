@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Core Systems (TLS)" type="CompoundRunConfigurationType">
-    <toRun name="GatekeeperMain (TLS)" type="Application" />
-    <toRun name="ServiceRegistryMain (TLS)" type="Application" />
-    <toRun name="AuthorizationMain (TLS)" type="Application" />
-    <toRun name="GatewayMain (TLS)" type="Application" />
-    <toRun name="EventHandlerMain (TLS)" type="Application" />
-    <toRun name="OrchestratorMain (TLS)" type="Application" />
+  <configuration default="false" name="Core Systems (TLS)" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun type="Application" name="AuthorizationMain (TLS)" />
+    <toRun type="Application" name="EventHandlerMain (TLS)" />
+    <toRun type="Application" name="GatekeeperMain (TLS)" />
+    <toRun type="Application" name="GatewayMain (TLS)" />
+    <toRun type="Application" name="OrchestratorMain (TLS)" />
+    <toRun type="Application" name="ServiceRegistryMain (TLS)" />
     <method v="2" />
   </configuration>
 </component>
