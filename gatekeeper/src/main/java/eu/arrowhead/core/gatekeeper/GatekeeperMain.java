@@ -13,6 +13,7 @@ import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
+import eu.arrowhead.common.database.Broker;
 import eu.arrowhead.common.database.OwnCloud;
 import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.common.exception.ArrowheadException;
@@ -105,7 +106,8 @@ public class GatekeeperMain implements NeedsCoreSystemService {
     System.out.println("Working directory: " + System.getProperty("user.dir"));
     DatabaseManager.init();
 
-    String address = props.getProperty("address", "0.0.0.0");
+    String internalAddress = props.getProperty("internal_address", "0.0.0.0");
+    String externalAddress = props.getProperty("external_address", "0.0.0.0");
     int internalInsecurePort = props.getIntProperty("internal_insecure_port", 8446);
     int internalSecurePort = props.getIntProperty("internal_secure_port", 8447);
     int externalInsecurePort = props.getIntProperty("external_insecure_port", 8448);
@@ -133,6 +135,7 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       }
     }
 
+    final DatabaseManager dm = DatabaseManager.getInstance();
     try {
       Utility.getOwnCloud(IS_SECURE);
     } catch (DataNotFoundException e) {
@@ -140,11 +143,20 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       String gatekeeperKeystorePath = props.getProperty("gatekeeper_keystore");
       String gatekeeperKeystorePass = props.getProperty("gatekeeper_keystore_pass");
       final String[] serverCN = getServerCN(gatekeeperKeystorePath, gatekeeperKeystorePass, false).split("\\.");
-      final ArrowheadCloud cloud = new ArrowheadCloud(serverCN[2], serverCN[1] + (IS_SECURE ? "" : "-insecure"), address,
+      final ArrowheadCloud cloud = new ArrowheadCloud(serverCN[2], serverCN[1] + (IS_SECURE ? "" : "-insecure"), externalAddress,
                                                       IS_SECURE ? externalSecurePort : externalInsecurePort, GATEKEEPER_SERVICE_URI,
                                                       IS_SECURE ? getAuthBase64(gatekeeperKeystorePath, gatekeeperKeystorePass) : null, IS_SECURE);
       final OwnCloud ownCloud = new OwnCloud(cloud);
-      DatabaseManager.getInstance().save(cloud, ownCloud);
+      dm.save(cloud, ownCloud);
+    }
+
+    if (dm.getAll(Broker.class, null).isEmpty() &&
+        props.getBooleanProperty("public_brokers", false)) {
+      dm.save(
+          new Broker("arrowhead-relay.tmit.bme.hu", 5672, false),
+          new Broker("arrowhead-relay.tmit.bme.hu", 5671, true),
+          new Broker("arrowhead-relay2.tmit.bme.hu", 5672, false),
+          new Broker("arrowhead-relay2.tmit.bme.hu", 5671, true));
     }
 
     if (IS_SECURE) {
@@ -152,17 +164,17 @@ public class GatekeeperMain implements NeedsCoreSystemService {
       allMandatoryProperties.addAll(Arrays.asList("gatekeeper_keystore", "gatekeeper_keystore_pass", "gatekeeper_keypass", "cloud_keystore",
                                                   "cloud_keystore_pass", "cloud_keypass", "master_arrowhead_cert"));
       Utility.checkProperties(props.stringPropertyNames(), allMandatoryProperties);
-      INBOUND_BASE_URI = Utility.getUri(address, internalSecurePort, null, true, true);
-      OUTBOUND_BASE_URI = Utility.getUri(address, externalSecurePort, null, true, true);
-      SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srSecurePort, "serviceregistry", true, true);
+      INBOUND_BASE_URI = Utility.getUri(internalAddress, internalSecurePort, null, IS_SECURE, true);
+      OUTBOUND_BASE_URI = Utility.getUri(externalAddress, externalSecurePort, null, IS_SECURE, true);
+      SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srSecurePort, "serviceregistry", IS_SECURE, true);
       inboundServer = startSecureServer(INBOUND_BASE_URI, true);
       outboundServer = startSecureServer(OUTBOUND_BASE_URI, false);
       useSRService(true);
     } else {
       Utility.checkProperties(props.stringPropertyNames(), alwaysMandatoryProperties);
-      INBOUND_BASE_URI = Utility.getUri(address, internalInsecurePort, null, false, true);
-      OUTBOUND_BASE_URI = Utility.getUri(address, externalInsecurePort, null, false, true);
-      SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srInsecurePort, "serviceregistry", false, true);
+      INBOUND_BASE_URI = Utility.getUri(internalAddress, internalInsecurePort, null, IS_SECURE, true);
+      OUTBOUND_BASE_URI = Utility.getUri(externalAddress, externalInsecurePort, null, IS_SECURE, true);
+      SERVICE_REGISTRY_URI = Utility.getUri(srAddress, srInsecurePort, "serviceregistry", IS_SECURE, true);
       inboundServer = startServer(INBOUND_BASE_URI, true);
       outboundServer = startServer(OUTBOUND_BASE_URI, false);
       useSRService(true);

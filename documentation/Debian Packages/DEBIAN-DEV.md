@@ -75,15 +75,6 @@ The service definition file, used to start and stop the daemon (should most like
 </data>
 ```
 
-Sql files to create empty database tables:
-```xml
-<data>
-  <type>file</type>
-  <src>${project.basedir}/src/deb/create_authorization_db_empty.sql</src>
-  <dst>/usr/share/arrowhead/db/create_authorization_db_empty.sql</dst>
-</data>
-```
-
 Additional libraries specific to a core system (not found in the `pom.xml` of the common module):
 ```xml
 <data>
@@ -117,43 +108,6 @@ Group=arrowhead
 
 [Install]
 WantedBy=default.target
-```
-
-### File: src/deb/create_SYSTEMNAME_db_empty.sql 
-
-Script to create empty MySQL tables if such is required - can be omitted if not.
-
-Note that 'DROP [...]' statements should be removed and 'IF NOT EXISTS' added to all 'CREATE [...]' statements.
-
-```mysql
-CREATE DATABASE  IF NOT EXISTS `arrowhead`;
-USE `arrowhead`;
-
-CREATE TABLE IF NOT EXISTS `inter_cloud_authorization` (
-  `id` bigint(20) NOT NULL,
-  `consumer_cloud_id` bigint(20) NOT NULL,
-  `arrowhead_service_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UKj4pymxepq7mf82wx7f8e4hd9b` (`consumer_cloud_id`,`arrowhead_service_id`),
-  KEY `FKsh4gbm0vs76weoq1lti6awtwf` (`arrowhead_service_id`),
-  CONSTRAINT `FKsh4gbm0vs76weoq1lti6awtwf` FOREIGN KEY (`arrowhead_service_id`) REFERENCES `arrowhead_service` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `FKsw50x8tjybx1jjrkj6aamxt8c` FOREIGN KEY (`consumer_cloud_id`) REFERENCES `arrowhead_cloud` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `intra_cloud_authorization` (
-  `id` bigint(20) NOT NULL,
-  `consumer_system_id` bigint(20) NOT NULL,
-  `provider_system_id` bigint(20) NOT NULL,
-  `arrowhead_service_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `UK4ie5ps7a6w40iqdte0u53mw1u` (`consumer_system_id`,`provider_system_id`,`arrowhead_service_id`),
-  KEY `FKt01tq84ypy16yfpt2q9v7qn2b` (`provider_system_id`),
-  KEY `FK1nx371ky16pl2rl0f4hk3puk4` (`arrowhead_service_id`),
-  CONSTRAINT `FK1nx371ky16pl2rl0f4hk3puk4` FOREIGN KEY (`arrowhead_service_id`) REFERENCES `arrowhead_service` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `FK58r9imuaq3dy3o96w5xcxkemh` FOREIGN KEY (`consumer_system_id`) REFERENCES `arrowhead_system` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `FKt01tq84ypy16yfpt2q9v7qn2b` FOREIGN KEY (`provider_system_id`) REFERENCES `arrowhead_system` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 ```
 
 ### File: src/deb/control 
@@ -228,22 +182,12 @@ exit 0
 
 The following sections should be added under configure:
 
-- Creation of MySQL databases. Functions in ahconf.sh from arrowhead-common package can be used to generate default
-  tables. Default tables (like the 'system' and 'service') should be created by all systems that need them - if they
-  already exist, nothing will be done. If database is used, it must start by creating the DB user by calling ah_db_user 
+- Creation of MySQL databases. If database is used, it must start by creating the DB user by calling ah_db_user 
   function from ahconf.sh
   
 ```bash
 echo "Configuring MySQL database..." >&2
 ah_db_user
-ah_db_logs
-ah_db_arrowhead_cloud
-ah_db_arrowhead_service
-ah_db_arrowhead_service_interface_list
-ah_db_arrowhead_system
-ah_db_hibernate_sequence
-mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_authorization_db_empty.sql
-ah_db_own_cloud
 ```
 
 - Create a directory for configuration under `/etc/arrowhead/systems`
@@ -258,37 +202,6 @@ fi
 
 ```bash
 ah_cert_signed_system ${SYSTEM_NAME}
-```
-
-- Insert data into MySQL database if required (Gatekeeper currently does this)
-
-```bash
-if [ $(mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead -sse "SELECT COUNT(*) FROM arrowhead_cloud;") -eq 0 ]; then
-    pubkey64=$(\
-        keytool -export \
-            -alias ${SYSTEM_NAME} \
-            -storepass ${AH_PASS_CERT}\
-            -keystore ${SYSTEM_DIR}/${SYSTEM_NAME}.p12 \
-        | openssl x509 \
-            -inform der \
-            -pubkey \
-            -noout \
-        | tail -n +2 | head -n -1 | sed ':a;N;$!ba;s/\n//g')
-
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
-LOCK TABLES arrowhead_cloud WRITE;
-INSERT INTO arrowhead_cloud VALUES (1,'localhost','${pubkey64}','${AH_CLOUD_NAME}','${SYSTEM_NAME}','${AH_OPERATOR}',8447,'Y');
-UNLOCK TABLES;
-EOF
-fi
-
-if [ $(mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead -sse "SELECT COUNT(*) FROM own_cloud;") -eq 0 ]; then
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
-LOCK TABLES own_cloud WRITE;
-INSERT INTO own_cloud VALUES (1);
-UNLOCK TABLES;
-EOF
-fi
 ```
 
 - Create 'default.conf' file in this dir containing all the config values for the core system

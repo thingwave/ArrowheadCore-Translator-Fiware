@@ -29,7 +29,6 @@ case "$1" in
 
         echo "Configuring MySQL database..." >&2
         ah_db_user
-        ah_db_logs
 
         if [ ! -d "${SYSTEM_DIR}" ]; then
             mkdir -p ${SYSTEM_DIR}

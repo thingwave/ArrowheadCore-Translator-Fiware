@@ -166,12 +166,6 @@
                   </mapper>
                 </data>
 
-                <data>
-                  <type>file</type>
-                  <src>${project.basedir}/src/deb/create_orchestrator_db_empty.sql</src>
-                  <dst>/usr/share/arrowhead/db/create_orchestrator_db_empty.sql</dst>
-                </data>
-
               </dataSet>
             </configuration>
           </execution>

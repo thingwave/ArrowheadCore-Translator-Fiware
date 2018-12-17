@@ -193,34 +193,6 @@ ah_cert_trust () {
     fi
 }
 
-ah_db_arrowhead_cloud () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_cloud_tbl_empty.sql
-}
-
-ah_db_arrowhead_service () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_service_tbl_empty.sql
-}
-
-ah_db_arrowhead_service_interface_list () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_service_interface_list_tbl_empty.sql
-}
-
-ah_db_arrowhead_system () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_arrowhead_system_tbl_empty.sql
-}
-
-ah_db_hibernate_sequence () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_hibernate_sequence_tbl_empty.sql
-}
-
-ah_db_logs () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_logs_tbl_empty.sql
-}
-
-ah_db_own_cloud () {
-    mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead < /usr/share/arrowhead/db/create_own_cloud_tbl_empty.sql
-}
-
 ah_db_user () {
     if [ ! -f "${AH_MYSQL_CONF}" ]; then
         touch "${AH_MYSQL_CONF}"
@@ -234,6 +206,7 @@ EOF
     if ! mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead -e "SHOW DATABASES" >/dev/null 2>/dev/null; then
         if mysql -u root -e "SHOW DATABASES" >/dev/null 2>/dev/null; then
             mysql -u root <<EOF
+CREATE DATABASE IF NOT EXISTS arrowhead;
 CREATE USER IF NOT EXISTS arrowhead@localhost IDENTIFIED BY '${AH_PASS_DB}';
 GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';
 FLUSH PRIVILEGES;
@@ -254,6 +227,7 @@ password="${AH_MYSQL_ROOT}"
 EOF
 
             mysql --defaults-extra-file="${OPT_FILE}" -u root <<EOF
+CREATE DATABASE IF NOT EXISTS arrowhead;
 CREATE USER IF NOT EXISTS arrowhead@localhost IDENTIFIED BY '${AH_PASS_DB}';
 GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';
 FLUSH PRIVILEGES;

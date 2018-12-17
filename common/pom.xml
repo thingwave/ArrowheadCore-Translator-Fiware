@@ -284,16 +284,6 @@
                   </mapper>
                 </data>
 
-                <data>
-                  <src>${project.basedir}/src/deb/sql</src>
-                  <type>directory</type>
-                  <includes>*.sql</includes>
-                  <mapper>
-                    <type>perm</type>
-                    <prefix>/usr/share/arrowhead/db</prefix>
-                  </mapper>
-                </data>
-
               </dataSet>
             </configuration>
           </execution>
