@@ -61,7 +61,7 @@ public class Logs {
   }
 
   @Basic
-  @Column(name = "message")
+  @Column(name = "message", length = 2047)
   public String getMessage() {
     return message;
   }
