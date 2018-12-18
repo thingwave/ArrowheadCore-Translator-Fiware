@@ -219,4 +219,17 @@ public class ServiceRegistryApi {
     return Response.status(Status.ACCEPTED).entity(retreivedEntry).build();
   }
 
+  @DELETE
+  @Path("{entryId}")
+  public Response deleteServiceRegistryEntry(@PathParam("entryId") long entryId) {
+    return dm.get(ServiceRegistryEntry.class, entryId).map(entry -> {
+      dm.delete(entry);
+      log.info(entry.toString() + " deleted");
+      return Response.ok().build();
+    }).<DataNotFoundException>orElseThrow(() -> {
+      log.info("deleteServiceRegistryEntry had no effect.");
+      throw new DataNotFoundException("ServiceRegistry entry not found with id: " + entryId);
+    });
+  }
+
 }
