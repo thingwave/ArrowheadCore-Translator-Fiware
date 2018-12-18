@@ -142,7 +142,7 @@ public class ServiceRegistryApi {
     List<ServiceRegistryEntry> retrievedServices = dm.getAll(ServiceRegistryEntry.class, null);
 
     for (ServiceQueryByRegex filter : regexFilters) {
-      Pattern pattern = Pattern.compile(filter.getRegularExpression());
+      Pattern pattern = Pattern.compile(filter.getRegularExpression(), Pattern.CASE_INSENSITIVE);
       List<ServiceRegistryEntry> matches = new ArrayList<>();
       for (ServiceRegistryEntry entry : retrievedServices) {
         Matcher matcher = null;
