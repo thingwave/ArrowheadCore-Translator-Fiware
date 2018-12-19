@@ -51,7 +51,8 @@ public class ServiceRegistryApi {
   @GET
   @Path("id/{id}")
   public ServiceRegistryEntry getServiceRegEntry(@PathParam("id") long id) {
-    return dm.get(ServiceRegistryEntry.class, id).orElseThrow(() -> new DataNotFoundException("ServiceRegistryEntry not found with id: " + id));
+    return dm.get(ServiceRegistryEntry.class, id)
+             .orElseThrow(() -> new DataNotFoundException("ServiceRegistryEntry not found with id: " + id));
   }
 
   @GET
@@ -92,14 +93,16 @@ public class ServiceRegistryApi {
   public List<ServiceRegistryEntry> getAllByProvider(@PathParam("systemId") long systemId) {
     ArrowheadSystem system = dm.get(ArrowheadSystem.class, systemId).<DataNotFoundException>orElseThrow(() -> {
       log.info("getAllByProvider throws DataNotFoundException");
-      throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadSystem in the database.");
+      throw new DataNotFoundException(
+          "There are no Service Registry entries with the requested ArrowheadSystem in the database.");
     });
 
     restrictionMap.put("provider", system);
     List<ServiceRegistryEntry> srList = dm.getAll(ServiceRegistryEntry.class, restrictionMap);
     if (srList.isEmpty()) {
       log.info("getAllByProvider throws DataNotFoundException");
-      throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadSystem in the database.");
+      throw new DataNotFoundException(
+          "There are no Service Registry entries with the requested ArrowheadSystem in the database.");
     }
 
     for (ServiceRegistryEntry entry : srList) {
@@ -117,7 +120,8 @@ public class ServiceRegistryApi {
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
     if (service == null) {
       log.info("getAllByService throws DataNotFoundException");
-      throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadService in the database.");
+      throw new DataNotFoundException(
+          "There are no Service Registry entries with the requested ArrowheadService in the database.");
     }
 
     restrictionMap.clear();
@@ -125,7 +129,8 @@ public class ServiceRegistryApi {
     List<ServiceRegistryEntry> srList = dm.getAll(ServiceRegistryEntry.class, restrictionMap);
     if (srList.isEmpty()) {
       log.info("getAllByService throws DataNotFoundException");
-      throw new DataNotFoundException("There are no Service Registry entries with the requested ArrowheadService in the database.");
+      throw new DataNotFoundException(
+          "There are no Service Registry entries with the requested ArrowheadService in the database.");
     }
 
     for (ServiceRegistryEntry entry : srList) {
@@ -154,13 +159,15 @@ public class ServiceRegistryApi {
             matcher = pattern.matcher(entry.getProvidedService().getServiceDefinition());
             break;
           case interfaces:
-            if (entry.getProvidedService().getInterfaces().contains(filter.getRegularExpression())) {
+            if (entry.getProvidedService().getInterfaces().stream()
+                     .anyMatch(filter.getRegularExpression()::equalsIgnoreCase)) {
               matches.add(entry);
             }
             break;
           default:
             throw new BadPayloadException(
-                "SR entries can only be queried based on systemName, serviceDefinition and interfaces fields with this method.");
+                "SR entries can only be queried based on systemName, serviceDefinition and interfaces fields with "
+                    + "this method.");
         }
 
         if (matcher != null) {
