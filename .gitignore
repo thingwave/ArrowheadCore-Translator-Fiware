@@ -9,6 +9,7 @@
 
 ### IntelliJ IDEA ###
 .idea/*.xml
+.idea/dataSources
 .idea/libraries
 *.iws
 *.iml
