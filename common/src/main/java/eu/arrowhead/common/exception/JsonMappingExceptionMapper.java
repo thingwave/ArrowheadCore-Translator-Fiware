@@ -29,7 +29,7 @@ public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingEx
   @Override
   public Response toResponse(JsonMappingException ex) {
     ex.printStackTrace();
-    int errorCode = 404; //Bad Request
+    int errorCode = 400; //Bad Request
     String origin = requestContext.get() != null ? requestContext.get().getAbsolutePath().toString() : "unknown";
     if (responseContext.get() != null && responseContext.get().getStatusInfo().getFamily() != Family.OTHER) {
       errorCode = responseContext.get().getStatus();

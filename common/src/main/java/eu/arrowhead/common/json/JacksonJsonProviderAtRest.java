@@ -37,7 +37,8 @@ public class JacksonJsonProviderAtRest extends JacksonJaxbJsonProvider {
     mapper.setDefaultPropertyInclusion(JsonInclude.Value.construct(Include.ALWAYS, Include.NON_NULL));
     mapper.setSerializationInclusion(Include.NON_NULL);
     mapper.setVisibility(PropertyAccessor.ALL, Visibility.NONE);
-    mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+    mapper.setVisibility(PropertyAccessor.GETTER, Visibility.ANY);
+    mapper.setVisibility(PropertyAccessor.SETTER, Visibility.ANY);
   }
 
   public JacksonJsonProviderAtRest() {

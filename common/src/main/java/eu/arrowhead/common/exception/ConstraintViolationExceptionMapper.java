@@ -28,7 +28,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     for (ConstraintViolation cv : ex.getConstraintViolations()) {
       messageBuilder.append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(", ");
     }
-    int errorCode = 404; //Bad Request
+    int errorCode = 400; //Bad Request
     String origin = requestContext.get() != null ? requestContext.get().getAbsolutePath().toString() : "unknown";
 
     ErrorMessage errorMessage = new ErrorMessage(messageBuilder.toString(), errorCode, ExceptionType.BAD_PAYLOAD, origin);

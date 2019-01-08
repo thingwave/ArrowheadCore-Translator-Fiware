@@ -8,7 +8,7 @@
 package eu.arrowhead.common.database;
 
 import com.google.common.base.MoreObjects;
-import eu.arrowhead.common.json.constraint.SENotBlank;
+import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.json.constraint.ZDTInFuture;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -77,7 +77,7 @@ public class EventFilter {
   @MapKeyColumn(name = "metadata_key")
   @Column(name = "metadata_value", length = 2047)
   @CollectionTable(name = "event_filter_metadata", joinColumns = @JoinColumn(name = "filter_id"))
-  private Map<@SENotBlank String, @SENotBlank String> filterMetadata = new HashMap<>();
+  private Map<String, String> filterMetadata = new HashMap<>();
 
   @Column(name = "notify_uri")
   private String notifyUri;
@@ -155,6 +155,16 @@ public class EventFilter {
   }
 
   public void setFilterMetadata(Map<String, String> filterMetadata) {
+    for (Map.Entry<String, String> entry : filterMetadata.entrySet()) {
+      String key = entry.getKey();
+      if (key == null || key.trim().isEmpty()) {
+        throw new BadPayloadException("EventFilter metadata key can not be blank!");
+      }
+      String value = entry.getValue();
+      if (value == null || value.trim().isEmpty()) {
+        throw new BadPayloadException("EventFilter metadata value can not be blank!");
+      }
+    }
     this.filterMetadata = filterMetadata;
   }
 

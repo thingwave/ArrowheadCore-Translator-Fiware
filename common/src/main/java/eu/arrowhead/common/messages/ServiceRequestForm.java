@@ -11,7 +11,6 @@ import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.exception.BadPayloadException;
-import eu.arrowhead.common.json.constraint.SENotBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class ServiceRequestForm {
   @Valid
   private ArrowheadService requestedService;
   @Size(max = 9, message = "There are only 9 orchestration flags, map size must not be bigger than 9")
-  private Map<@SENotBlank String, Boolean> orchestrationFlags = new HashMap<>();
+  private Map<String, Boolean> orchestrationFlags = new HashMap<>();
   @Valid
   private List<PreferredProvider> preferredProviders = new ArrayList<>();
   private Map<String, String> requestedQoS = new HashMap<>();
@@ -91,6 +90,16 @@ public class ServiceRequestForm {
   }
 
   public void setOrchestrationFlags(Map<String, Boolean> orchestrationFlags) {
+    for (Map.Entry<String, Boolean> entry : orchestrationFlags.entrySet()) {
+      String key = entry.getKey();
+      if (key == null || key.trim().isEmpty()) {
+        throw new BadPayloadException("SRF orchestration flag key can not be blank!");
+      }
+      Boolean value = entry.getValue();
+      if (value == null) {
+        throw new BadPayloadException("SRF orchestration flag value can not be null!");
+      }
+    }
     this.orchestrationFlags = orchestrationFlags;
   }
 
