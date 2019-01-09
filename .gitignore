@@ -11,6 +11,7 @@
 .idea/*.xml
 .idea/dataSources
 .idea/libraries
+.idea/markdown-navigator
 *.iws
 *.iml
 *.ipr

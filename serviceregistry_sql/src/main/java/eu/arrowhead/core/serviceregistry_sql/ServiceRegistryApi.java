@@ -51,8 +51,10 @@ public class ServiceRegistryApi {
   @GET
   @Path("id/{id}")
   public ServiceRegistryEntry getServiceRegEntry(@PathParam("id") long id) {
-    return dm.get(ServiceRegistryEntry.class, id)
-             .orElseThrow(() -> new DataNotFoundException("ServiceRegistryEntry not found with id: " + id));
+    ServiceRegistryEntry entry = dm.get(ServiceRegistryEntry.class, id).orElseThrow(
+        () -> new DataNotFoundException("ServiceRegistryEntry not found with id: " + id));
+    entry.fromDatabase();
+    return entry;
   }
 
   @GET
