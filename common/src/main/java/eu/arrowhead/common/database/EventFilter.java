@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.json.constraint.ZDTInFuture;
@@ -176,6 +177,7 @@ public class EventFilter {
     this.notifyUri = notifyUri;
   }
 
+  @JsonGetter
   public Boolean isMatchMetadata() {
     return matchMetadata;
   }

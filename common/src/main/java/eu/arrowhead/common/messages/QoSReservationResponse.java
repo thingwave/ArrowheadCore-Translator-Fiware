@@ -7,6 +7,8 @@
 
 package eu.arrowhead.common.messages;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+
 public class QoSReservationResponse {
 
   private boolean successfulReservation;
@@ -32,6 +34,7 @@ public class QoSReservationResponse {
     this.command = command;
   }
 
+  @JsonGetter
   public boolean isSuccessfulReservation() {
     return successfulReservation;
   }

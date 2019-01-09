@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.messages;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import eu.arrowhead.common.database.ArrowheadService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,7 @@ public class ServiceQueryForm {
     this.service = service;
   }
 
+  @JsonGetter
   public boolean isPingProviders() {
     return pingProviders;
   }
@@ -51,6 +53,7 @@ public class ServiceQueryForm {
     this.pingProviders = pingProviders;
   }
 
+  @JsonGetter
   public boolean isMetadataSearch() {
     return metadataSearch;
   }

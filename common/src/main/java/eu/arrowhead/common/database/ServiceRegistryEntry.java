@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.database;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.json.constraint.LDTInFuture;
@@ -134,6 +135,7 @@ public class ServiceRegistryEntry {
     this.serviceURI = serviceURI;
   }
 
+  @JsonGetter
   public Boolean isUdp() {
     return udp;
   }
