@@ -9,6 +9,7 @@ package eu.arrowhead.common.database;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.exception.BadPayloadException;
@@ -107,6 +108,7 @@ public class ArrowheadService {
     return interfaces;
   }
 
+  @JsonSetter
   public void setInterfaces(Set<String> interfaces) {
     for (String serviceInterface : interfaces) {
       if (serviceInterface == null || serviceInterface.trim().isEmpty()) {
@@ -120,6 +122,7 @@ public class ArrowheadService {
     return serviceMetadata;
   }
 
+  @JsonSetter
   public void setServiceMetadata(Map<String, String> serviceMetadata) {
     for (Map.Entry<String, String> entry : serviceMetadata.entrySet()) {
       String key = entry.getKey();

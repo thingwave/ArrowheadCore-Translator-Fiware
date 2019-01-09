@@ -7,7 +7,7 @@
 
 package eu.arrowhead.common.database;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.base.MoreObjects;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.json.constraint.ZDTInFuture;
@@ -155,6 +155,7 @@ public class EventFilter {
     return filterMetadata;
   }
 
+  @JsonSetter
   public void setFilterMetadata(Map<String, String> filterMetadata) {
     for (Map.Entry<String, String> entry : filterMetadata.entrySet()) {
       String key = entry.getKey();
@@ -177,7 +178,7 @@ public class EventFilter {
     this.notifyUri = notifyUri;
   }
 
-  @JsonGetter
+
   public Boolean isMatchMetadata() {
     return matchMetadata;
   }

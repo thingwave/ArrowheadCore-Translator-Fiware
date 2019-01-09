@@ -7,7 +7,6 @@
 
 package eu.arrowhead.common.messages;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,7 +119,7 @@ public class MonitorRule {
     this.parameters = parameters;
   }
 
-  @JsonGetter
+
   public boolean isSoftRealTime() {
     return softRealTime;
   }

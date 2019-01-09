@@ -7,8 +7,6 @@
 
 package eu.arrowhead.common.messages;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-
 public class InterCloudAuthResponse {
 
   private boolean authorized;
@@ -20,7 +18,7 @@ public class InterCloudAuthResponse {
     this.authorized = isAuthorized;
   }
 
-  @JsonGetter
+
   public boolean isAuthorized() {
     return authorized;
   }

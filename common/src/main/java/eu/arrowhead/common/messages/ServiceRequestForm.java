@@ -7,6 +7,7 @@
 
 package eu.arrowhead.common.messages;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
@@ -89,6 +90,7 @@ public class ServiceRequestForm {
     return orchestrationFlags;
   }
 
+  @JsonSetter
   public void setOrchestrationFlags(Map<String, Boolean> orchestrationFlags) {
     for (Map.Entry<String, Boolean> entry : orchestrationFlags.entrySet()) {
       String key = entry.getKey();

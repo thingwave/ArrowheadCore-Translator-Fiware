@@ -7,7 +7,6 @@
 
 package eu.arrowhead.common.database;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.google.common.base.MoreObjects;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -140,7 +139,7 @@ public class ArrowheadCloud {
     this.authenticationInfo = authenticationInfo;
   }
 
-  @JsonGetter
+
   public Boolean isSecure() {
     return secure;
   }
