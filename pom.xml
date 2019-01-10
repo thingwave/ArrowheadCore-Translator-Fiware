@@ -24,7 +24,7 @@
 
   <modules>
     <module>authorization</module>
-    <module>common</module>
+    <module>core-common</module>
     <module>dnssd</module>
     <module>eventhandler</module>
     <module>gatekeeper</module>
@@ -84,7 +84,7 @@
 
       <dependency>
         <groupId>eu.arrowhead</groupId>
-        <artifactId>arrowhead-common</artifactId>
+        <artifactId>arrowhead-core-common</artifactId>
         <version>${project.version}</version>
       </dependency>
 

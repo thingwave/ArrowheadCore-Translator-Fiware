@@ -5,12 +5,12 @@ AH_CLOUDS_DIR="${AH_CONF_DIR}/clouds"
 AH_SYSTEMS_DIR="${AH_CONF_DIR}/systems"
 AH_MYSQL_CONF="${AH_CONF_DIR}/mysql.cnf"
 
-db_get arrowhead-common/mysql_password; AH_PASS_DB=$RET
-db_get arrowhead-common/cert_password; AH_PASS_CERT=$RET
-db_get arrowhead-common/cloudname; AH_CLOUD_NAME=$RET
-db_get arrowhead-common/operator; AH_OPERATOR=$RET
-db_get arrowhead-common/company; AH_COMPANY=$RET
-db_get arrowhead-common/country; AH_COUNTRY=$RET
+db_get arrowhead-core-common/mysql_password; AH_PASS_DB=$RET
+db_get arrowhead-core-common/cert_password; AH_PASS_CERT=$RET
+db_get arrowhead-core-common/cloudname; AH_CLOUD_NAME=$RET
+db_get arrowhead-core-common/operator; AH_OPERATOR=$RET
+db_get arrowhead-core-common/company; AH_COMPANY=$RET
+db_get arrowhead-core-common/country; AH_COUNTRY=$RET
 
 ah_cert () {
     dst_path=${1}
@@ -212,12 +212,12 @@ GRANT ALL PRIVILEGES ON arrowhead.* TO arrowhead@'localhost';
 FLUSH PRIVILEGES;
 EOF
         else
-            db_input critical arrowhead-common/mysql_password_root || true
+            db_input critical arrowhead-core-common/mysql_password_root || true
             db_go || true
-            db_get arrowhead-common/mysql_password_root; AH_MYSQL_ROOT=$RET
-            db_unregister arrowhead-common/mysql_password_root
+            db_get arrowhead-core-common/mysql_password_root; AH_MYSQL_ROOT=$RET
+            db_unregister arrowhead-core-common/mysql_password_root
 
-            OPT_FILE="$(mktemp -q --tmpdir "arrowhead-common.XXXXXX")"
+            OPT_FILE="$(mktemp -q --tmpdir "arrowhead-core-common.XXXXXX")"
             trap 'rm -f "${OPT_FILE}"' EXIT
             chmod 0600 "${OPT_FILE}"
 

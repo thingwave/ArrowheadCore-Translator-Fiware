@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for arrowhead-common
+# postrm script for arrowhead-core-common
 #
 # see: dh_installdeb(1)
 
@@ -23,7 +23,7 @@ set -e
 
 case "$1" in
     purge)
-        db_get arrowhead-common/cloudname; AH_CLOUD_NAME=$RET
+        db_get arrowhead-core-common/cloudname; AH_CLOUD_NAME=$RET
         AH_CONF_DIR="/etc/arrowhead"
         AH_CLOUDS_DIR="${AH_CONF_DIR}/clouds"
         AH_SYSTEMS_DIR="${AH_CONF_DIR}/systems"
@@ -36,12 +36,12 @@ DROP DATABASE IF EXISTS arrowhead;
 DROP USER IF EXISTS arrowhead@localhost;
 EOF
             else
-                db_input critical arrowhead-common/mysql_password_root || true
+                db_input critical arrowhead-core-common/mysql_password_root || true
                 db_go || true
-                db_get arrowhead-common/mysql_password_root; AH_MYSQL_ROOT=$RET
-                db_unregister arrowhead-common/mysql_password_root
+                db_get arrowhead-core-common/mysql_password_root; AH_MYSQL_ROOT=$RET
+                db_unregister arrowhead-core-common/mysql_password_root
 
-                OPT_FILE="$(mktemp -q --tmpdir "arrowhead-common.XXXXXX")"
+                OPT_FILE="$(mktemp -q --tmpdir "arrowhead-core-common.XXXXXX")"
                 trap 'rm -f "${OPT_FILE}"' EXIT
                 chmod 0600 "${OPT_FILE}"
 

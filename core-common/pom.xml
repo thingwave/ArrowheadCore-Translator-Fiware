@@ -16,7 +16,7 @@
     <version>${revision}</version>
   </parent>
 
-  <artifactId>arrowhead-common</artifactId>
+  <artifactId>arrowhead-core-common</artifactId>
   <packaging>jar</packaging>
 
   <properties>

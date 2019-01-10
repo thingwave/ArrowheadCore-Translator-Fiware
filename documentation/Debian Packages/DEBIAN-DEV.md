@@ -113,7 +113,7 @@ WantedBy=default.target
 ### File: src/deb/control 
 
 Description file for the package manager. Contains an description of the system, the maintainer, and which packages
-should be installed before this one. In general, all should depend on arrowhead-common.
+should be installed before this one. In general, all should depend on arrowhead-core-common.
 
 ```
 Package: [[name]]
@@ -125,7 +125,7 @@ Maintainer: Thomas Pedersen <tp@cs.aau.dk>
 Homepage: http://www.arrowhead.eu
 Description: Arrowhead Gatekeeper System
 Distribution: development
-Depends: java-runtime-headless, virtual-mysql-server, arrowhead-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
+Depends: java-runtime-headless, virtual-mysql-server, arrowhead-core-common, arrowhead-serviceregistry-sql, arrowhead-authorization, arrowhead-gateway
 ```
 
 ### File: src/deb/postinst
