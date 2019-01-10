@@ -212,6 +212,7 @@ public class DatabaseManager {
       if (transaction != null) {
         transaction.rollback();
       }
+      //NOTE root cause of persistenceException can be other reasons too
       log.error("DatabaseManager:save throws DuplicateEntryException", e);
       throw new DuplicateEntryException(
           "There is already an entry in the database with these parameters. Please check the unique fields of the " + objects.getClass(),
