@@ -74,6 +74,7 @@ public class Broker {
     this.port = port;
   }
 
+
   public Boolean isSecure() {
     return secure;
   }

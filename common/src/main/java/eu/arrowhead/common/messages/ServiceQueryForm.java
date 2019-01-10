@@ -43,6 +43,7 @@ public class ServiceQueryForm {
     this.service = service;
   }
 
+
   public boolean isPingProviders() {
     return pingProviders;
   }
@@ -50,6 +51,7 @@ public class ServiceQueryForm {
   public void setPingProviders(boolean pingProviders) {
     this.pingProviders = pingProviders;
   }
+
 
   public boolean isMetadataSearch() {
     return metadataSearch;

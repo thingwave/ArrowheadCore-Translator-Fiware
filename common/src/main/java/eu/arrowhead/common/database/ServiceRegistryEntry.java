@@ -134,6 +134,7 @@ public class ServiceRegistryEntry {
     this.serviceURI = serviceURI;
   }
 
+
   public Boolean isUdp() {
     return udp;
   }

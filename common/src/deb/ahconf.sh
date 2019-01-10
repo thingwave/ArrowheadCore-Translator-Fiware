@@ -65,7 +65,7 @@ ah_cert_export_pub () {
     dst_path=${3}
 
     src_file="${src_path}/${dst_name}.p12"
-    dst_file="${dst_path}/${dst_name}.crt"
+    dst_file="${dst_path}/${dst_name}.pub"
 
     if [ ! -f "${dst_file}" ]; then
         keytool -exportcert \

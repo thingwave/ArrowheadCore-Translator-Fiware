@@ -32,6 +32,7 @@ public class QoSReservationResponse {
     this.command = command;
   }
 
+
   public boolean isSuccessfulReservation() {
     return successfulReservation;
   }

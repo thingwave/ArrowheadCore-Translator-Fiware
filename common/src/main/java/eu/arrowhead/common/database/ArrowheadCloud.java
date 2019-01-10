@@ -139,6 +139,7 @@ public class ArrowheadCloud {
     this.authenticationInfo = authenticationInfo;
   }
 
+
   public Boolean isSecure() {
     return secure;
   }

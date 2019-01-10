@@ -15,7 +15,7 @@ CLOUD_64PUB=${4}
 
 echo "Registering cloud '${CLOUD_NAME}' in database" >&2
 mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
-    LOCK TABLES arrowhead_cloud WRITE, hibernate_sequence WRITE, neighbor_cloud WRITE;
+    LOCK TABLES arrowhead_cloud WRITE, table_generator WRITE, neighbor_cloud WRITE;
     INSERT INTO arrowhead_cloud
         (id, address, authentication_info, cloud_name, gatekeeper_service_uri, operator, port, is_secure)
         SELECT
@@ -27,9 +27,9 @@ mysql --defaults-extra-file="${AH_MYSQL_CONF}" -u arrowhead arrowhead <<EOF
             '${AH_OPERATOR}',
             '8447',
             'Y'
-            FROM hibernate_sequence;
-    INSERT INTO neighbor_cloud (cloud_id) SELECT next_val FROM hibernate_sequence;
-    UPDATE hibernate_sequence SET next_val = next_val + 1;
+            FROM table_generator;
+    INSERT INTO neighbor_cloud (cloud_id) SELECT next_val FROM table_generator;
+    UPDATE table_generator SET next_val = next_val + 1;
     UNLOCK TABLES;
 EOF
 

@@ -119,6 +119,7 @@ public class MonitorRule {
     this.parameters = parameters;
   }
 
+
   public boolean isSoftRealTime() {
     return softRealTime;
   }

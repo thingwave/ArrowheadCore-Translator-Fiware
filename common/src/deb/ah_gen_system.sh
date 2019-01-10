@@ -40,10 +40,10 @@ SYSTEM_64PUB=$(\
 
 echo "Registering system '${SYSTEM_NAME}' in database" >&2
 db_cmd="
-    LOCK TABLES arrowhead_system WRITE, hibernate_sequence WRITE, arrowhead_service WRITE, arrowhead_service_interfaces WRITE;
+    LOCK TABLES arrowhead_system WRITE, table_generator WRITE, arrowhead_service WRITE, arrowhead_service_interfaces WRITE;
     INSERT INTO arrowhead_system (id, address, authentication_info, port, system_name)
-        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}', '${PORT}', '${SYSTEM_NAME}' FROM hibernate_sequence;
-    UPDATE hibernate_sequence SET next_val = next_val + 1;
+        SELECT next_val, '${SYSTEM_HOST}', '${SYSTEM_64PUB}', '${PORT}', '${SYSTEM_NAME}' FROM table_generator;
+    UPDATE table_generator SET next_val = next_val + 1;
 "
 
 if [ ! -z "${SERVICE}" ]; then
@@ -51,10 +51,10 @@ if [ ! -z "${SERVICE}" ]; then
         echo "Registering service '${SERVICE}' in database" >&2
         db_cmd="${db_cmd}
             INSERT INTO arrowhead_service (id, service_definition)
-                SELECT next_val, '${SERVICE}' FROM hibernate_sequence;
+                SELECT next_val, '${SERVICE}' FROM table_generator;
             INSERT INTO arrowhead_service_interfaces (arrowhead_service_id, interfaces)
-                SELECT next_val, 'JSON' FROM hibernate_sequence;
-            UPDATE hibernate_sequence SET next_val = next_val + 1;
+                SELECT next_val, 'JSON' FROM table_generator;
+            UPDATE table_generator SET next_val = next_val + 1;
         "
     fi
 fi
@@ -119,7 +119,7 @@ keystorepass=${AH_PASS_CERT}
 keypass=${AH_PASS_CERT}
 truststore=${SYSTEM_STORE}
 truststorepass=${AH_PASS_CERT}
-authorization_cert=${SYSTEM_DIR}/authorization.crt
+authorization_cert=${SYSTEM_DIR}/authorization.pub
 " >> "${SYSTEM_DIR}/default.conf"
 
 chown root:arrowhead "${SYSTEM_DIR}/default.conf"

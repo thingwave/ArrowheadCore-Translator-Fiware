@@ -18,6 +18,7 @@ public class InterCloudAuthResponse {
     this.authorized = isAuthorized;
   }
 
+
   public boolean isAuthorized() {
     return authorized;
   }
