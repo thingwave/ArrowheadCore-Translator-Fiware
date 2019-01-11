@@ -193,12 +193,10 @@ public class ServiceRegistryEntry {
     }
   }
 
-  public void fromDatabase() {
-    ArrowheadService temp = providedService;
-    providedService = new ArrowheadService();
-    providedService.setServiceDefinition(temp.getServiceDefinition());
-    providedService.setInterfaces(temp.getInterfaces());
-
+  public void fromDatabase(boolean removeId) {
+    if (removeId) {
+      providedService.setId(null);
+    }
     if (metadata != null && metadata.trim().length() > 0) {
       String[] parts = metadata.split(",");
       providedService.getServiceMetadata().clear();

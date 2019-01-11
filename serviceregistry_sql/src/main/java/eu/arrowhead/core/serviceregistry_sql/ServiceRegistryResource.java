@@ -83,7 +83,7 @@ public class ServiceRegistryResource {
               .getServiceDefinition() + ")");
     }
 
-    savedEntry.fromDatabase();
+    savedEntry.fromDatabase(true);
     log.info("New " + entry.toString() + " is saved.");
     return Response.status(Status.CREATED).entity(savedEntry).build();
   }
@@ -102,7 +102,7 @@ public class ServiceRegistryResource {
     restrictionMap.put("providedService", service);
     List<ServiceRegistryEntry> providedServices = dm.getAll(ServiceRegistryEntry.class, restrictionMap);
     for (ServiceRegistryEntry entry : providedServices) {
-      entry.fromDatabase();
+      entry.fromDatabase(true);
     }
 
     if (queryForm.getVersion() != null) {
@@ -150,7 +150,7 @@ public class ServiceRegistryResource {
     ServiceRegistryEntry retrievedEntry = dm.get(ServiceRegistryEntry.class, restrictionMap);
     if (retrievedEntry != null) {
       dm.delete(retrievedEntry);
-      retrievedEntry.fromDatabase();
+      retrievedEntry.fromDatabase(true);
       log.info(retrievedEntry.toString() + " deleted.");
       return Response.status(Status.OK).entity(retrievedEntry).build();
     } else {

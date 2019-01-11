@@ -53,7 +53,7 @@ public class ServiceRegistryApi {
   public ServiceRegistryEntry getServiceRegEntry(@PathParam("id") long id) {
     ServiceRegistryEntry entry = dm.get(ServiceRegistryEntry.class, id).orElseThrow(
         () -> new DataNotFoundException("ServiceRegistryEntry not found with id: " + id));
-    entry.fromDatabase();
+    entry.fromDatabase(false);
     return entry;
   }
 
@@ -63,7 +63,7 @@ public class ServiceRegistryApi {
     List<ServiceRegistryEntry> providedServices = dm.getAll(ServiceRegistryEntry.class, null);
 
     for (ServiceRegistryEntry entry : providedServices) {
-      entry.fromDatabase();
+      entry.fromDatabase(false);
     }
 
     ServiceQueryResult result = new ServiceQueryResult(providedServices);
@@ -108,7 +108,7 @@ public class ServiceRegistryApi {
     }
 
     for (ServiceRegistryEntry entry : srList) {
-      entry.fromDatabase();
+      entry.fromDatabase(false);
     }
 
     log.info("getAllByProvider returns " + srList.size() + " entries");
@@ -136,7 +136,7 @@ public class ServiceRegistryApi {
     }
 
     for (ServiceRegistryEntry entry : srList) {
-      entry.fromDatabase();
+      entry.fromDatabase(false);
     }
 
     log.info("getAllByService returns " + srList.size() + " entries");
@@ -222,7 +222,7 @@ public class ServiceRegistryApi {
     retreivedEntry.setServiceURI(entry.getServiceURI());
     retreivedEntry.setEndOfValidity(entry.getEndOfValidity());
     retreivedEntry = dm.merge(retreivedEntry);
-    retreivedEntry.fromDatabase();
+    retreivedEntry.fromDatabase(false);
 
     log.info("updateServiceRegistryEntry successfully returns.");
     return Response.status(Status.ACCEPTED).entity(retreivedEntry).build();
