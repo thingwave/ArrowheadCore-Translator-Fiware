@@ -54,6 +54,7 @@ public class AuthorizationApi {
 
   @GET
   @Path("publickey")
+  @Produces(MediaType.TEXT_PLAIN)
   public String getMyPublicKey() {
     return Base64.getEncoder().encodeToString(AuthorizationMain.publicKey.getEncoded());
   }
