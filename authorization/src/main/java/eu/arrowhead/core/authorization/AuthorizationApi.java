@@ -162,31 +162,6 @@ public class AuthorizationApi {
     return authRights;
   }
 
-  @GET
-  @Path("intracloud/serviceId/{serviceId}/providers")
-  public Set<ArrowheadSystem> getServiceProviders(@PathParam("serviceId") long serviceId) {
-    ArrowheadService service = dm.get(ArrowheadService.class, serviceId).<DataNotFoundException>orElseThrow(() -> {
-      log.info("getServiceProviders throws DataNotFoundException");
-      throw new DataNotFoundException("ArrowheadService not found with id: " + serviceId);
-    });
-
-    restrictionMap.put("service", service);
-    List<IntraCloudAuthorization> authRights = dm.getAll(IntraCloudAuthorization.class, restrictionMap);
-    if (authRights.isEmpty()) {
-      log.info("getServiceProviders throws DataNotFoundException");
-      throw new DataNotFoundException(
-          "This Service is not present in intra-cloud authorization: " + service.toString());
-    }
-
-    Set<ArrowheadSystem> providers = new HashSet<>();
-    for (IntraCloudAuthorization authRight : authRights) {
-      providers.add(authRight.getProvider());
-    }
-    log.info("getServiceProviders returns " + providers.size() + " providers");
-    return providers;
-  }
-
-
   /**
    * Creates relations between local Systems, defining the consumable services between Systems. (Not bidirectional.)
    * OneToMany relation between

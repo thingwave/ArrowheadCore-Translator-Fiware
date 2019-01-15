@@ -17,7 +17,9 @@ import eu.arrowhead.common.messages.ServiceQueryByRegex;
 import eu.arrowhead.common.messages.ServiceQueryResult;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.Valid;
@@ -141,6 +143,29 @@ public class ServiceRegistryApi {
 
     log.info("getAllByService returns " + srList.size() + " entries");
     return srList;
+  }
+
+  @GET
+  @Path("/serviceId/{serviceId}/providers")
+  public Set<ArrowheadSystem> getServiceProviders(@PathParam("serviceId") long serviceId) {
+    ArrowheadService service = dm.get(ArrowheadService.class, serviceId).<DataNotFoundException>orElseThrow(() -> {
+      log.info("getServiceProviders throws DataNotFoundException");
+      throw new DataNotFoundException("ArrowheadService not found with id: " + serviceId);
+    });
+
+    restrictionMap.put("providedService", service);
+    List<ServiceRegistryEntry> srEntries = dm.getAll(ServiceRegistryEntry.class, restrictionMap);
+    if (srEntries.isEmpty()) {
+      log.info("getServiceProviders throws DataNotFoundException");
+      throw new DataNotFoundException("This Service is not present in the Service Registry: " + service.toString());
+    }
+
+    Set<ArrowheadSystem> providers = new HashSet<>();
+    for (ServiceRegistryEntry srEntry : srEntries) {
+      providers.add(srEntry.getProvider());
+    }
+    log.info("getServiceProviders returns " + providers.size() + " providers");
+    return providers;
   }
 
   @PUT

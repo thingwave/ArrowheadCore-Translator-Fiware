@@ -171,13 +171,12 @@ public class ArrowheadService {
     return MoreObjects.toStringHelper(this).add("serviceDefinition", serviceDefinition).toString();
   }
 
+  @SuppressWarnings("unchecked")
   public void partialUpdate(ArrowheadService other) {
-    this.serviceDefinition =
-        other.getServiceDefinition() != null ? other.getServiceDefinition() : this.serviceDefinition;
+    this.serviceDefinition = other.getServiceDefinition() != null ? other.getServiceDefinition() : this.serviceDefinition;
     //Making deep copies of the collections with the help of JSON (de)serialization
     this.interfaces = other.getInterfaces().isEmpty() ? this.interfaces : Utility
         .fromJson(Utility.toPrettyJson(null, other.getInterfaces()), Set.class);
-    this.serviceMetadata = other.getServiceMetadata().isEmpty() ? this.serviceMetadata : Utility
-        .fromJson(Utility.toPrettyJson(null, other.getServiceMetadata()), Map.class);
+    this.serviceMetadata = other.getServiceMetadata().isEmpty() ? this.serviceMetadata : Utility.fromJson(Utility.toPrettyJson(null, other.getServiceMetadata()), Map.class);
   }
 }
