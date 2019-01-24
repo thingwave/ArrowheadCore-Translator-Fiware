@@ -10,11 +10,13 @@ package eu.arrowhead.common;
 import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.exception.DuplicateEntryException;
 import eu.arrowhead.common.misc.TypeSafeProperties;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ServiceConfigurationError;
+import java.util.Set;
 import javax.persistence.PersistenceException;
 import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
@@ -113,6 +115,26 @@ public class DatabaseManager {
     return Optional.ofNullable(object);
   }
 
+  public <T> List<T> get(Class<T> queryClass, Set<Long> ids) {
+    List<T> retrievedList = new ArrayList<>();
+    Transaction transaction = null;
+
+    try (Session session = getSessionFactory().openSession()) {
+      transaction = session.beginTransaction();
+      for (Long id : ids) {
+        retrievedList.add(session.get(queryClass, id));
+      }
+      transaction.commit();
+    } catch (Exception e) {
+      if (transaction != null) {
+        transaction.rollback();
+      }
+      throw e;
+    }
+
+    return retrievedList;
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T get(Class<T> queryClass, Map<String, Object> restrictionMap) {
     T object;
@@ -199,7 +221,8 @@ public class DatabaseManager {
   }
 
 
-  public <T> T save(T... objects) {
+  @SafeVarargs
+  public final <T> T save(T... objects) {
     Transaction transaction = null;
 
     try (Session session = getSessionFactory().openSession()) {
@@ -228,12 +251,15 @@ public class DatabaseManager {
   }
 
 
-  public <T> T merge(T object) {
+  @SafeVarargs
+  public final <T> T merge(T... objects) {
     Transaction transaction = null;
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
-      session.merge(object);
+      for (T object : objects) {
+        session.merge(object);
+      }
       transaction.commit();
     } catch (PersistenceException e) {
       if (transaction != null) {
@@ -241,7 +267,8 @@ public class DatabaseManager {
       }
       log.error("DatabaseManager:merge throws DuplicateEntryException", e);
       throw new DuplicateEntryException(
-          "There is already an entry in the database with these parameters. Please check the unique fields of the " + object.getClass(),
+          "There is already an entry in the database with these parameters. Please check the unique fields of the "
+              + objects.getClass(),
           Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
@@ -250,15 +277,18 @@ public class DatabaseManager {
       throw e;
     }
 
-    return object;
+    return objects[0];
   }
 
-  public <T> void delete(T object) {
+  @SafeVarargs
+  public final <T> void delete(T... objects) {
     Transaction transaction = null;
 
     try (Session session = getSessionFactory().openSession()) {
       transaction = session.beginTransaction();
-      session.delete(object);
+      for (T object : objects) {
+        session.delete(object);
+      }
       transaction.commit();
     } catch (ConstraintViolationException e) {
       if (transaction != null) {
@@ -266,7 +296,8 @@ public class DatabaseManager {
       }
       log.error("DatabaseManager:delete throws ConstraintViolationException");
       throw new ArrowheadException(
-          "There is a reference to this object in another table, which prevents the delete operation. (" + object.getClass() + ")",
+          "There is a reference to this object in another table, which prevents the delete operation. (" + objects
+              .getClass() + ")",
           Status.BAD_REQUEST.getStatusCode(), e);
     } catch (Exception e) {
       if (transaction != null) {
