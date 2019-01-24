@@ -19,8 +19,12 @@ ah_cert () {
 
     file="${dst_path}/${dst_name}.p12"
 
+    # The command has been renamed in newer versions of keytool
+    gen_cmd="-genkeypair"
+    keytool ${gen_cmd} --help >/dev/null 2>&1 || gen_cmd='-genkey'
+
     if [ ! -f "${file}" ]; then
-        keytool -genkeypair \
+        keytool ${gen_cmd} \
             -alias ${dst_name} \
             -keyalg RSA \
             -keysize 2048 \
