@@ -63,7 +63,9 @@ messages from all the core systems in one place.
 * Each core system will log to a file in its active working directory called `log4j_log.txt`. These text files are separate for each core system, 
 meaning one text file only contains the log messages of one core system.
 
-The databases schema(s) have to be created before starting the core systems. The `logs` table also has to be manually created, because that is 
+The databases schema have to be created before starting the core systems. The SQL script at `scripts/create_empty_arrowhead_db.sql` creates a database schema callel `arrowhead`, and also generates all the database tables used by the Core Systems.
+
+The `logs` table also has to be manually created, because that is 
 only used by the logging library, and the ORM library does not know about it. The ORM library can create all the other arrowhead tables, if they do 
 not exist yet. An SQL script can be found at `common/config/create_arrowhead_logs.sql` to create the `logs` table.
 
