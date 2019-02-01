@@ -70,7 +70,7 @@ only used by the logging library, and the ORM library does not know about it. Th
 not exist yet. An SQL script can be found at `common/config/create_arrowhead_logs.sql` to create the `logs` table.
 
 The project can also be run from an IDE for testing purposes. Just import the multi-module project as a maven project, and the IDE should find all 
-the `pom.xml` files necessary to download the dependencies and start the core systems.
+the `pom.xml` files necessary to download the dependencies and start the core systems. IntelliJ IDEA specific run configurations (for insecure and secure mode separately) are also provided, including compound configurations, which can start all the core systems together, from the IDE.
 
 ### Ubuntu, Raspbian and other Debian based Linux distriutions
 An alternative method for installing a local Arrowhead Cloud on a
