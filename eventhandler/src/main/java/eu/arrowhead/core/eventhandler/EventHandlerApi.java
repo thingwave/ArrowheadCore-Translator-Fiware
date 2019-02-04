@@ -5,6 +5,7 @@ import eu.arrowhead.common.database.EventFilter;
 import eu.arrowhead.common.exception.DataNotFoundException;
 import java.util.List;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -18,11 +19,14 @@ public class EventHandlerApi {
 
   private static final DatabaseManager dm = DatabaseManager.getInstance();
 
+  @GET
   @Path("subscriptions")
-  public List<EventFilter> getAllEventSubscriptions() {
-    return dm.getAll(EventFilter.class, null);
+  public Response getAllEventSubscriptions() {
+    List<EventFilter> subscriptions = dm.getAll(EventFilter.class, null);
+    return Response.ok().entity(subscriptions).build();
   }
 
+  @GET
   @Path("subscriptions/{id}")
   public Response getEventSubscriptionById(@PathParam("id") long id) {
     EventFilter subscription = dm.get(EventFilter.class, id)
