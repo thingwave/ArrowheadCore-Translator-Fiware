@@ -105,6 +105,8 @@ public class ServiceRegistryResource {
       entry.fromDatabase(true);
     }
 
+    log.debug("Potential service providers before filtering:" + providedServices.size());
+    RegistryUtils.filterOnInterfaces(providedServices, queryForm.getService());
     if (queryForm.getVersion() != null) {
       RegistryUtils.filterOnVersion(providedServices, queryForm.getVersion());
     } else {
@@ -126,6 +128,7 @@ public class ServiceRegistryResource {
     if (queryForm.isPingProviders()) {
       RegistryUtils.filterOnPing(providedServices);
     }
+    log.debug("Potential service providers after filtering:" + providedServices.size());
 
     log.info("Service " + queryForm.getService().toString() + " queried successfully.");
     ServiceQueryResult result = new ServiceQueryResult(providedServices);
