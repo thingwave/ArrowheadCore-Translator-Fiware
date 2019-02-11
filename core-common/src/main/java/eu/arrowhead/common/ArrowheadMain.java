@@ -47,7 +47,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 public abstract class ArrowheadMain {
 
-  public static final List<String> dbFields = Collections.unmodifiableList(Arrays.asList("db_user", "db_password", "db_address"));
+  public static final List<String> dbFields = Collections
+      .unmodifiableList(Arrays.asList("db_user", "db_password", "db_address"));
   public static final List<String> certFields = Collections
       .unmodifiableList(Arrays.asList("keystore", "keystorepass", "keypass", "truststore", "truststorepass"));
   public static final Map<String, String> secureServerMetadata = Collections.singletonMap("security", "certificate");
@@ -114,7 +115,8 @@ public abstract class ArrowheadMain {
     if (!coreSystem.equals(CoreSystem.SERVICE_REGISTRY_DNS) && !coreSystem.equals(CoreSystem.SERVICE_REGISTRY_SQL)) {
       String srAddress = props.getProperty("sr_address", "0.0.0.0");
       int srPort = isSecure ? props.getIntProperty("sr_secure_port", CoreSystem.SERVICE_REGISTRY_SQL.getSecurePort())
-                            : props.getIntProperty("sr_insecure_port", CoreSystem.SERVICE_REGISTRY_SQL.getInsecurePort());
+                            : props
+                       .getIntProperty("sr_insecure_port", CoreSystem.SERVICE_REGISTRY_SQL.getInsecurePort());
       srBaseUri = Utility.getUri(srAddress, srPort, "serviceregistry", isSecure, true);
       Utility.setServiceRegistryUri(srBaseUri);
       useSRService(true);
@@ -158,8 +160,8 @@ public abstract class ArrowheadMain {
       log.info("Started server at: " + baseUri);
       System.out.println("Started insecure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
-                                          e);
+      throw new ServiceConfigurationError(
+          "Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)", e);
     }
   }
 
@@ -197,23 +199,25 @@ public abstract class ArrowheadMain {
     if (!SecurityUtils.isKeyStoreCNArrowheadValid(serverCN)) {
       log.fatal("Server CN is not compliant with the Arrowhead cert structure");
       throw new AuthException(
-          "Server CN ( " + serverCN + ") is not compliant with the Arrowhead cert structure, since it does not have 5 parts, or does not end with"
-              + " \"arrowhead.eu\"");
+          "Server CN ( " + serverCN + ") is not compliant with the Arrowhead cert structure, since it does not have 5 "
+              + "parts, or does not end with" + " \"arrowhead.eu\"");
     }
     log.info("Certificate of the secure server: " + serverCN);
     config.property("server_common_name", serverCN);
 
     URI uri = UriBuilder.fromUri(baseUri).build();
     try {
-      server = GrizzlyHttpServerFactory
-          .createHttpServer(uri, config, true, new SSLEngineConfigurator(sslCon).setClientMode(false).setNeedClientAuth(true), false);
+      server = GrizzlyHttpServerFactory.createHttpServer(uri, config, true,
+                                                         new SSLEngineConfigurator(sslCon).setClientMode(false)
+                                                                                          .setNeedClientAuth(true),
+                                                         false);
       configureServer(server);
       server.start();
       log.info("Started server at: " + baseUri);
       System.out.println("Started secure server at: " + baseUri);
     } catch (IOException | ProcessingException e) {
-      throw new ServiceConfigurationError("Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)",
-                                          e);
+      throw new ServiceConfigurationError(
+          "Make sure you gave a valid address in the config file! (Assignable to this JVM and not in use already)", e);
     }
   }
 
@@ -238,13 +242,15 @@ public abstract class ArrowheadMain {
 
   private void useSRService(boolean registering) {
     //Preparing the payload
-    URI uri = UriBuilder.fromUri(baseUri).build();
-    boolean isSecure = uri.getScheme().equals("https");
-    ArrowheadSystem provider = new ArrowheadSystem(coreSystem.name(), uri.getHost(), uri.getPort(), base64PublicKey);
+    final URI uri = UriBuilder.fromUri(baseUri).build();
+    final boolean isSecure = uri.getScheme().equals("https");
+    final String interfaceName = isSecure ? "HTTP-SECURE-JSON" : "HTTP-INSECURE-JSON";
+    final ArrowheadSystem provider = new ArrowheadSystem(coreSystem.name(), uri.getHost(), uri.getPort(),
+                                                         base64PublicKey);
 
     for (CoreSystemService service : coreSystem.getServices()) {
-      ArrowheadService providedService = new ArrowheadService(Utility.createSD(service.getServiceDef(), isSecure), Collections.singleton("JSON"),
-                                                              null);
+      ArrowheadService providedService = new ArrowheadService(Utility.createSD(service.getServiceDef(), isSecure),
+                                                              Collections.singleton(interfaceName), null);
       if (isSecure) {
         providedService.setServiceMetadata(ArrowheadMain.secureServerMetadata);
       }
