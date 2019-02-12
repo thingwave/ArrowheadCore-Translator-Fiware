@@ -46,7 +46,7 @@ import org.apache.log4j.Logger;
 /**
  * This is the REST resource for the Gatekeeper Core System.
  */
-@Path("gatekeeper")
+@Path(GatekeeperMain.GATEKEEPER_SERVICE_URI)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GatekeeperOutboundResource {
@@ -149,15 +149,14 @@ public class GatekeeperOutboundResource {
     requestForm.getNegotiationFlags().put("useGateway", GatekeeperMain.USE_GATEWAY);
     // Compiling the payload and then getting the request URI
     ICNProposal icnProposal = new ICNProposal(requestForm.getRequestedService(), Utility.getOwnCloud(GatekeeperMain.IS_SECURE),
-                                              requestForm.getRequesterSystem(),
-                                              requestForm.getPreferredSystems(), requestForm.getNegotiationFlags(), null, GatekeeperMain.TIMEOUT,
-                                              null);
+                                              requestForm.getRequesterSystem(), requestForm.getPreferredSystems(), requestForm.getNegotiationFlags(),
+                                              null, GatekeeperMain.TIMEOUT, null);
 
     if (GatekeeperMain.USE_GATEWAY) {
       Map<String, Object> restrictionMap = new HashMap<>();
       restrictionMap.put("secure", GatekeeperMain.IS_SECURE);
       icnProposal.setPreferredBrokers(dm.getAll(Broker.class, restrictionMap));
-      icnProposal.setGatewayPublicKey(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
+      icnProposal.setGatewayPublicKey(GatekeeperMain.getGatewayConsumerUri()[3]);
     }
 
     String icnUri = Utility.getUri(requestForm.getTargetCloud().getAddress(), requestForm.getTargetCloud().getPort(),
@@ -189,14 +188,14 @@ public class GatekeeperOutboundResource {
 
     // Sending the gateway request and parsing the response
     Response gatewayResponse = Utility
-        .sendRequest(GatekeeperMain.GATEWAY_CONSUMER_URI[0], "PUT", connectionRequest, GatekeeperMain.outboundServerContext);
+        .sendRequest(GatekeeperMain.getGatewayConsumerUri()[0], "PUT", connectionRequest, GatekeeperMain.outboundServerContext);
     ConnectToConsumerResponse connectToConsumerResponse = gatewayResponse.readEntity(ConnectToConsumerResponse.class);
 
     ArrowheadSystem gatewaySystem = new ArrowheadSystem();
-    gatewaySystem.setSystemName(GatekeeperMain.GATEWAY_CONSUMER_URI[1]);
-    gatewaySystem.setAddress(GatekeeperMain.GATEWAY_CONSUMER_URI[2]);
+    gatewaySystem.setSystemName(GatekeeperMain.getGatewayConsumerUri()[1]);
+    gatewaySystem.setAddress(GatekeeperMain.getGatewayConsumerUri()[2]);
     gatewaySystem.setPort(connectToConsumerResponse.getServerSocketPort());
-    gatewaySystem.setAuthenticationInfo(GatekeeperMain.GATEWAY_CONSUMER_URI[3]);
+    gatewaySystem.setAuthenticationInfo(GatekeeperMain.getGatewayConsumerUri()[3]);
     icnEnd.getOrchestrationForm().setProvider(gatewaySystem);
     List<OrchestrationForm> orchResponse = new ArrayList<>();
     orchResponse.add(icnEnd.getOrchestrationForm());

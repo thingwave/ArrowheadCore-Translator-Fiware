@@ -14,6 +14,7 @@ import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.OrchestrationStore;
 import eu.arrowhead.common.exception.BadPayloadException;
 import eu.arrowhead.common.exception.DataNotFoundException;
+import eu.arrowhead.common.messages.OrchestrationStorePriorities;
 import eu.arrowhead.common.messages.OrchestrationStoreQuery;
 import eu.arrowhead.core.orchestrator.StoreService;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -316,6 +318,21 @@ public class StoreApi {
       log.info("deleteEntries successfully returns.");
       return Response.ok().build();
     }
+  }
+
+  @PUT
+  @Path("priorities")
+  public Response updatePriorities(@Valid OrchestrationStorePriorities prioritiesMap) {
+    Set<Long> IDs = prioritiesMap.getPriorities().keySet();
+    List<OrchestrationStore> storeList = dm.get(OrchestrationStore.class, IDs);
+    dm.delete(storeList.toArray());
+
+    for (OrchestrationStore entry : storeList) {
+      int newPriority = prioritiesMap.getPriorities().get(entry.getId());
+      entry.setPriority(newPriority);
+    }
+    dm.save(storeList.toArray());
+    return Response.ok().entity(storeList).build();
   }
 
 }

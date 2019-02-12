@@ -44,7 +44,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.log4j.Logger;
 
-@Path("gatekeeper")
+@Path(GatekeeperMain.GATEKEEPER_SERVICE_URI)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GatekeeperInboundResource {
@@ -69,7 +69,7 @@ public class GatekeeperInboundResource {
   public Response GSDPoll(@Valid GSDPoll gsdPoll) {
     // Polling the Authorization System about the consumer Cloud
     InterCloudAuthRequest authRequest = new InterCloudAuthRequest(gsdPoll.getRequesterCloud(), gsdPoll.getRequestedService());
-    String authUri = UriBuilder.fromPath(GatekeeperMain.AUTH_CONTROL_URI).path("intercloud").toString();
+    String authUri = UriBuilder.fromPath(GatekeeperMain.getAuthControlUri()).path("intercloud").toString();
     Response authResponse = Utility.sendRequest(authUri, "PUT", authRequest);
 
     // If the consumer Cloud is not authorized an error is returned
@@ -110,7 +110,7 @@ public class GatekeeperInboundResource {
   public Response ICNProposal(@Valid ICNProposal icnProposal) {
     // Polling the Authorization System about the consumer Cloud
     InterCloudAuthRequest authRequest = new InterCloudAuthRequest(icnProposal.getRequesterCloud(), icnProposal.getRequestedService());
-    String authUri = UriBuilder.fromPath(GatekeeperMain.AUTH_CONTROL_URI).path("intercloud").toString();
+    String authUri = UriBuilder.fromPath(GatekeeperMain.getAuthControlUri()).path("intercloud").toString();
     Response authResponse = Utility.sendRequest(authUri, "PUT", authRequest);
 
     // If the consumer Cloud is not authorized an error is returned
@@ -131,13 +131,13 @@ public class GatekeeperInboundResource {
       if (!GatekeeperMain.USE_GATEWAY) {
         throw new ArrowheadException("The remote Gatekeeper is configured to use the Gateway Core System!");
       }
-      icnProposal.getRequesterSystem().setSystemName(GatekeeperMain.GATEWAY_PROVIDER_URI[1]);
+      icnProposal.getRequesterSystem().setSystemName(GatekeeperMain.getGatewayProviderUri()[1]);
     }
     ServiceRequestForm serviceRequestForm = new ServiceRequestForm.Builder(icnProposal.getRequesterSystem())
         .requesterCloud(icnProposal.getRequesterCloud()).requestedService(icnProposal.getRequestedService()).orchestrationFlags(orchestrationFlags)
         .preferredProviders(preferredProviders).build();
 
-    Response response = Utility.sendRequest(GatekeeperMain.ORCHESTRATOR_URI, "POST", serviceRequestForm);
+    Response response = Utility.sendRequest(GatekeeperMain.getOrchestratorUri(), "POST", serviceRequestForm);
     OrchestrationResponse orchResponse = response.readEntity(OrchestrationResponse.class);
     // If the gateway service is not requested, then return the full orchestration response
     if (!icnProposal.getNegotiationFlags().get("useGateway")) {
@@ -172,13 +172,13 @@ public class GatekeeperInboundResource {
                                                                                 icnProposal.getGatewayPublicKey());
 
       // Sending request, parsing response
-      Response gatewayResponse = Utility.sendRequest(GatekeeperMain.GATEWAY_PROVIDER_URI[0], "PUT", connectionRequest);
+      Response gatewayResponse = Utility.sendRequest(GatekeeperMain.getGatewayProviderUri()[0], "PUT", connectionRequest);
       ConnectToProviderResponse connectToProviderResponse = gatewayResponse.readEntity(ConnectToProviderResponse.class);
 
       GatewayConnectionInfo gatewayConnectionInfo = new GatewayConnectionInfo(chosenBroker.getAddress(), chosenBroker.getPort(),
                                                                               connectToProviderResponse.getQueueName(),
                                                                               connectToProviderResponse.getControlQueueName(),
-                                                                              GatekeeperMain.GATEWAY_PROVIDER_URI[3]);
+                                                                              GatekeeperMain.getGatewayProviderUri()[3]);
       // The AMQP broker can only create 1 channel at the moment, so the gatekeeper have to choose an orchestration form
       ICNEnd icnEnd = new ICNEnd(orchResponse.getResponse().get(0), gatewayConnectionInfo);
       log.info("ICNProposal: returning the first OrchestrationForm and the GatewayConnectionInfo to the requester Cloud.");

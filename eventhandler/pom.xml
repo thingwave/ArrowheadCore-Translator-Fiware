@@ -14,7 +14,7 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>eu.arrowhead</groupId>
-    <version>4.0</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>arrowhead-eventhandler</artifactId>
@@ -33,7 +33,7 @@
 
     <dependency>
       <groupId>eu.arrowhead</groupId>
-      <artifactId>arrowhead-common</artifactId>
+      <artifactId>arrowhead-core-common</artifactId>
     </dependency>
 
   </dependencies>
@@ -125,7 +125,7 @@
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>1.5</version>
+        <version>1.7</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -133,9 +133,9 @@
               <goal>jdeb</goal>
             </goals>
             <configuration>
-              <!--<snapshotExpand>true</snapshotExpand>-->
-              <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
-              <!--<snapshotEnv>USER</snapshotEnv>-->
+              <snapshotExpand>true</snapshotExpand>
+              <snapshotTemplate>[YYMMddHHmm].${git.commit.id.abbrev}</snapshotTemplate>
+              <deb>target/${project.artifactId}_${revision}.deb</deb>
               <verbose>true</verbose>
               <controlDir>${basedir}/src/deb/control</controlDir>
               <dataSet>
@@ -152,6 +152,12 @@
                 </data>
 
                 <data>
+                  <type>link</type>
+                  <linkName>/usr/share/arrowhead/${project.artifactId}.jar</linkName>
+                  <linkTarget>/usr/share/arrowhead/${project.build.finalName}.jar</linkTarget>
+                </data>
+
+                <data>
                   <type>file</type>
                   <src>${project.basedir}/src/deb/arrowhead-eventhandler.service</src>
                   <mapper>
@@ -159,12 +165,6 @@
                     <prefix>/etc/systemd/system</prefix>
                     <filemode>664</filemode>
                   </mapper>
-                </data>
-
-                <data>
-                  <type>file</type>
-                  <src>${project.basedir}/src/deb/create_event_handler_db_empty.sql</src>
-                  <dst>/usr/share/arrowhead/db/create_event_handler_db_empty.sql</dst>
                 </data>
 
               </dataSet>

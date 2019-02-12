@@ -1,3 +1,13 @@
+### November 12th, 2018
+* All dependencies updated to their latest versions and code base now runs on Java 11
+* Changes to support MySQL 8 server
+* Most core systems now have their debian packages, which offers fast installation on Debian based Linux systems. See [Debian Packages](https://github.com/arrowhead-f/core-java/tree/develop/documentation/Debian%20Packages) for more details.
+* Added windows batch files for starting/stopping the core systems
+* Device Registry progress
+* Added version based ArrowheadService filtering to Service Registry querying
+* Service Registry management API also supports regular expression based querying
+* Many bug fixes
+
 ### October 1st, 2018
 * Input validation properly works now, used the incorrect dependencies before
 * Exception handling improved

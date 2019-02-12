@@ -1,7 +1,7 @@
 [![Build Status](https://api.travis-ci.com/arrowhead-f/core-java.svg?branch=develop)](https://travis-ci.com/arrowhead-f/core-java)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?colorB=green)](https://github.com/arrowhead-f/core-java/blob/master/LICENSE)
 
-# Arrowhead Framework 4.2
+# Arrowhead Framework 4.1
 
 [Arrowhead](http://www.arrowhead.eu/) (and its continuation, [Productive4.0](https://productive40.eu/)) is an ambitious holistic innovation project,
  meant to open the doors to the potentials of Digital Industry and to maintain a leadership position of the industries in Europe. All partners involved will work on creating the capability to efficiently design and integrate hardware and software of Internet of Things (IoT) devices. Linking the real with the digital world takes more than just adding software to the hardware.
@@ -10,7 +10,7 @@
 
 The project has the following dependencies:
 * JRE/JDK 8+
-* Maven 3
+* Maven 3.5+
 * MySQL server 5.7+ (other SQL databases can work with Hibernate ORM, but the `common module pom.xml` has to include the appropriate connector 
 dependency to use them)
 
@@ -63,16 +63,18 @@ messages from all the core systems in one place.
 * Each core system will log to a file in its active working directory called `log4j_log.txt`. These text files are separate for each core system, 
 meaning one text file only contains the log messages of one core system.
 
-The databases schema(s) have to be created before starting the core systems. The `logs` table also has to be manually created, because that is 
+The databases schema have to be created before starting the core systems. The SQL script at `scripts/create_empty_arrowhead_db.sql` creates a database schema callel `arrowhead`, and also generates all the database tables used by the Core Systems.
+
+The `logs` table also has to be manually created, because that is 
 only used by the logging library, and the ORM library does not know about it. The ORM library can create all the other arrowhead tables, if they do 
 not exist yet. An SQL script can be found at `common/config/create_arrowhead_logs.sql` to create the `logs` table.
 
 The project can also be run from an IDE for testing purposes. Just import the multi-module project as a maven project, and the IDE should find all 
-the `pom.xml` files necessary to download the dependencies and start the core systems.
+the `pom.xml` files necessary to download the dependencies and start the core systems. IntelliJ IDEA specific run configurations (for insecure and secure mode separately) are also provided, including compound configurations, which can start all the core systems together.
 
-### Debian packages
-An alternative method for setting up a local Arrowhead Cloud on a [Debian based Linux system](https://wiki.debian.org/Derivatives/Census) is to use
-Debconf! 
+### Ubuntu, Raspbian and other Debian based Linux distriutions
+An alternative method for installing a local Arrowhead Cloud on a
+[Debian based Linux](https://wiki.debian.org/Derivatives/Census) is to use your package manager.
  
 Currently the following core systems have this option: Authorization, Certificate Authority, Event Handler, Gatekeeper, Gateway, 
 Orchestrator and Service Registry.
@@ -80,3 +82,9 @@ Orchestrator and Service Registry.
 A full setup guide can be read here: [DEBIAN-INSTALL.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-INSTALL.md)
 
 A guide on how to add new core systems to the package generation: [DEBIAN-DEV.md](https://github.com/arrowhead-f/core-java/blob/develop/documentation/Debian%20Packages/DEBIAN-DEV.md) 
+
+### REST interfaces
+
+Each core system offers [Swagger UI](https://swagger.io/tools/swagger-ui/) to discover its REST interfaces. This UI is available at the `/api/` 
+root path. So for example the REST interfaces of the Service Registry is available at http://localhost:8442/api/ by default. In insecure mode, all 
+the requests can be tested by clicking on the "Try it out" button.

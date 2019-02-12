@@ -8,6 +8,7 @@
 package eu.arrowhead.core.orchestrator;
 
 import eu.arrowhead.common.ArrowheadMain;
+import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.common.misc.CoreSystem;
 import eu.arrowhead.common.misc.CoreSystemService;
 import eu.arrowhead.common.misc.GetCoreSystemServicesTask;
@@ -28,10 +29,12 @@ public class OrchestratorMain extends ArrowheadMain implements NeedsCoreSystemSe
 
   static boolean USE_GATEKEEPER = true;
   static String SR_BASE_URI;
-  static String AUTH_CONTROL_URI;
-  static String TOKEN_GEN_URI;
-  static String GSD_SERVICE_URI;
-  static String ICN_SERVICE_URI;
+  private static String AUTH_CONTROL_URI;
+  private static String TOKEN_GEN_URI;
+  private static String GSD_SERVICE_URI;
+  private static String ICN_SERVICE_URI;
+  private static final String GET_CORE_SYSTEM_URLS_ERROR_MESSAGE = "The Orchestrator core system has not acquired the addresses of the "
+      + "Authorization and Gatekeeper core systems yet from the Service Registry. Wait 15 seconds and retry your request";
 
   private OrchestratorMain(String[] args) {
     String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.orchestrator"};
@@ -72,7 +75,7 @@ public class OrchestratorMain extends ArrowheadMain implements NeedsCoreSystemSe
   //NOTE if a service def is changed, it needs to be modified here too!
   //TODO find a way to make the switch/case work without the hardcoded strings
   @Override
-  public void getCoreSystemServiceUris(Map<String, String[]> uriMap) {
+  public void getCoreSystemServiceURIs(Map<String, String[]> uriMap) {
     for (Entry<String, String[]> entry : uriMap.entrySet()) {
       switch (entry.getKey()) {
         case "AuthorizationControl":
@@ -94,4 +97,31 @@ public class OrchestratorMain extends ArrowheadMain implements NeedsCoreSystemSe
     System.out.println("Core system URLs acquired/updated.");
   }
 
+  static String getAuthControlUri() {
+    if (AUTH_CONTROL_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return AUTH_CONTROL_URI;
+  }
+
+  static String getTokenGenUri() {
+    if (TOKEN_GEN_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return TOKEN_GEN_URI;
+  }
+
+  static String getGsdServiceUri() {
+    if (GSD_SERVICE_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return GSD_SERVICE_URI;
+  }
+
+  static String getIcnServiceUri() {
+    if (ICN_SERVICE_URI == null) {
+      throw new ArrowheadException(GET_CORE_SYSTEM_URLS_ERROR_MESSAGE, 500);
+    }
+    return ICN_SERVICE_URI;
+  }
 }

@@ -1,8 +1,14 @@
-## Installing Arrowhead on a Ubuntu Server using Debian Packages
+## Installing Arrowhead on a Debian based Linux distribution
 
-### 1. Install Ubuntu Server (18.04)
+Currently, this guide is known to work on Ubuntu Server 18.04 and Rasbian 2018-11-13, but it will likely work on other
+version and Debian based Linux distribution also. The following is a quick guide on the essentials.
 
-Do a normal installation of Ubuntu server, remember to update:
+Note Rasbian installation has only been attempted with the included mysql-server and openjdk-9-jre-headless packages so
+far. Also you should use Arrowhead packages after 19.11.2018, due to a bug with logname in earlier versions. 
+
+### 1. Install Linux
+
+Do a normal installation of Linux, and remember to update afterwards:
 
 `sudo apt update && sudo apt dist-upgrade`
 
@@ -16,6 +22,8 @@ Install:
 
 `sudo apt install mysql-server`
 
+(Note that on Rasbian, this is actually a MariaDB behind the scenes but it should not be an issue.)
+
 Check if running:
 
 `sudo netstat -tap | grep mysql`
@@ -26,14 +34,11 @@ First, get the latest repository package from <https://dev.mysql.com/downloads/r
 
 ```bash
 wget https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
-sudo apt dpkg -i mysql-apt-config_0.8.10-1_all.deb
+sudo dpkg -i mysql-apt-config_0.8.10-1_all.deb
 sudo apt update
 ```
 
-As of writing, please leave an empty root password for the database, when installing it. The MySQL scripts in Arrowhead
-does not (yet) support password protected databases. After Arrowhead is installed and you finished calling any of the
-generation scripts below, it should be safe to set a root password for the database. Arrowhead itself uses its own
-`arrowhead` user, only the scripts requires a non-password `root` user. To install the MySQL server, run:
+To install the MySQL server, run:
 
 ```bash
 sudo apt install mysql-server
@@ -45,7 +50,17 @@ Pick one of the options below.
 
 #### 3a. Install Java (OpenJDK)
 
+Ubuntu users (and others?):
+
 `sudo apt install openjdk-11-jre-headless`
+
+Rasbian users do not have this newer version yet, so until then this will do:
+
+`sudo apt install openjdk-9-jre-headless`
+
+**NOTE:** Install JDK versions instead of JRE versions, if you plan to build the latest Debian Packages from source, using Maven. You just need to 
+change the "-jre-" part to "-jdk-" in the package names. JDK needs more disk space. JRE versions can only run packaged Java applications, but can 
+not build them from source code.
 
 #### 3b. Install Java 11 (Oracle)
 
@@ -80,7 +95,7 @@ Pick one of the options below.
 Check the GitHub releases site <https://github.com/arrowhead-f/core-java/releases> for the latest release and download
 it: 
 
-`wget -c https://github.com/arrowhead-f/core-java/releases/download/4.0-debian/debian_packages.zip`
+`wget -c https://github.com/arrowhead-f/core-java/releases/download/4.1.0/debian_packages.zip`
 
 Unpack it:
 
@@ -91,26 +106,20 @@ cd debian_packages/
 
 #### 4b. Build Arrowhead Debian Packages
 
+**NOTE:** To compile Arrowhead yourself, you should have both the JDK and Maven installed. Raspbian users should probably do this on their PC and then copy the files to their Raspberry Pi.
+
 To build the Debian packages yourself, start by cloning the repository:
 
-`git clone https://github.com/arrowhead-f/core-java.git -b feature/debian`
+`git clone https://github.com/arrowhead-f/core-java.git -b develop`
 
 Build them with:
 
 `mvn package`
 
-Copy all the packages to one location:
+Copy all the packages to your Arrowhead server/Raspberry Pi (you may have to start SSH server on it first with `sudo systemctl start ssh`:
 
 ```bash
-scp common/target/arrowhead-common_4.0_all.deb \
-    authorization/target/arrowhead-authorization_4.0_all.deb \
-    certificate_authority/target/arrowhead-certificate_authority_4.0_all.deb \
-    serviceregistry_sql/target/arrowhead-serviceregistry-sql_4.0_all.deb \
-    gateway/target/arrowhead-gateway_4.0_all.deb \
-    eventhandler/target/arrowhead-eventhandler_4.0_all.deb \
-    gatekeeper/target/arrowhead-gatekeeper_4.0_all.deb \
-    orchestrator/target/arrowhead-orchestrator_4.0_all.deb \
-    X.X.X.X:~/
+scp target/arrowhead-*.deb X.X.X.X:~/
 ```
 
 ### 5. Install Arrowhead Core Debian Packages
@@ -186,8 +195,9 @@ and password you need to use.
 `apt purge` can be used to remove configuration files, database, log files, etc. Use `sudo apt purge arrowhead-\*` to
 remove everything arrowhead related.
 
-For the provider and consumer example in the client skeletons, the script `sudo ah_gen_quickstart` can be used to
-generate the necessary certificates and database entries. It will also output the certificate/keystore password. Note,
+For the provider and consumer example in the client skeletons, the script `sudo ah_gen_quickstart HOST` can be used to
+generate the necessary certificates and database entries. `HOST` should be the IP address of where you intend to run
+the systems. It will also output the certificate/keystore password. Note,
 this script should only be used for test clouds on a clean installation.
 
 To switch to insecure mode of all core services, remove `-tls` in the service files and restart them, e.g.:

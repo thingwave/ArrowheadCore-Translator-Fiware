@@ -13,7 +13,7 @@
   <parent>
     <groupId>eu.arrowhead</groupId>
     <artifactId>core</artifactId>
-    <version>4.0</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>arrowhead-gateway</artifactId>
@@ -26,14 +26,14 @@
     <maven.dependency.version>2.10</maven.dependency.version>
     <maven.jar.version>3.0.2</maven.jar.version>
     <maven.resources.version>2.7</maven.resources.version>
-    <rabbitmq.version>3.0.4</rabbitmq.version>
+    <rabbitmq.version>5.5.0</rabbitmq.version>
   </properties>
 
   <dependencies>
 
     <dependency>
       <groupId>eu.arrowhead</groupId>
-      <artifactId>arrowhead-common</artifactId>
+      <artifactId>arrowhead-core-common</artifactId>
     </dependency>
 
     <dependency>
@@ -131,7 +131,7 @@
       <plugin>
         <artifactId>jdeb</artifactId>
         <groupId>org.vafer</groupId>
-        <version>1.5</version>
+        <version>1.7</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -139,9 +139,9 @@
               <goal>jdeb</goal>
             </goals>
             <configuration>
-              <!--<snapshotExpand>true</snapshotExpand>-->
-              <!-- expand "SNAPSHOT" to what is in the "USER" env variable -->
-              <!--<snapshotEnv>USER</snapshotEnv>-->
+              <snapshotExpand>true</snapshotExpand>
+              <snapshotTemplate>[YYMMddHHmm].${git.commit.id.abbrev}</snapshotTemplate>
+              <deb>target/${project.artifactId}_${revision}.deb</deb>
               <verbose>true</verbose>
               <controlDir>${basedir}/src/deb/control</controlDir>
               <dataSet>
@@ -155,6 +155,12 @@
                     <user>arrowhead</user>
                     <filemode>755</filemode>
                   </mapper>
+                </data>
+
+                <data>
+                  <type>link</type>
+                  <linkName>/usr/share/arrowhead/${project.artifactId}.jar</linkName>
+                  <linkTarget>/usr/share/arrowhead/${project.build.finalName}.jar</linkTarget>
                 </data>
 
                 <data>

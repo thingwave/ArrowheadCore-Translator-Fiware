@@ -62,12 +62,13 @@ class RegistryUtils {
     if (registryEntry.getProvider().getAuthenticationInfo() != null) {
       properties.put("ahsysauth", registryEntry.getProvider().getAuthenticationInfo());
     }
-    if (registryEntry.getServiceUri() != null) {
-      properties.put("path", registryEntry.getServiceUri());
+    if (registryEntry.getServiceURI() != null) {
+      properties.put("path", registryEntry.getServiceURI());
     }
 
     LocalDateTime date = registryEntry.getEndOfValidity();
-    String encodedDate = String.valueOf(date.getYear()).concat(".").concat(String.valueOf(date.getMonthValue())).concat(".").concat(String.valueOf(date.getDayOfMonth())).concat(".").concat(String.valueOf(date.getHour())).concat(".")
+    String encodedDate = String.valueOf(date.getYear()).concat(".").concat(String.valueOf(date.getMonthValue())).concat(".")
+                               .concat(String.valueOf(date.getDayOfMonth())).concat(".").concat(String.valueOf(date.getHour())).concat(".")
                                .concat(String.valueOf(date.getMinute())).concat(".").concat(String.valueOf(date.getSecond()));
     properties.put("eovdate", encodedDate);
 
@@ -177,7 +178,7 @@ class RegistryUtils {
     }
 
     if (properties.containsKey("path")) {
-      providerService.setServiceUri(properties.get("path"));
+      providerService.setServiceURI(properties.get("path"));
     }
 
     if (properties.containsKey("txtvers")) {
