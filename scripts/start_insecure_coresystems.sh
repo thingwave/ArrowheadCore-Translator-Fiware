@@ -31,3 +31,7 @@ echo Gatekeeper started
 cd ../../orchestrator/target
 nohup java -jar $(find . -maxdepth 1 -name arrowhead-orchestrator-\*.jar | sort | tail -n1) -d -daemon &> insecure_orch.log &
 echo Orchestrator started
+
+cd ../../translator/target
+nohup java -jar $(find . -maxdepth 1 -name arrowhead-translator-\*.jar | sort | tail -n1) -d -daemon &> insecure_orch.log &
+echo Translator started

@@ -8,6 +8,7 @@ pkill -f eventhandler
 pkill -f gateway
 sleep 5s
 pkill -f serviceregistry
+pkill -f translator
 
 if pgrep -f serviceregistry
 then
@@ -17,6 +18,7 @@ then
   kill -KILL $(ps aux | grep 'eventhandler' | awk '{print $2}')
   kill -KILL $(ps aux | grep 'gateway' | awk '{print $2}')
   kill -KILL $(ps aux | grep 'serviceregistry' | awk '{print $2}')
+  kill -KILL $(ps aux | grep 'translator' | awk '{print $2}')
   echo Core systems forcefully killed
 else
   echo Core systems killed
