@@ -13,7 +13,7 @@
   <parent>
     <groupId>eu.arrowhead</groupId>
     <artifactId>core</artifactId>
-    <version>4.0</version>
+    <version>${revision}</version>
   </parent>
   
   <artifactId>arrowhead-translator</artifactId>
@@ -32,7 +32,7 @@
 
     <dependency>
       <groupId>eu.arrowhead</groupId>
-      <artifactId>arrowhead-common</artifactId>
+      <artifactId>arrowhead-core-common</artifactId>
     </dependency>
     
     <!-- Dependencies translator -->
@@ -106,7 +106,7 @@
             </manifestEntries>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>eu.arrowhead.core.orchestrator.OrchestratorMain</mainClass>
+              <mainClass>eu.arrowhead.core.translator.TranslatorMain</mainClass>
               <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
