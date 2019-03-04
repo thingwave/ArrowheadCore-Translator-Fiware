@@ -30,3 +30,4 @@
 */target
 *.txt
 *app.conf
+/target/

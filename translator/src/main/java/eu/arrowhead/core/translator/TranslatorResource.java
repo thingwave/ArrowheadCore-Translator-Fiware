@@ -35,6 +35,7 @@ public class TranslatorResource implements Observer{
 	public String getIt() {
 		return "This is the Translator Arrowhead Core System";
 	}
+        
   
 	/**
 	 * This method initiates the creation of a new translation hub, if none exists already, between two systems.
@@ -163,6 +164,6 @@ public class TranslatorResource implements Observer{
 		hubs.remove((int)arg1);
 		System.out.println("Cleanup hub: " + (int)arg1);
 		}
-  
-
+        
+        
 }

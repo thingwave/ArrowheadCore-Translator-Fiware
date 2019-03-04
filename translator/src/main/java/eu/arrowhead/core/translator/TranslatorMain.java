@@ -18,6 +18,8 @@ public class TranslatorMain extends ArrowheadMain {
 
 private TranslatorMain(String[] args) {
 	Set<Class<?>> classes = new HashSet<>(Collections.singleton(TranslatorResource.class));
+        classes.addAll(Collections.singleton(FiwareResource.class));
+        classes.addAll(Collections.singleton(FiwareVersionResource.class));
 	String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.translator"};
 	init(CoreSystem.TRANSLATOR, args, classes, packages);
 	listenForInput();
