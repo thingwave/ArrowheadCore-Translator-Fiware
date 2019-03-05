@@ -115,13 +115,16 @@ public class FiwareResource implements Observer{
     @Path("entities")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response createEntity(
+            @QueryParam("options") String options,
             String content,
-            @QueryParam("options") String options) {
+            @Context HttpHeaders headers) {
         System.out.println("createEntity");
-        if (options != null)
-            System.out.println("Complete support for options: "+options);        
+        String contentType = headers.getHeaderString("Content-type"); 
+        JsonObject jQueryParams = new JsonObject();
+        if (options != null) jQueryParams.addProperty("options", options);
+        
         try {
-            return Response.status(fiwareClient.createEntity(content)).build();
+            return Response.status(fiwareClient.createEntity(jQueryParams,contentType, content)).build();
         } catch (Exception ex) {
             System.out.println("Exception: "+ex.getLocalizedMessage());
         }
@@ -177,17 +180,19 @@ public class FiwareResource implements Observer{
     @Path("entities/{entityId}/attrs")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateAppendEntityAttributes(
-            String content,
             @PathParam("entityId") String entityId,
             @QueryParam("type") String type,
-            @QueryParam("options") String options) {
+            @QueryParam("options") String options,
+            String content,
+            @Context HttpHeaders headers) {
         System.out.println("updateAppendEntityAttributes");
+        String contentType = headers.getHeaderString("Content-type");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
         if (type != null) jQueryParams.addProperty("options", options);
-        JsonObject jContent = new JsonParser().parse(content).getAsJsonObject();        
+        
         try {
-            return Response.status(fiwareClient.updateAppendEntityAttributes(entityId, jQueryParams, jContent)).build();
+            return Response.status(fiwareClient.updateAppendEntityAttributes(entityId, jQueryParams, contentType, content)).build();
         } catch (Exception ex) {
             System.out.println("Exception: "+ex.getLocalizedMessage());
         }
@@ -407,6 +412,193 @@ public class FiwareResource implements Observer{
     }
     
     
+    /* ---------------------------- SUBSCRIPTIONS --------------------------- */
+    @GET
+    @Path("subscriptions")
+    public String listSubscriptions(
+            @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset,
+            @QueryParam("options") String options) {
+        System.out.println("listEntityTypes");
+        JsonObject jQueryParams = new JsonObject();
+        if (limit != 0) jQueryParams.addProperty("limit", limit);
+        if (limit != 0) jQueryParams.addProperty("offset", offset);
+        if (options != null) jQueryParams.addProperty("options", options);        
+                
+        //System.out.println("Request All entities");
+        try {
+            return pretyGson.toJson(fiwareClient.listSubscriptions(jQueryParams));
+            //System.out.println(gson.toJson(entities));
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        
+        return pretyGson.toJson(new ArrayList<>());
+    }
+        
+    @POST
+    @Path("subscriptions")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createSubscription(
+            String content,
+            @Context HttpHeaders headers) {
+        System.out.println("updateAppendEntityAttributes");
+        String contentType = headers.getHeaderString("Content-type");        
+        try {
+            return Response.ok().header("Location",fiwareClient.createSubscription(contentType, content)).build();
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        return Response.status(0).build();
+    }
+    
+    @GET
+    @Path("subscriptions/{subscriptionId}")
+    public String retrieveSubscription(
+            @PathParam("subscriptionId") String subscriptionId
+            ) throws UnsupportedEncodingException, URISyntaxException {
+        System.out.println("retrieveSubscription");
+        
+        JsonObject jresp = null;
+        
+        try {
+            jresp = fiwareClient.retrieveSubscription(subscriptionId);
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        return pretyGson.toJson(jresp);
+    }
+    
+    @PATCH
+    @Path("subscriptions/{subscriptionId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateSubscription(
+            String content,
+            @PathParam("subscriptionId") String subscriptionId
+            ) throws UnsupportedEncodingException, URISyntaxException {
+        System.out.println("updateSubscription");
+        try {
+            return Response.status(fiwareClient.updateSubscription(subscriptionId, content)).build();
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        return Response.status(0).build();
+    }
+    
+    @DELETE
+    @Path("subscriptions/{subscriptionId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteSubscription(
+            String content,
+            @PathParam("subscriptionId") String subscriptionId
+            ) throws UnsupportedEncodingException, URISyntaxException {
+        System.out.println("deleteSubscription");
+        try {
+            return Response.status(fiwareClient.deleteSubscription(subscriptionId, content)).build();
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        return Response.status(0).build();
+    }
+    
+    /* ---------------------------- REGISTRATION ---------------------------- */
+    // Orion Broker does not support this yet
+    /*@GET
+    @Path("registrations")
+    public String listRegistrations(
+            @QueryParam("limit") int limit,
+            @QueryParam("offset") int offset,
+            @QueryParam("options") String options) {
+        System.out.println("listRegistrations");
+        JsonObject jQueryParams = new JsonObject();
+        if (limit != 0) jQueryParams.addProperty("limit", limit);
+        if (limit != 0) jQueryParams.addProperty("offset", offset);
+        if (options != null) jQueryParams.addProperty("options", options);        
+                
+        //System.out.println("Request All entities");
+        try {
+            return pretyGson.toJson(fiwareClient.listRegistrations(jQueryParams));
+            //System.out.println(gson.toJson(entities));
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        
+        return pretyGson.toJson(new ArrayList<>());
+    }
+    
+    
+    @POST
+    @Path("registrations")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response createRegistration(
+            String content,
+            @Context HttpHeaders headers) {
+        System.out.println("createRegistration");
+        String contentType = headers.getHeaderString("Content-type");        
+        try {
+            return Response.ok().header("Location",fiwareClient.createRegistration(contentType, content)).build();
+        } catch (Exception ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        return Response.status(0).build();
+    }*/
+    
+        
+    
+    
+    
+    
+    /* ---------------------------- NOTIFICATIONS --------------------------- */
+    @GET
+    @Path("fiware_notification")
+    public Response getNotifications(
+            @Context UriInfo uriInfo) {
+        System.out.println("=====> getNotifications");
+        System.out.println("requestURL: "+uriInfo.getRequestUri().getQuery());
+        return Response.status(200).build();
+    }
+    
+    @PUT
+    @Path("fiware_notification")
+    public Response putNotifications(
+            @Context UriInfo uriInfo) {
+        System.out.println("=====> putNotifications");
+        System.out.println("requestURL: "+uriInfo.getRequestUri().getQuery());
+        return Response.status(200).build();
+    }
+    
+    @POST
+    @Path("fiware_notification")
+    public Response postNotifications(
+            String content,
+            @Context HttpHeaders headers,
+            @Context UriInfo uriInfo) {
+        System.out.println("=====> postNotifications");
+        System.out.println("requestURL: "+uriInfo.getRequestUri().getQuery());
+        String contentType = headers.getHeaderString("Content-type");
+        System.out.println("Content-type: "+contentType);
+        JsonObject json = new JsonParser().parse(content).getAsJsonObject();
+        System.out.println("Content:\n"+pretyGson.toJson(json));        
+        return Response.status(200).build();
+    }
+    
+    @DELETE
+    @Path("fiware_notification")
+    public Response deleteNotifications(
+            @Context UriInfo uriInfo) {
+        System.out.println("=====> deleteNotifications");
+        System.out.println("requestURL: "+uriInfo.getRequestUri().getQuery());
+        return Response.status(200).build();
+    }
+    
+    @PATCH
+    @Path("fiware_notification")
+    public Response patchNotifications(
+            @Context UriInfo uriInfo) {
+        System.out.println("=====> patchNotifications");
+        System.out.println("requestURL: "+uriInfo.getRequestUri().getQuery());
+        return Response.status(200).build();
+    }
     
     
     /* ---------------------------------------------------------------------- */

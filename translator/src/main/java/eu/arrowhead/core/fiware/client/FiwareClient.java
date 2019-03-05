@@ -56,12 +56,10 @@ public class FiwareClient {
         updateServicesUrlList();
     }
     
-    private int httpDELETE(String url) throws UnsupportedEncodingException, IOException {
+    private CloseableHttpResponse httpDELETE(String url) throws UnsupportedEncodingException, IOException {
         HttpDelete delete = new HttpDelete(url);
-        
-        System.out.println("DELETE: "+delete.toString());
-        CloseableHttpResponse resp = httpClient.execute(delete);
-        return resp.getStatusLine().getStatusCode();
+        //System.out.println("DELETE: "+delete.toString());
+        return httpClient.execute(delete);
     }
     
     private String httpGET(String url) throws IOException {
@@ -76,7 +74,7 @@ public class FiwareClient {
         return result.toString();
     }
     
-    private int httpPATCH(String url, String content) throws UnsupportedEncodingException, IOException {
+    private CloseableHttpResponse httpPATCH(String url, String content) throws UnsupportedEncodingException, IOException {
         HttpPatch patch = new HttpPatch(url);
         // Header
         patch.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
@@ -86,22 +84,20 @@ public class FiwareClient {
         patch.setEntity(entity);
         
         //System.out.println("PATCH: "+post.toString());
-        CloseableHttpResponse resp = httpClient.execute(patch);
-        return resp.getStatusLine().getStatusCode();
+        return httpClient.execute(patch);
     }
     
-    private int httpPOST(String url, String content) throws UnsupportedEncodingException, IOException {
+    private CloseableHttpResponse httpPOST(String url, String contentType, String content) throws UnsupportedEncodingException, IOException {
         HttpPost post = new HttpPost(url);
         // Header
-        post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        post.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
         
         // Content
         StringEntity entity = new StringEntity(content);
         post.setEntity(entity);
         
         //System.out.println("POST: "+post.toString());
-        CloseableHttpResponse resp = httpClient.execute(post);
-        return resp.getStatusLine().getStatusCode();
+        return httpClient.execute(post);
     }
     
     private int httpPUT(String url, String contentType, String content) throws UnsupportedEncodingException, IOException {
@@ -185,8 +181,20 @@ public class FiwareClient {
                 new TypeToken<ArrayList<JsonObject>>() {}.getType());
     }
         
-    public int createEntity(String entityInfo) throws IOException {
-        return httpPOST(orionBrokerURL+entitiesURL, entityInfo);
+    public int createEntity(JsonObject queryParams, String contentType, String content) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL);
+        
+        // Add queries and remove empty queries
+        if (queryParams != null) {
+            Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
+            for (Map.Entry<String, JsonElement> entry: entries) {
+                System.out.println(entry.getKey()+" = "+entry.getValue());
+                if (!entry.getValue().getAsString().isEmpty())
+                    urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        
+        return httpPOST(urlBuilder.build().toString(), contentType, content).getStatusLine().getStatusCode();
     }
     
     public JsonObject retrieveEntity(String entityId, JsonObject queryParams) throws IOException, URISyntaxException {
@@ -222,7 +230,7 @@ public class FiwareClient {
     }
     
     
-    public int updateAppendEntityAttributes(String entityId, JsonObject queryParams, JsonObject content) throws URISyntaxException, IOException {
+    public int updateAppendEntityAttributes(String entityId, JsonObject queryParams, String contentType, String content) throws URISyntaxException, IOException {
         URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId+"/attrs");
         
         // Add queries and remove empty queries
@@ -235,7 +243,7 @@ public class FiwareClient {
             }
         }
         
-        return httpPOST(urlBuilder.build().toString(), gson.toJson(content));
+        return httpPOST(urlBuilder.build().toString(), contentType, content).getStatusLine().getStatusCode();
     }
     
     
@@ -252,7 +260,7 @@ public class FiwareClient {
             }
         }
         
-        return httpPATCH(urlBuilder.build().toString(), gson.toJson(content));
+        return httpPATCH(urlBuilder.build().toString(), gson.toJson(content)).getStatusLine().getStatusCode();
     }
     
     public int replaceAllEntityAttributes(String entityId, JsonObject queryParams, String contentType, String content) throws URISyntaxException, IOException {
@@ -284,7 +292,7 @@ public class FiwareClient {
             }
         }
         
-        return httpDELETE(urlBuilder.build().toString());
+        return httpDELETE(urlBuilder.build().toString()).getStatusLine().getStatusCode();
     }
     
     /* ----------------------------- ATTRIBUTES ----------------------------- */
@@ -333,7 +341,7 @@ public class FiwareClient {
             }
         }
         
-        return httpDELETE(urlBuilder.build().toString());
+        return httpDELETE(urlBuilder.build().toString()).getStatusLine().getStatusCode();
     }
     
     
@@ -393,4 +401,72 @@ public class FiwareClient {
         URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+typesURL+"/"+entityType);        
         return new JsonParser().parse(httpGET(urlBuilder.build().toString())).getAsJsonObject();
     }
+    
+    /* ---------------------------- SUBSCRIPTIONS --------------------------- */
+    public ArrayList<JsonObject> listSubscriptions(JsonObject queryParams) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+subscriptionsURL);
+        
+        // Add queries and remove empty queries
+        if (queryParams != null) {
+            Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
+            for (Map.Entry<String, JsonElement> entry: entries) {
+                System.out.println(entry.getKey()+" = "+entry.getValue());
+                if (!entry.getValue().getAsString().isEmpty())
+                    urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        
+        return new Gson().fromJson(
+                httpGET(urlBuilder.build().toString()),
+                new TypeToken<ArrayList<JsonObject>>() {}.getType());
+    }
+    
+    public String createSubscription(String contentType, String content) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+subscriptionsURL);
+        CloseableHttpResponse resp = httpPOST(urlBuilder.build().toString(), contentType, content);        
+        return resp.getLastHeader("Location").getValue();
+    }
+    
+    public JsonObject retrieveSubscription(String subscriptionId) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+subscriptionsURL+"/"+subscriptionId);
+        return new JsonParser().parse(httpGET(urlBuilder.build().toString())).getAsJsonObject();
+    }
+    
+    public int updateSubscription(String subscriptionId, String content) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+subscriptionsURL+"/"+subscriptionId);        
+        return httpPATCH(urlBuilder.build().toString(), content).getStatusLine().getStatusCode();
+    }
+    
+    public int deleteSubscription(String subscriptionId, String content) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+subscriptionsURL+"/"+subscriptionId);        
+        return httpDELETE(urlBuilder.build().toString()).getStatusLine().getStatusCode();
+    }
+    
+    /* ---------------------------- REGISTRATION ---------------------------- */
+    /*public ArrayList<JsonObject> listRegistrations(JsonObject queryParams) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+registrationsURL);
+        
+        // Add queries and remove empty queries
+        if (queryParams != null) {
+            Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
+            for (Map.Entry<String, JsonElement> entry: entries) {
+                System.out.println(entry.getKey()+" = "+entry.getValue());
+                if (!entry.getValue().getAsString().isEmpty())
+                    urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        
+        return new Gson().fromJson(
+            httpGET(urlBuilder.build().toString()),
+            new TypeToken<ArrayList<JsonObject>>() {}.getType());
+    }
+    
+    public String createRegistration(String contentType, String content) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+registrationsURL);
+        CloseableHttpResponse resp = httpPOST(urlBuilder.build().toString(), contentType, content);        
+        return resp.getLastHeader("Location").getValue();
+    }*/
+    
+    
+    
 }
