@@ -7,6 +7,8 @@
 
 package eu.arrowhead.core.orchestrator;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
@@ -51,6 +53,7 @@ import org.apache.log4j.Logger;
 final class OrchestratorDriver {
 
   private static final Logger log = Logger.getLogger(OrchestratorService.class.getName());
+  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   private OrchestratorDriver() throws AssertionError {
     throw new AssertionError("OrchestratorDriver is a non-instantiable class");
@@ -112,13 +115,28 @@ final class OrchestratorDriver {
    */
 
   static Set<ArrowheadSystem> queryAuthorization(ArrowheadSystem consumer, ArrowheadService service, Set<ArrowheadSystem> providerSet) {
+    System.out.println("queryAuthorization");
     // Compiling the URI and the request payload
     String uri = UriBuilder.fromPath(OrchestratorMain.getAuthControlUri()).path("intracloud").toString();
+    
+    System.out.println("INTRA CLOUD AUTH REQUEST:");
+    System.out.println("uri: "+uri);
+    System.out.println("consumer: "+gson.toJson(consumer));
+    System.out.println("providerSet: "+gson.toJson(providerSet));
+    System.out.println("service: "+gson.toJson(service));
+    
     IntraCloudAuthRequest request = new IntraCloudAuthRequest(consumer, providerSet, service);
 
+    
+    System.out.println("request: "+gson.toJson(request));
+    
     // Sending the request, parsing the returned result
     Response response = Utility.sendRequest(uri, "PUT", request);
     IntraCloudAuthResponse authResponse = response.readEntity(IntraCloudAuthResponse.class);
+    
+    
+    System.out.println("authResponse: "+gson.toJson(authResponse));
+    
     Set<ArrowheadSystem> authorizedSystems = new HashSet<>();
     // Set view of HashMap ensures there are no duplicates between the keys (systems)
     for (Map.Entry<ArrowheadSystem, Boolean> entry : authResponse.getAuthorizationMap().entrySet()) {
@@ -232,18 +250,22 @@ final class OrchestratorDriver {
 
     //If the service is null, we return all the default store entries.
     if (service == null) {
+        System.out.println("service == null");
       retrievedList = StoreService.getDefaultStoreEntries(consumer);
     }
     //If not, we return all the Orchestration Store entries specified by the consumer and the service.
     else {
+        System.out.println("service != null");
       retrievedList = StoreService.getStoreEntries(consumer, service);
     }
 
     if (retrievedList.isEmpty()) {
+        System.out.println("retrievedList.isEmpty()");
       log.error("queryOrchestrationStore DataNotFoundException");
       throw new DataNotFoundException("No Orchestration Store entries were found for consumer " + consumer.getSystemName(),
                                       Status.NOT_FOUND.getStatusCode());
     } else {
+        System.out.println("!retrievedList.isEmpty()");
       // Removing non-valid Store entries from the results
       List<OrchestrationStore> temp = new ArrayList<>();
       for (OrchestrationStore entry : retrievedList) {
@@ -256,6 +278,7 @@ final class OrchestratorDriver {
       // Sorting the store entries based on their int priority field
       Collections.sort(retrievedList);
       log.info("queryOrchestrationStore returns " + retrievedList.size() + " orchestration store entries matching the criteria");
+      System.out.println("queryOrchestrationStore returns " + retrievedList.size() + " orchestration store entries matching the criteria");
       return retrievedList;
     }
   }

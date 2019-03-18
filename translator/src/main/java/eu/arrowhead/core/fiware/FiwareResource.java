@@ -1,18 +1,28 @@
-package eu.arrowhead.core.translator;
+package eu.arrowhead.core.fiware;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import eu.arrowhead.common.database.ArrowheadService;
+import eu.arrowhead.common.database.ArrowheadSystem;
+import eu.arrowhead.common.database.ServiceRegistryEntry;
 import eu.arrowhead.core.fiware.client.FiwareClient;
 import eu.arrowhead.core.fiware.common.FiwareTools;
+import eu.arrowhead.core.fiware.common.ServiceURL;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -30,9 +40,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+
 
 /**
- * REST resource for the Translator Core System.
+ *
+ * @author Pablo Puñal Pereira <pablo.punal@thingwave.eu>
+ */
+
+/**
+ * REST resource for the Fiware Plugin.
  */
 
 @Path("v2")
@@ -44,11 +66,100 @@ public class FiwareResource implements Observer{
     private final Gson gson = gsonBuilder.create();
     private final Gson pretyGson = gsonBuilder.setPrettyPrinting().create();
     private final FiwareClient fiwareClient;
+    private final CloseableHttpClient httpClient;
     
     public FiwareResource() {
-        System.out.println("FIWARE PLUGING start!");
+        System.out.println("FIWARE Resource start!");
         fiwareClient = new FiwareClient("http://localhost:1026");
+        httpClient = HttpClients.createDefault();
+        
+        
+        
     }
+    
+    /* ------------------------------ ARROWHEAD ----------------------------- */
+    
+    private void registerAllEntities() {
+        try {
+            ArrayList<JsonObject> entities = fiwareClient.listEntities(new JsonObject());
+            
+            entities.forEach(entity -> {
+                try {
+                    System.out.println("Register entities on Arrowhead");
+                    String serviceDef = entity.get("id").getAsString();
+                    String serviceUri = "/plugin/service/"+entity.get("id").getAsString()+"/"+entity.get("type").getAsString();
+                    String interfaceList = "SenML";
+                    Set<String> interfaces = new HashSet<>();
+                    if (interfaceList != null && !interfaceList.isEmpty()) {
+                        //Interfaces are read from a comma separated list
+                        interfaces.addAll(Arrays.asList(interfaceList.replaceAll("\\s+", "").split(",")));
+                    }
+                    Map<String, String> metadata = new HashMap<>();
+                    String metadataString = "unit-celsius";
+                    if (metadataString != null && !metadataString.isEmpty()) {
+                        //Metadata in the properties file: key1-value1, key2-value2, ...
+                        String[] parts = metadataString.split(",");
+                        for (String part : parts) {
+                            String[] pair = part.split("-");
+                            metadata.put(pair[0], pair[1]);
+                        }
+                    }
+                    ArrowheadService service = new ArrowheadService(serviceDef, interfaces, metadata);
+                    String insecProviderName = entity.get("id").getAsString()+"-"+entity.get("type").getAsString();
+                    ArrowheadSystem provider = new ArrowheadSystem(insecProviderName, "0.0.0.0", 8462, null);
+                    ServiceRegistryEntry entry = new ServiceRegistryEntry(service, provider, serviceUri);
+                    
+                    if (registerEntry(entry) == 400) {
+                        System.out.println("Service ["+insecProviderName+"] already registered on Arrowhead! -> unregister");
+                        unregisterEntry(entry);
+                        if (registerEntry(entry) != 400) {
+                            System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
+                        }
+                    } else {
+                        System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
+                    }
+                } catch (IOException ex) {
+                    System.out.println("IOException!: "+ex.getLocalizedMessage());
+                }
+            
+            });
+            
+        } catch (IOException ex) {
+            System.out.println("IOException!: "+ex.getLocalizedMessage());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(FiwareResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private int registerEntry(ServiceRegistryEntry entry) throws UnsupportedEncodingException, IOException {
+        HttpPost post = new HttpPost("http://0.0.0.0:8442/serviceregistry/register");
+        // Header
+        post.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json");
+        
+        
+        System.out.println("registerEntry: "+gson.toJson(entry));
+        // Content
+        StringEntity entity = new StringEntity(gson.toJson(entry));
+        post.setEntity(entity);
+        
+        return httpClient.execute(post).getStatusLine().getStatusCode();
+    }
+    
+    private int unregisterEntry(ServiceRegistryEntry entry) throws UnsupportedEncodingException, IOException {
+        HttpPut put = new HttpPut("http://0.0.0.0:8442/serviceregistry/remove");
+        // Header
+        put.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json");
+        
+        System.out.println("unregisterEntry: "+gson.toJson(entry));
+        // Content
+        StringEntity entity = new StringEntity(gson.toJson(entry));
+        put.setEntity(entity);
+        
+        return httpClient.execute(put).getStatusLine().getStatusCode();
+    }
+    
+    
+    
     
     @GET
     public String getIt() {
@@ -106,6 +217,8 @@ public class FiwareResource implements Observer{
         } catch (Exception ex) {
             System.out.println("Exception: "+ex.getLocalizedMessage());
         }
+        
+        registerAllEntities();
         
         System.out.println("GET entities - Transparent request/response");
         return pretyGson.toJson(entities);

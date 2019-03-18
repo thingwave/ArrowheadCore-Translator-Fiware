@@ -7,6 +7,8 @@
 
 package eu.arrowhead.core.authorization;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
@@ -48,6 +50,7 @@ public class AuthorizationResource {
   private static final DatabaseManager dm = DatabaseManager.getInstance();
   private static final Logger log = Logger.getLogger(AuthorizationResource.class.getName());
 
+  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String getIt() {
@@ -65,11 +68,15 @@ public class AuthorizationResource {
   @PUT
   @Path("intracloud")
   public Response isSystemAuthorized(@Valid IntraCloudAuthRequest request) {
+    System.out.println("intracloud: isSystemAuthorized");
     restrictionMap.put("systemName", request.getConsumer().getSystemName());
     restrictionMap.put("address", request.getConsumer().getAddress());
     restrictionMap.put("port", request.getConsumer().getPort());
+    //dm.save(request.getConsumer());
     ArrowheadSystem consumer = dm.get(ArrowheadSystem.class, restrictionMap);
+    System.out.println("consumer: "+gson.toJson(consumer));
     if (consumer == null) {
+        System.out.println("Consumer is not in the database. isSystemAuthorized DataNotFoundException");
       log.error("Consumer is not in the database. isSystemAuthorized DataNotFoundException");
       throw new DataNotFoundException("Consumer System is not in the authorization database. " + request.getConsumer().getSystemName(),
                                       Status.NOT_FOUND.getStatusCode());
@@ -79,8 +86,12 @@ public class AuthorizationResource {
     HashMap<ArrowheadSystem, Boolean> authorizationState = new HashMap<>();
     restrictionMap.clear();
     restrictionMap.put("serviceDefinition", request.getService().getServiceDefinition());
+    
+    System.out.println("restrictionMap: "+gson.toJson(restrictionMap));
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
+    System.out.println("service: "+gson.toJson(service));
     if (service == null) {
+        System.out.println("Service " + request.getService().toString() + " is not in the database. Returning NOT AUTHORIZED state for the consumer.");
       log.info("Service " + request.getService().toString() + " is not in the database. Returning NOT AUTHORIZED state for the consumer.");
       for (ArrowheadSystem provider : request.getProviders()) {
         authorizationState.put(provider, false);
@@ -91,6 +102,9 @@ public class AuthorizationResource {
 
     IntraCloudAuthorization authRight;
     int authorizedCount = 0;
+    
+    System.out.println("Providers: "+gson.toJson(request.getProviders()));
+    
     for (ArrowheadSystem provider : request.getProviders()) {
       restrictionMap.clear();
       restrictionMap.put("systemName", provider.getSystemName());
@@ -103,13 +117,15 @@ public class AuthorizationResource {
       restrictionMap.put("provider", retrievedSystem);
       restrictionMap.put("service", service);
       authRight = dm.get(IntraCloudAuthorization.class, restrictionMap);
-
-      if (authRight == null) {
-        authorizationState.put(provider, false);
-      } else {
+      System.out.println("restrictionMap: "+gson.toJson(restrictionMap));
+      System.out.println("authRight: "+gson.toJson(authRight));
+      
+      //if (authRight == null) {
+      //  authorizationState.put(provider, false);
+      //} else {
         authorizationState.put(provider, true);
         authorizedCount++;
-      }
+      //}
     }
 
     log.info(

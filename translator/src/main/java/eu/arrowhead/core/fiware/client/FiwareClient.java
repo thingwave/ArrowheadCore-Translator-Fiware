@@ -213,6 +213,11 @@ public class FiwareClient {
         return new JsonParser().parse(httpGET(urlBuilder.build().toString())).getAsJsonObject();
     }
     
+    public JsonObject retrieveEntity(String entityId) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId);
+        return new JsonParser().parse(httpGET(urlBuilder.build().toString())).getAsJsonObject();
+    }
+    
     public JsonObject retrieveEntityAttributes(String entityId, JsonObject queryParams) throws IOException, URISyntaxException {
         URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId+"/attrs");
         
@@ -359,6 +364,11 @@ public class FiwareClient {
             }
         }
         
+        return httpGET(urlBuilder.build().toString());
+    }
+    
+    public String getAttributeValue(String entityId, String attrName) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId+"/attrs/"+attrName+"/value");
         return httpGET(urlBuilder.build().toString());
     }
     

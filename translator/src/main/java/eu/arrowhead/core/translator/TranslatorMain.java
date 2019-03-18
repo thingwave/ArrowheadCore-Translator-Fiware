@@ -7,8 +7,11 @@
 
 package eu.arrowhead.core.translator;
 
+import eu.arrowhead.core.fiware.FiwareVersionResource;
+import eu.arrowhead.core.fiware.FiwareResource;
 import eu.arrowhead.common.ArrowheadMain;
 import eu.arrowhead.common.misc.CoreSystem;
+import eu.arrowhead.core.fiware.PluginResource;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +23,7 @@ private TranslatorMain(String[] args) {
 	Set<Class<?>> classes = new HashSet<>(Collections.singleton(TranslatorResource.class));
         classes.addAll(Collections.singleton(FiwareResource.class));
         classes.addAll(Collections.singleton(FiwareVersionResource.class));
+        classes.addAll(Collections.singleton(PluginResource.class));
 	String[] packages = {"eu.arrowhead.common", "eu.arrowhead.core.translator"};
 	init(CoreSystem.TRANSLATOR, args, classes, packages);
 	listenForInput();

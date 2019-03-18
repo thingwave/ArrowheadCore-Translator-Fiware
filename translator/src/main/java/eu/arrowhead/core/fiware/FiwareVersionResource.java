@@ -1,4 +1,4 @@
-package eu.arrowhead.core.translator;
+package eu.arrowhead.core.fiware;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

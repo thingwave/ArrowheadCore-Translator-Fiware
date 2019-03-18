@@ -7,6 +7,8 @@
 
 package eu.arrowhead.core.orchestrator;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
@@ -20,6 +22,7 @@ public final class StoreService {
 
   private static final DatabaseManager dm = DatabaseManager.getInstance();
   private static final HashMap<String, Object> restrictionMap = new HashMap<>();
+  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   /**
    * This method returns the active Orchestration Store entries for a consumer.
@@ -41,8 +44,12 @@ public final class StoreService {
    */
   public static List<OrchestrationStore> getStoreEntries(ArrowheadSystem consumer, ArrowheadService service) {
     restrictionMap.clear();
+    System.out.println("getStoreEntries");
     ArrowheadSystem savedConsumer = getConsumerSystem(consumer);
     ArrowheadService savedService = getRequestedService(service.getServiceDefinition());
+    
+    System.out.println("savedConsumer: \n"+gson.toJson(savedConsumer));
+    System.out.println("savedService: \n"+gson.toJson(savedService));
     if (savedConsumer == null || savedService == null) {
       return new ArrayList<>();
     }
