@@ -7,8 +7,6 @@
 
 package eu.arrowhead.core.serviceregistry_sql;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.DatabaseManager;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
@@ -39,7 +37,6 @@ public class ServiceRegistryResource {
 
   private final HashMap<String, Object> restrictionMap = new HashMap<>();
   private static final Logger log = Logger.getLogger(ServiceRegistryResource.class.getName());
-  private Gson gson = new GsonBuilder().setPrettyPrinting().create();
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String getIt() {
@@ -49,7 +46,6 @@ public class ServiceRegistryResource {
   @POST
   @Path("register")
   public Response registerService(@Valid ServiceRegistryEntry entry) {
-    System.out.println("\nRegister!!!\n"+gson.toJson(entry));
     entry.toDatabase();
     restrictionMap.put("serviceDefinition", entry.getProvidedService().getServiceDefinition());
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
@@ -94,8 +90,6 @@ public class ServiceRegistryResource {
   @PUT
   @Path("query")
   public Response queryRegistry(@Valid ServiceQueryForm queryForm) {
-      
-    System.out.println("\nquery!!!\n"+gson.toJson(queryForm));
     restrictionMap.put("serviceDefinition", queryForm.getService().getServiceDefinition());
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
     if (service == null) {
@@ -143,8 +137,6 @@ public class ServiceRegistryResource {
   @PUT
   @Path("remove")
   public Response removeService(@Valid ServiceRegistryEntry entry) {
-      
-    System.out.println("\nremove!!!\n"+gson.toJson(entry));
     restrictionMap.put("serviceDefinition", entry.getProvidedService().getServiceDefinition());
     ArrowheadService service = dm.get(ArrowheadService.class, restrictionMap);
 

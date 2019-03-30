@@ -51,24 +51,18 @@ public class OrchestratorResource {
    */
   @POST
   public Response orchestrationProcess(@Valid ServiceRequestForm srf) {
-    System.out.println("CHECK VALIDATION of PARAMETERS");
     srf.validateCrossParameterConstraints();
-    System.out.println("CHECK DONE");
     OrchestrationResponse orchResponse;
     if (srf.getOrchestrationFlags().getOrDefault("externalServiceRequest", false)) {
-        System.out.println("Received an externalServiceRequest.");
       log.info("Received an externalServiceRequest.");
       orchResponse = OrchestratorService.externalServiceRequest(srf);
     } else if (srf.getOrchestrationFlags().getOrDefault("triggerInterCloud", false)) {
-        System.out.println("Received a triggerInterCloud request.");
       log.info("Received a triggerInterCloud request.");
       orchResponse = OrchestratorService.triggerInterCloud(srf);
     } else if (!srf.getOrchestrationFlags().getOrDefault("overrideStore", false)) { //overrideStore == false
-      System.out.println("Received an orchestrationFromStore request.");
       log.info("Received an orchestrationFromStore request.");
       orchResponse = OrchestratorService.orchestrationFromStore(srf);
     } else {
-      System.out.println("Received a dynamicOrchestration request.");
       log.info("Received a dynamicOrchestration request.");
       orchResponse = OrchestratorService.dynamicOrchestration(srf);
     }

@@ -19,6 +19,7 @@ import eu.arrowhead.common.exception.ArrowheadException;
 import eu.arrowhead.core.fiware.client.FiwareClient;
 import eu.arrowhead.core.fiware.common.FiwareTools;
 import eu.arrowhead.core.fiware.common.SenML;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -83,7 +86,7 @@ public class PluginResource implements Observer {
             @PathParam("entityId") String entityId,
             @PathParam("serviceName") String serviceName
             ) throws UnsupportedEncodingException, URISyntaxException {
-        System.out.println("getEntityValue "+entityId+" "+serviceName);
+        //System.out.println("getEntityValue "+entityId+" "+serviceName);
         
         
         try {
@@ -107,25 +110,98 @@ public class PluginResource implements Observer {
     }
     
     
-    @POST
-    @Path("service/{entityId}")
+    @PUT // Create Entity if doesn't exist
+    @Path("service/{entityId}/{serviceName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response register(){
-        return Response.status(204).build();
+    public Response createEntity(
+            String content,
+            @PathParam("entityId") String entityId,
+            @PathParam("serviceName") String serviceName){
+        int status = 404;
+        JsonObject jEntity = new JsonObject();
+        jEntity.addProperty("id", entityId);
+        jEntity.addProperty("type", serviceName);
+        
+        try {
+            status = fiwareClient.createEntity(jEntity);
+            SenML senML = new SenML();
+            senML.fromJSON(content);        
+            JsonObject jContent = new JsonObject();
+            JsonObject jValue = new JsonObject();
+
+            if (senML.getLastest().getValue() != null) {
+                jValue.addProperty("type", "Number");
+                jValue.addProperty("value", senML.getLastest().getValue());
+            } else if (senML.getLastest().getStringValue() != null) {
+                jValue.addProperty("type", "Text");
+                jValue.addProperty("value", senML.getLastest().getStringValue());
+            }
+
+            jContent.add(serviceName, jValue);
+            status = fiwareClient.updateAppendEntityAttributes(entityId, jContent);
+            
+        } catch (IOException ex) {
+            return Response.status(500).build();
+        } catch (URISyntaxException ex) {
+            return Response.status(204).build();
+        }
+        
+        return Response.status(status).build();
     }
     
-    @PUT
-    @Path("service/{entityId}")
+    @POST // Update Value
+    @Path("service/{entityId}/{serviceName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateValue(){
-        return Response.status(204).build();
+    public Response updateEntity(
+            String content,
+            @PathParam("entityId") String entityId,
+            @PathParam("serviceName") String serviceName){
+        
+        int status = 404;
+        
+        SenML senML = new SenML();
+        senML.fromJSON(content);        
+        JsonObject jContent = new JsonObject();
+        JsonObject jValue = new JsonObject();
+        
+        if (senML.getLastest().getValue() != null) {
+            jValue.addProperty("type", "Number");
+            jValue.addProperty("value", senML.getLastest().getValue());
+        } else if (senML.getLastest().getStringValue() != null) {
+            jValue.addProperty("type", "Text");
+            jValue.addProperty("value", senML.getLastest().getStringValue());
+        }
+        
+        jContent.add(serviceName, jValue);
+        
+        try {
+            status = fiwareClient.updateAppendEntityAttributes(entityId, jContent);
+            //System.out.println("Status: "+status);
+        } catch (IOException ex) {
+            return Response.status(500).build();
+        } catch (URISyntaxException ex) {
+            return Response.status(204).build();
+        }
+        
+        return Response.status(status).build();
     }
     
     @DELETE
     @Path("service/{entityId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deteleEntity(){
-        return Response.status(204).build();
+    public Response deteleEntity(
+            @PathParam("entityId") String entityId){
+        int status = 404;
+        
+        try {
+            status = fiwareClient.removeEntity(entityId);
+        } catch (URISyntaxException ex) {
+            status = 204;
+        } catch (IOException ex) {
+            status = 500;
+        }
+        
+        return Response.status(status).build();
     }
     
     

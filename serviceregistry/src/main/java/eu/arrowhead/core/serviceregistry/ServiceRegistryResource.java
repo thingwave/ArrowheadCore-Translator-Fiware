@@ -133,7 +133,6 @@ public class ServiceRegistryResource {
   @GET
   @Path("all")
   public Response getAllServices() {
-      System.out.println("Requesting ALL!!");
     ServiceQueryResult sqr = ServiceRegistry.provideAllServices();
     if (sqr.getServiceQueryData().isEmpty()) {
       return Response.status(Status.PARTIAL_CONTENT).entity(sqr).build();

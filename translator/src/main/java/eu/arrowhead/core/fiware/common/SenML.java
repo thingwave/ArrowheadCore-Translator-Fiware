@@ -7,7 +7,9 @@ package eu.arrowhead.core.fiware.common;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -26,6 +28,41 @@ public class SenML {
     public SenML addValue(SenMLValue value) {
         values.add(value);
         return this;
+    }
+    
+    public void fromJSON(String json) {
+        Collection<SenMLValue> tmp = gson.fromJson(json, new TypeToken<Collection<SenMLValue>>(){}.getType());
+        values.clear();
+        tmp.forEach(senMLvalue -> { values.add(senMLvalue); });
+    }
+    
+    public SenMLValue getLastest() {
+        // TODO: add suport by name
+        if (values.isEmpty()) return new SenMLValue();
+        
+        double time = 0;
+        Number bt = 0;
+        String bn = null;
+        int index = 0;
+        for (int i = 0; i< values.size(); i++) {
+            if (values.get(i).getTime() != null) {
+                if (time > values.get(i).getTime().doubleValue()) {
+                    time = values.get(i).getTime().doubleValue();
+                    index = i;
+                }
+            }
+            if (values.get(i).getBaseTime() != null) {
+                bt = values.get(i).getBaseTime();
+            }
+            if (values.get(i).getBaseName() != null) {
+                bn = values.get(i).getBaseName();
+            }
+        }
+        
+        values.get(index).setBaseTime(bt);
+        values.get(index).setBaseName(bn);
+        
+        return values.get(index);
     }
     
     public String toJSON() {

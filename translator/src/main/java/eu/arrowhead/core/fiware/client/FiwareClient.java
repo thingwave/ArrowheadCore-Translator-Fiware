@@ -144,11 +144,11 @@ public class FiwareClient {
         } catch (IOException ex) {
             System.out.println("Error "+ex);
         }
-        System.out.println("Services:");
+        /*System.out.println("Services:");
         System.out.println("entitiesURL: "+entitiesURL);
         System.out.println("typesURL: "+typesURL);
         System.out.println("subscriptionsURL: "+subscriptionsURL);
-        System.out.println("registrationsURL: "+registrationsURL);
+        System.out.println("registrationsURL: "+registrationsURL);*/
     }
     
     public ArrayList<ServiceURL> getAllServices() throws IOException {
@@ -171,7 +171,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -188,13 +188,18 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
         }
         
         return httpPOST(urlBuilder.build().toString(), contentType, content).getStatusLine().getStatusCode();
+    }
+        
+    public int createEntity(JsonObject entity) throws IOException, URISyntaxException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL);
+        return httpPOST(urlBuilder.build().toString(), "application/json", gson.toJson(entity)).getStatusLine().getStatusCode();
     }
     
     public JsonObject retrieveEntity(String entityId, JsonObject queryParams) throws IOException, URISyntaxException {
@@ -204,7 +209,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -225,7 +230,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -242,13 +247,19 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
         }
         
         return httpPOST(urlBuilder.build().toString(), contentType, content).getStatusLine().getStatusCode();
+    }
+    
+    public int updateAppendEntityAttributes(String entityId, JsonObject jContent) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId+"/attrs");
+                
+        return httpPOST(urlBuilder.build().toString(), "application/json", gson.toJson(jContent)).getStatusLine().getStatusCode();
     }
     
     
@@ -259,7 +270,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -275,7 +286,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -291,12 +302,17 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
         }
         
+        return httpDELETE(urlBuilder.build().toString()).getStatusLine().getStatusCode();
+    }
+    
+    public int removeEntity(String entityId) throws URISyntaxException, IOException {
+        URIBuilder urlBuilder = new URIBuilder(orionBrokerURL+entitiesURL+"/"+entityId);        
         return httpDELETE(urlBuilder.build().toString()).getStatusLine().getStatusCode();
     }
     
@@ -308,7 +324,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -324,7 +340,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -340,7 +356,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -358,7 +374,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -379,7 +395,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -396,7 +412,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }
@@ -420,7 +436,7 @@ public class FiwareClient {
         if (queryParams != null) {
             Set<Map.Entry<String, JsonElement>> entries = queryParams.entrySet();
             for (Map.Entry<String, JsonElement> entry: entries) {
-                System.out.println(entry.getKey()+" = "+entry.getValue());
+                //System.out.println(entry.getKey()+" = "+entry.getValue());
                 if (!entry.getValue().getAsString().isEmpty())
                     urlBuilder.addParameter(entry.getKey(), entry.getValue().getAsString());
             }

@@ -13,14 +13,19 @@ import eu.arrowhead.core.fiware.common.ServiceURL;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +50,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 
 /**
@@ -71,8 +80,18 @@ public class FiwareResource implements Observer{
     public FiwareResource() {
         System.out.println("FIWARE Resource start!");
         fiwareClient = new FiwareClient("http://localhost:1026");
-        httpClient = HttpClients.createDefault();
+        //httpClient = HttpClients.createDefault();
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, 1000);
+        httpClient = new DefaultHttpClient(httpParams);
         
+        ScheduledExecutorService sesAHregistration = Executors.newSingleThreadScheduledExecutor();
+        System.out.println("Starting Auto-registration...");
+        sesAHregistration.scheduleAtFixedRate(
+            () -> {
+                System.out.println("--- Scheduled :: Update AH FIWARE registration ---");
+                registerAllEntities();
+            }, 5, 60, TimeUnit.SECONDS);
         
         
     }
@@ -83,9 +102,12 @@ public class FiwareResource implements Observer{
         try {
             ArrayList<JsonObject> entities = fiwareClient.listEntities(new JsonObject());
             
-            entities.forEach(entity -> {
+            for (int i=0; i< entities.size(); i++) {
+                JsonObject entity = entities.get(i);
+                System.out.printf("%3d/%d :: %80s | %20s ", (i+1), entities.size(), entity.get("id").getAsString(), entity.get("type").getAsString());
+                //System.out.print("["+(i+1)+"/"+entities.size()+"] "+entity.get("id")+" | "+entity.get("type")+" ");
                 try {
-                    System.out.println("Register entities on Arrowhead");
+                    //System.out.println("Register entities on Arrowhead");
                     String serviceDef = entity.get("id").getAsString();
                     String serviceUri = "/plugin/service/"+entity.get("id").getAsString()+"/"+entity.get("type").getAsString();
                     String interfaceList = "SenML";
@@ -109,20 +131,24 @@ public class FiwareResource implements Observer{
                     ArrowheadSystem provider = new ArrowheadSystem(insecProviderName, "0.0.0.0", 8462, null);
                     ServiceRegistryEntry entry = new ServiceRegistryEntry(service, provider, serviceUri);
                     
-                    if (registerEntry(entry) == 400) {
-                        System.out.println("Service ["+insecProviderName+"] already registered on Arrowhead! -> unregister");
-                        unregisterEntry(entry);
-                        if (registerEntry(entry) != 400) {
-                            System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
+                    int status = registerEntry(entry);
+                    
+                    if (status != 201) {
+                        status = unregisterEntry(entry);
+                        status = registerEntry(entry);
+                        if (status == 201) {
+                            System.out.println("[REGISTERED]");
+                        } else {
+                            System.out.println("[NOT REGISTERED]");
                         }
                     } else {
-                        System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
+                        System.out.println("[REGISTERED]");
+                        //System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
                     }
                 } catch (IOException ex) {
                     System.out.println("IOException!: "+ex.getLocalizedMessage());
                 }
-            
-            });
+            }
             
         } catch (IOException ex) {
             System.out.println("IOException!: "+ex.getLocalizedMessage());
@@ -141,8 +167,9 @@ public class FiwareResource implements Observer{
         // Content
         StringEntity entity = new StringEntity(gson.toJson(entry));
         post.setEntity(entity);
-        
-        return httpClient.execute(post).getStatusLine().getStatusCode();
+        int status = httpClient.execute(post).getStatusLine().getStatusCode();
+        post.releaseConnection();
+        return status;
     }
     
     private int unregisterEntry(ServiceRegistryEntry entry) throws UnsupportedEncodingException, IOException {
@@ -150,12 +177,13 @@ public class FiwareResource implements Observer{
         // Header
         put.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json");
         
-        System.out.println("unregisterEntry: "+gson.toJson(entry));
+        //System.out.println("unregisterEntry: "+gson.toJson(entry));
         // Content
         StringEntity entity = new StringEntity(gson.toJson(entry));
         put.setEntity(entity);
-        
-        return httpClient.execute(put).getStatusLine().getStatusCode();
+        int status = httpClient.execute(put).getStatusLine().getStatusCode();
+        put.releaseConnection();
+        return status;
     }
     
     
@@ -190,7 +218,7 @@ public class FiwareResource implements Observer{
             @QueryParam("metadata") String metadata,
             @QueryParam("orderBy") String orderBy,
             @QueryParam("options") String options) {
-        System.out.println("listEntities");
+        //System.out.println("listEntities");
         JsonObject jQueryParams = new JsonObject();
         if (id != null) jQueryParams.addProperty("id", id);
         if (type != null) jQueryParams.addProperty("type", type);
@@ -218,9 +246,8 @@ public class FiwareResource implements Observer{
             System.out.println("Exception: "+ex.getLocalizedMessage());
         }
         
-        registerAllEntities();
         
-        System.out.println("GET entities - Transparent request/response");
+        //System.out.println("GET entities - Transparent request/response");
         return pretyGson.toJson(entities);
     }
     
@@ -231,7 +258,7 @@ public class FiwareResource implements Observer{
             @QueryParam("options") String options,
             String content,
             @Context HttpHeaders headers) {
-        System.out.println("createEntity");
+        //System.out.println("createEntity");
         String contentType = headers.getHeaderString("Content-type"); 
         JsonObject jQueryParams = new JsonObject();
         if (options != null) jQueryParams.addProperty("options", options);
@@ -254,7 +281,7 @@ public class FiwareResource implements Observer{
             @QueryParam("options") String options,
             @Context UriInfo uriInfo
             ) throws UnsupportedEncodingException, URISyntaxException {
-        System.out.println("retrieveEntity");
+        //System.out.println("retrieveEntity");
         
         JsonObject jresp = null;
         
@@ -277,7 +304,7 @@ public class FiwareResource implements Observer{
             @QueryParam("metadata") String metadata,
             @QueryParam("options") String options,
             @Context UriInfo uriInfo) {
-        System.out.println("retrieveEntityAttributes");
+        //System.out.println("retrieveEntityAttributes");
         
         JsonObject jresp = null;
         
@@ -298,7 +325,7 @@ public class FiwareResource implements Observer{
             @QueryParam("options") String options,
             String content,
             @Context HttpHeaders headers) {
-        System.out.println("updateAppendEntityAttributes");
+        //System.out.println("updateAppendEntityAttributes");
         String contentType = headers.getHeaderString("Content-type");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
@@ -320,7 +347,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @QueryParam("type") String type,
             @QueryParam("options") String options) {
-        System.out.println("updateExistingEntityAttributes");
+        //System.out.println("updateExistingEntityAttributes");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
         if (type != null) jQueryParams.addProperty("options", options);
@@ -343,7 +370,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @QueryParam("type") String type,
             @QueryParam("options") String options) {
-        System.out.println("replaceAllEntityAttributes");
+        //System.out.println("replaceAllEntityAttributes");
         String contentType = headers.getHeaderString("Content-type");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
@@ -363,7 +390,7 @@ public class FiwareResource implements Observer{
     public Response removeEntity(
             @PathParam("entityId") String entityId,
             @QueryParam("type") String type) {
-        System.out.println("removeEntity");
+        //System.out.println("removeEntity");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
                 
@@ -386,7 +413,7 @@ public class FiwareResource implements Observer{
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type,
             @QueryParam("metadata") String metadata) {
-        System.out.println("getAttributeData");
+        //System.out.println("getAttributeData");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
         if (metadata != null) jQueryParams.addProperty("metadata", metadata);
@@ -409,7 +436,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type) {
-        System.out.println("updateAttributeData");
+        //System.out.println("updateAttributeData");
         String contentType = headers.getHeaderString("Content-type");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
@@ -429,7 +456,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type) {
-        System.out.println("removeASingleAttribute");
+        //System.out.println("removeASingleAttribute");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
                 
@@ -451,7 +478,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type) {
-        System.out.println("getAttributeValue");
+        //System.out.println("getAttributeValue");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
         try {
@@ -471,7 +498,7 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type) {
-        System.out.println("updateAttributeValue");
+        //System.out.println("updateAttributeValue");
         String contentType = headers.getHeaderString("Content-type");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
@@ -491,7 +518,7 @@ public class FiwareResource implements Observer{
             @QueryParam("limit") int limit,
             @QueryParam("offset") int offset,
             @QueryParam("options") String options) {
-        System.out.println("listEntityTypes");
+        //System.out.println("listEntityTypes");
         JsonObject jQueryParams = new JsonObject();
         if (limit != 0) jQueryParams.addProperty("limit", limit);
         if (limit != 0) jQueryParams.addProperty("offset", offset);
@@ -512,7 +539,7 @@ public class FiwareResource implements Observer{
     @Path("types/{entityType}")
     public String retrieveEntityType(
             @PathParam("entityType") String entityType) {
-        System.out.println("retrieveEntityType");       
+        //System.out.println("retrieveEntityType");       
                 
         try {
             return pretyGson.toJson(fiwareClient.retrieveEntityType(entityType));
@@ -532,7 +559,7 @@ public class FiwareResource implements Observer{
             @QueryParam("limit") int limit,
             @QueryParam("offset") int offset,
             @QueryParam("options") String options) {
-        System.out.println("listEntityTypes");
+        //System.out.println("listEntityTypes");
         JsonObject jQueryParams = new JsonObject();
         if (limit != 0) jQueryParams.addProperty("limit", limit);
         if (limit != 0) jQueryParams.addProperty("offset", offset);
@@ -555,7 +582,7 @@ public class FiwareResource implements Observer{
     public Response createSubscription(
             String content,
             @Context HttpHeaders headers) {
-        System.out.println("updateAppendEntityAttributes");
+        //System.out.println("updateAppendEntityAttributes");
         String contentType = headers.getHeaderString("Content-type");        
         try {
             return Response.ok().header("Location",fiwareClient.createSubscription(contentType, content)).build();
@@ -570,7 +597,7 @@ public class FiwareResource implements Observer{
     public String retrieveSubscription(
             @PathParam("subscriptionId") String subscriptionId
             ) throws UnsupportedEncodingException, URISyntaxException {
-        System.out.println("retrieveSubscription");
+        //System.out.println("retrieveSubscription");
         
         JsonObject jresp = null;
         
@@ -589,7 +616,7 @@ public class FiwareResource implements Observer{
             String content,
             @PathParam("subscriptionId") String subscriptionId
             ) throws UnsupportedEncodingException, URISyntaxException {
-        System.out.println("updateSubscription");
+        //System.out.println("updateSubscription");
         try {
             return Response.status(fiwareClient.updateSubscription(subscriptionId, content)).build();
         } catch (Exception ex) {
@@ -605,7 +632,7 @@ public class FiwareResource implements Observer{
             String content,
             @PathParam("subscriptionId") String subscriptionId
             ) throws UnsupportedEncodingException, URISyntaxException {
-        System.out.println("deleteSubscription");
+        //System.out.println("deleteSubscription");
         try {
             return Response.status(fiwareClient.deleteSubscription(subscriptionId, content)).build();
         } catch (Exception ex) {

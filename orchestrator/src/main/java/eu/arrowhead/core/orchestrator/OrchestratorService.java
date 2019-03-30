@@ -7,8 +7,6 @@
 
 package eu.arrowhead.core.orchestrator;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.OrchestrationStore;
@@ -43,7 +41,6 @@ import org.apache.log4j.Logger;
 final class OrchestratorService {
 
   private static final Logger log = Logger.getLogger(OrchestratorService.class.getName());
-  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   private OrchestratorService() throws AssertionError {
     throw new AssertionError("OrchestratorService is a non-instantiable class");
@@ -59,25 +56,19 @@ final class OrchestratorService {
   static OrchestrationResponse dynamicOrchestration(ServiceRequestForm srf) {
     Map<String, Boolean> orchestrationFlags = srf.getOrchestrationFlags();
     
-    System.out.println("dynamicOrchestration:");
-
     try {
       // Querying the Service Registry
       List<ServiceRegistryEntry> srList = OrchestratorDriver
           .queryServiceRegistry(srf.getRequestedService(), orchestrationFlags.get("metadataSearch"), orchestrationFlags.get("pingProviders"));
 
-      System.out.println("srList: \n"+gson.toJson(srList));
       // Cross-checking the SR response with the Authorization
       Set<ArrowheadSystem> providerSystems = new HashSet<>();
       for (ServiceRegistryEntry entry : srList) {
         providerSystems.add(entry.getProvider());
       }
       
-      System.out.println("providerSystems: \n"+gson.toJson(providerSystems));
-      System.out.println("queryAuthorization!");
       providerSystems = OrchestratorDriver.queryAuthorization(srf.getRequesterSystem(), srf.getRequestedService(), providerSystems);
       
-      System.out.println("providerSystems: \n"+gson.toJson(providerSystems));
       /*
        * The Authorization cross-check only returns the provider systems where the requester system is authorized to consume the service. We filter
        * out the non-authorized systems from the SR response (ServiceRegistryEntry list).
@@ -90,15 +81,12 @@ final class OrchestratorService {
       }
       srList.removeAll(temp);
       
-      System.out.println("srList: \n"+gson.toJson(srList));
       
       if (srList.isEmpty()) {
         log.error("None of the providers from the SRlist are authorized!");
-        System.out.println("None of the providers from the SRlist are authorized!");
         throw new DataNotFoundException("None of the providers from the Service Registry query are authorized!");
       }
       log.debug("dynamicOrchestration SR query and Auth cross-check is done");
-        System.out.println("dynamicOrchestration SR query and Auth cross-check is done");
 
       // If needed, remove the non-preferred providers from the remaining list
       providerSystems.clear(); //providerSystems set is reused
@@ -130,7 +118,6 @@ final class OrchestratorService {
 
       // All the filtering is done, need to compile the response
       log.info("dynamicOrchestration finished with " + srList.size() + " service providers");
-      System.out.println("dynamicOrchestration finished with " + srList.size() + " service providers");
       return compileOrchestrationResponse(srList, srf, null);
     }
     /*
@@ -148,7 +135,6 @@ final class OrchestratorService {
         }
         log.info("Intra-Cloud dynamicOrchestration failed with: " + ex.getMessage());
         ex.printStackTrace();
-        System.out.println("Intra-Cloud orchestration failed, moving to Inter-Cloud options.");
       }
     }
 
@@ -167,23 +153,18 @@ final class OrchestratorService {
    * @throws DataNotFoundException if all the queried Orchestration Store entry options were exhausted and none were found operational
    */
   static OrchestrationResponse orchestrationFromStore(ServiceRequestForm srf) {
-    System.out.println("orchestrationFromStore: ServiceRequestForm: \n"+gson.toJson(srf));
     // Querying the Orchestration Store for matching entries
     List<OrchestrationStore> entryList = OrchestratorDriver.queryOrchestrationStore(srf.getRequesterSystem(), srf.getRequestedService());
     int storeSize = entryList.size();
     
-    System.out.println("entrylist: \n"+gson.toJson(entryList));
     
     // Cross-checking the results with the Service Registry and Authorization (modifies the entryList)
     entryList = OrchestratorDriver.crossCheckStoreEntries(srf, entryList);
     log.debug("orchestrationFromStore: SR-Auth cross-check is done");
-    System.out.println("orchestrationFromStore: SR-Auth cross-check is done");
-    System.out.println("entrylist: \n"+gson.toJson(entryList));
     
     // In case of default store orchestration, we return all the remaining Store entries (all intra-cloud, 1 provider/service)
     if (srf.getRequestedService() == null) {
         
-        System.out.println("srf.getRequestedService() == null");
       List<ServiceRegistryEntry> srList = new ArrayList<>();
       List<String> instructions = new ArrayList<>();
       for (OrchestrationStore entry : entryList) {
@@ -195,7 +176,6 @@ final class OrchestratorService {
     }
     // In case of non-default store orchestration (service is fixed), we go one by one on the entries until we find one operational
     else {
-        System.out.println("srf.getRequestedService() != null");
       for (OrchestrationStore entry : entryList) {
         // If the entry is intra-cloud, we can return with it, since it already passed the SR/Auth cross-checking
         if (entry.getProviderCloud() == null) {
