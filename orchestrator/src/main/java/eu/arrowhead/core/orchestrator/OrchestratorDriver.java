@@ -7,6 +7,8 @@
 
 package eu.arrowhead.core.orchestrator;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.Utility;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadService;
@@ -51,6 +53,7 @@ import org.apache.log4j.Logger;
 final class OrchestratorDriver {
 
   private static final Logger log = Logger.getLogger(OrchestratorService.class.getName());
+  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
   private OrchestratorDriver() throws AssertionError {
     throw new AssertionError("OrchestratorDriver is a non-instantiable class");
@@ -73,11 +76,14 @@ final class OrchestratorDriver {
     // Compiling the URI and the request payload
     String srUri = UriBuilder.fromPath(OrchestratorMain.SR_BASE_URI).path("query").toString();
     ServiceQueryForm queryForm = new ServiceQueryForm(service, pingProviders, metadataSearch);
-
+        System.out.println("queryForm");
+        System.out.println(gson.toJson(queryForm));
     // Sending the request, parsing the returned result
     Response srResponse = Utility.sendRequest(srUri, "PUT", queryForm);
+    
     ServiceQueryResult serviceQueryResult = srResponse.readEntity(ServiceQueryResult.class);
-
+System.out.println("serviceQueryResult");
+        System.out.println(gson.toJson(serviceQueryResult));
     // If there are non-valid entries in the Service Registry response, we filter those out
     List<ServiceRegistryEntry> temp = new ArrayList<>();
     for (ServiceRegistryEntry entry : serviceQueryResult.getServiceQueryData()) {
@@ -120,6 +126,8 @@ final class OrchestratorDriver {
     // Sending the request, parsing the returned result
     Response response = Utility.sendRequest(uri, "PUT", request);
     IntraCloudAuthResponse authResponse = response.readEntity(IntraCloudAuthResponse.class);
+        System.out.println("authResponse");
+        System.out.println(gson.toJson(authResponse));
         
     Set<ArrowheadSystem> authorizedSystems = new HashSet<>();
     // Set view of HashMap ensures there are no duplicates between the keys (systems)

@@ -19,26 +19,27 @@ public class SenML {
     private final GsonBuilder gsonBuilder = new GsonBuilder().disableHtmlEscaping();
     private final Gson gson = gsonBuilder.create();
     private final Gson pretyGson = gsonBuilder.setPrettyPrinting().create();
-    private final ArrayList<SenMLValue> values;
+    private final ArrayList<SenMLElement> values;
     
     public SenML() {
         values = new ArrayList<>();
     }
     
-    public SenML addValue(SenMLValue value) {
+    public SenML addElement(SenMLElement value) {
         values.add(value);
         return this;
     }
     
-    public void fromJSON(String json) {
-        Collection<SenMLValue> tmp = gson.fromJson(json, new TypeToken<Collection<SenMLValue>>(){}.getType());
+    public SenML fromJSON(String json) {
+        Collection<SenMLElement> tmp = gson.fromJson(json, new TypeToken<Collection<SenMLElement>>(){}.getType());
         values.clear();
         tmp.forEach(senMLvalue -> { values.add(senMLvalue); });
+        return this;
     }
     
-    public SenMLValue getLastest() {
+    public SenMLElement getLastest() {
         // TODO: add suport by name
-        if (values.isEmpty()) return new SenMLValue();
+        if (values.isEmpty()) return new SenMLElement();
         
         double time = 0;
         Number bt = 0;
@@ -74,7 +75,7 @@ public class SenML {
     }
     
     // RFC 8428
-    public static class SenMLValue {
+    public static class SenMLElement {
         private String bn;  // Base Name
         private Number bt;  // Base Time
         private String bu;  // Base Unit
@@ -91,7 +92,7 @@ public class SenML {
         private Number t;   // Time
         private Number ut;  // Update Time
         
-        public SenMLValue(String bn, Number bt, String bu, Number bv, Number bs,
+        public SenMLElement(String bn, Number bt, String bu, Number bv, Number bs,
                 Number bver, String n, String u, Number v, String vs, Boolean vb,
                 String vd, Number s, Number t, Number ut) {
             this.bn = bn;
@@ -111,13 +112,13 @@ public class SenML {
             this.ut = ut;
         }
         
-        public SenMLValue() {}
+        public SenMLElement() {}
         
         public String getBaseName() {
             return bn;
         }
         
-        public SenMLValue setBaseName(String bn) {
+        public SenMLElement setBaseName(String bn) {
             this.bn = bn;
             return this;
         }
@@ -126,7 +127,7 @@ public class SenML {
             return bt;
         }
         
-        public SenMLValue setBaseTime(Number bt) {
+        public SenMLElement setBaseTime(Number bt) {
             this.bt = bt;
             return this;
         }
@@ -135,7 +136,7 @@ public class SenML {
             return bu;
         }
         
-        public SenMLValue setBaseUnit(String bu) {
+        public SenMLElement setBaseUnit(String bu) {
             this.bu = bu;
             return this;
         }
@@ -144,7 +145,7 @@ public class SenML {
             return bv;
         }
         
-        public SenMLValue setBaseValue(Number bv) {
+        public SenMLElement setBaseValue(Number bv) {
             this.bv = bv;
             return this;
         }
@@ -153,7 +154,7 @@ public class SenML {
             return bs;
         }
         
-        public SenMLValue setBaseSum(Number bs) {
+        public SenMLElement setBaseSum(Number bs) {
             this.bs = bs;
             return this;
         }
@@ -162,7 +163,7 @@ public class SenML {
             return bver;
         }
         
-        public SenMLValue setBaseVersion(Number bver) {
+        public SenMLElement setBaseVersion(Number bver) {
             this.bver = bver;
             return this;
         }
@@ -171,7 +172,7 @@ public class SenML {
             return n;
         }
         
-        public SenMLValue setName(String n) {
+        public SenMLElement setName(String n) {
             this.n = n;
             return this;
         }
@@ -180,7 +181,7 @@ public class SenML {
             return u;
         }
         
-        public SenMLValue setUnit(String u) {
+        public SenMLElement setUnit(String u) {
             this.u = u;
             return this;
         }
@@ -189,7 +190,7 @@ public class SenML {
             return v;
         }
         
-        public SenMLValue setValue(Number v) {
+        public SenMLElement setValue(Number v) {
             this.v = v;
             return this;
         }
@@ -198,7 +199,7 @@ public class SenML {
             return vs;
         }
         
-        public SenMLValue setStringValue(String vs) {
+        public SenMLElement setStringValue(String vs) {
             this.vs = vs;
             return this;
         }
@@ -207,7 +208,7 @@ public class SenML {
             return vb;
         }
         
-        public SenMLValue setBooleanValue(Boolean vb) {
+        public SenMLElement setBooleanValue(Boolean vb) {
             this.vb = vb;
             return this;
         }
@@ -216,7 +217,7 @@ public class SenML {
             return vd;
         }
         
-        public SenMLValue setDataValue(String vd) {
+        public SenMLElement setDataValue(String vd) {
             this.vd = vd;
             return this;
         }
@@ -225,7 +226,7 @@ public class SenML {
             return s;
         }
         
-        public SenMLValue setSum(Number s) {
+        public SenMLElement setSum(Number s) {
             this.s = s;
             return this;
         }
@@ -234,7 +235,7 @@ public class SenML {
             return t;
         }
         
-        public SenMLValue setTime(Number t) {
+        public SenMLElement setTime(Number t) {
             this.t = t;
             return this;
         }
@@ -243,7 +244,7 @@ public class SenML {
             return ut;
         }
         
-        public SenMLValue setUpdateTime(Number ut) {
+        public SenMLElement setUpdateTime(Number ut) {
             this.ut = ut;
             return this;
         }

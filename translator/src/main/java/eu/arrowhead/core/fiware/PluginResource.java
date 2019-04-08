@@ -93,8 +93,8 @@ public class PluginResource implements Observer {
             String value = fiwareClient.getAttributeValue(entityId, serviceName);
             if (!value.isEmpty()) {
                 SenML senML = new SenML();
-                senML.addValue(
-                        new SenML.SenMLValue()
+                senML.addElement(
+                        new SenML.SenMLElement()
                         .setName(serviceName)
                         .setBaseTime(System.currentTimeMillis())
                         .setStringValue(value)

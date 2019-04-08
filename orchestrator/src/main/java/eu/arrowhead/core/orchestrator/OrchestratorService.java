@@ -7,6 +7,8 @@
 
 package eu.arrowhead.core.orchestrator;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.arrowhead.common.database.ArrowheadCloud;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.OrchestrationStore;
@@ -42,6 +44,8 @@ final class OrchestratorService {
 
   private static final Logger log = Logger.getLogger(OrchestratorService.class.getName());
 
+  private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  
   private OrchestratorService() throws AssertionError {
     throw new AssertionError("OrchestratorService is a non-instantiable class");
   }
@@ -56,19 +60,29 @@ final class OrchestratorService {
   static OrchestrationResponse dynamicOrchestration(ServiceRequestForm srf) {
     Map<String, Boolean> orchestrationFlags = srf.getOrchestrationFlags();
     
+    System.out.println("dynamicOrchestration");
+    System.out.println(gson.toJson(srf));
+    
     try {
       // Querying the Service Registry
+      System.out.println("HERE");
       List<ServiceRegistryEntry> srList = OrchestratorDriver
           .queryServiceRegistry(srf.getRequestedService(), orchestrationFlags.get("metadataSearch"), orchestrationFlags.get("pingProviders"));
 
+      System.out.println("srList");
+        System.out.println(gson.toJson(srList));
       // Cross-checking the SR response with the Authorization
       Set<ArrowheadSystem> providerSystems = new HashSet<>();
       for (ServiceRegistryEntry entry : srList) {
         providerSystems.add(entry.getProvider());
       }
       
-      providerSystems = OrchestratorDriver.queryAuthorization(srf.getRequesterSystem(), srf.getRequestedService(), providerSystems);
+      System.out.println("providerSystems");
+        System.out.println(gson.toJson(providerSystems));
       
+      providerSystems = OrchestratorDriver.queryAuthorization(srf.getRequesterSystem(), srf.getRequestedService(), providerSystems);
+      System.out.println("providerSystems");
+        System.out.println(gson.toJson(providerSystems));
       /*
        * The Authorization cross-check only returns the provider systems where the requester system is authorized to consume the service. We filter
        * out the non-authorized systems from the SR response (ServiceRegistryEntry list).
@@ -81,6 +95,9 @@ final class OrchestratorService {
       }
       srList.removeAll(temp);
       
+      
+    System.out.println("srList");
+    System.out.println(gson.toJson(srList));
       
       if (srList.isEmpty()) {
         log.error("None of the providers from the SRlist are authorized!");

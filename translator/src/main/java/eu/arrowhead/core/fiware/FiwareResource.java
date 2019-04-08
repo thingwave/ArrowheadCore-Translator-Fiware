@@ -7,21 +7,29 @@ import com.google.gson.JsonParser;
 import eu.arrowhead.common.database.ArrowheadService;
 import eu.arrowhead.common.database.ArrowheadSystem;
 import eu.arrowhead.common.database.ServiceRegistryEntry;
+import eu.arrowhead.common.messages.ServiceRequestForm;
+import eu.arrowhead.core.fiware.arrowhead.ArrowheadEntity;
+import eu.arrowhead.core.fiware.arrowhead.OrchestrationResponse;
+import eu.arrowhead.core.fiware.arrowhead.OrchestrationService;
 import eu.arrowhead.core.fiware.client.FiwareClient;
 import eu.arrowhead.core.fiware.common.FiwareTools;
-import eu.arrowhead.core.fiware.common.ServiceURL;
+import eu.arrowhead.core.fiware.common.SenML;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,13 +53,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.HttpHeaders;
+import org.apache.http.HttpEntityEnclosingRequest;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -77,9 +88,12 @@ public class FiwareResource implements Observer{
     private final FiwareClient fiwareClient;
     private final CloseableHttpClient httpClient;
     
+    private final ArrayList<ArrowheadEntity> arrowheadEntities;
+    
     public FiwareResource() {
         System.out.println("FIWARE Resource start!");
-        fiwareClient = new FiwareClient("http://localhost:1026");
+        fiwareClient = new FiwareClient(getPropFiwareURL());
+        arrowheadEntities = new ArrayList<>();
         //httpClient = HttpClients.createDefault();
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, 1000);
@@ -93,10 +107,110 @@ public class FiwareResource implements Observer{
                 registerAllEntities();
             }, 5, 60, TimeUnit.SECONDS);
         
+        // Adding Hook to auto-unregister the service
+        Runtime.getRuntime().addShutdownHook(
+                new Thread() {
+                    @Override
+                    public void run() {
+                        unregisterAllEntities();
+                    }
+                });
+    }
+    
+    /* ------------------------------ Load Prop ----------------------------- */
+    private String getPropFiwareURL() {
+        Properties defaults = new Properties();
+        defaults.setProperty("fiware_url", "http://0.0.0.0:1026");
+        Properties prop = new Properties(defaults);
+        InputStream input = null;
         
+        try {
+            input = new FileInputStream("config/default.conf");
+            prop.load(input);
+        } catch (IOException ex) {
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }        
+        return prop.getProperty("fiware_url");
+    }
+    
+    private ArrowheadEntity findArrowheadEntity(String id) {
+        for (ArrowheadEntity ae :arrowheadEntities){
+            if (ae.getId().equals(id))
+                return ae;
+        }
+        return null;
+    }
+    
+    private void addArrowheadEntity(ArrowheadEntity ae) {
+        if (findArrowheadEntity(ae.getId()) == null) {
+            arrowheadEntities.add(ae);
+        }
+    }
+    
+    private String requestHttpService(String url) {
+        try {
+            HttpGet get = new HttpGet(url);
+            CloseableHttpResponse response = httpClient.execute(get);
+            
+            
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(
+                            response.getEntity().getContent()
+                    )
+            );
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            get.releaseConnection();
+            return sb.toString();
+            
+        } catch (MalformedURLException ex) {
+        } catch (IOException ex) {
+        }
+        return "ERROR";
+    }
+    
+    private SenML requestServiceSenML(String url) {
+        return new SenML().fromJSON(requestHttpService(url));
     }
     
     /* ------------------------------ ARROWHEAD ----------------------------- */
+    private ServiceRegistryEntry fiware2ArrowheadEntry(JsonObject entity) {
+        if (!entity.has("id") || !entity.has("type")) return null;
+        String serviceDef = "FIWARE-"+entity.get("type").getAsString();
+        String serviceUri = "/plugin/service/"+entity.get("id").getAsString()+"/"+entity.get("type").getAsString();
+        String interfaceList = "FIWARE";
+        Set<String> interfaces = new HashSet<>();
+        if (interfaceList != null && !interfaceList.isEmpty()) {
+            //Interfaces are read from a comma separated list
+            interfaces.addAll(Arrays.asList(interfaceList.replaceAll("\\s+", "").split(",")));
+        }
+        Map<String, String> metadata = new HashMap<>();
+        String metadataString = "unit-celsius";
+        if (metadataString != null && !metadataString.isEmpty()) {
+            //Metadata in the properties file: key1-value1, key2-value2, ...
+            String[] parts = metadataString.split(",");
+            for (String part : parts) {
+                String[] pair = part.split("-");
+                metadata.put(pair[0], pair[1]);
+            }
+        }
+        ArrowheadService service = new ArrowheadService(serviceDef, interfaces, metadata);
+        String insecProviderName = entity.get("id").getAsString()+"-"+entity.get("type").getAsString();
+        ArrowheadSystem provider = new ArrowheadSystem(insecProviderName, "0.0.0.0", 8462, null);
+        
+        return new ServiceRegistryEntry(service, provider, serviceUri);
+    }
+    
     
     private void registerAllEntities() {
         try {
@@ -107,29 +221,7 @@ public class FiwareResource implements Observer{
                 System.out.printf("%3d/%d :: %80s | %20s ", (i+1), entities.size(), entity.get("id").getAsString(), entity.get("type").getAsString());
                 //System.out.print("["+(i+1)+"/"+entities.size()+"] "+entity.get("id")+" | "+entity.get("type")+" ");
                 try {
-                    //System.out.println("Register entities on Arrowhead");
-                    String serviceDef = entity.get("id").getAsString();
-                    String serviceUri = "/plugin/service/"+entity.get("id").getAsString()+"/"+entity.get("type").getAsString();
-                    String interfaceList = "SenML";
-                    Set<String> interfaces = new HashSet<>();
-                    if (interfaceList != null && !interfaceList.isEmpty()) {
-                        //Interfaces are read from a comma separated list
-                        interfaces.addAll(Arrays.asList(interfaceList.replaceAll("\\s+", "").split(",")));
-                    }
-                    Map<String, String> metadata = new HashMap<>();
-                    String metadataString = "unit-celsius";
-                    if (metadataString != null && !metadataString.isEmpty()) {
-                        //Metadata in the properties file: key1-value1, key2-value2, ...
-                        String[] parts = metadataString.split(",");
-                        for (String part : parts) {
-                            String[] pair = part.split("-");
-                            metadata.put(pair[0], pair[1]);
-                        }
-                    }
-                    ArrowheadService service = new ArrowheadService(serviceDef, interfaces, metadata);
-                    String insecProviderName = entity.get("id").getAsString()+"-"+entity.get("type").getAsString();
-                    ArrowheadSystem provider = new ArrowheadSystem(insecProviderName, "0.0.0.0", 8462, null);
-                    ServiceRegistryEntry entry = new ServiceRegistryEntry(service, provider, serviceUri);
+                    ServiceRegistryEntry entry = fiware2ArrowheadEntry(entity);
                     
                     int status = registerEntry(entry);
                     
@@ -145,6 +237,30 @@ public class FiwareResource implements Observer{
                         System.out.println("[REGISTERED]");
                         //System.out.println("Service ["+insecProviderName+"] registered on Arrowhead!");
                     }
+                } catch (IOException ex) {
+                    System.out.println("IOException!: "+ex.getLocalizedMessage());
+                }
+            }
+            
+        } catch (IOException ex) {
+            System.out.println("IOException!: "+ex.getLocalizedMessage());
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(FiwareResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void unregisterAllEntities() {
+        try {
+            ArrayList<JsonObject> entities = fiwareClient.listEntities(new JsonObject());
+            
+            for (int i=0; i< entities.size(); i++) {
+                JsonObject entity = entities.get(i);
+                System.out.printf("%3d/%d :: %80s | %20s ", (i+1), entities.size(), entity.get("id").getAsString(), entity.get("type").getAsString());
+                //System.out.print("["+(i+1)+"/"+entities.size()+"] "+entity.get("id")+" | "+entity.get("type")+" ");
+                try {
+                    ServiceRegistryEntry entry = fiware2ArrowheadEntry(entity);
+                    unregisterEntry(entry);
+                    
                 } catch (IOException ex) {
                     System.out.println("IOException!: "+ex.getLocalizedMessage());
                 }
@@ -184,6 +300,45 @@ public class FiwareResource implements Observer{
         int status = httpClient.execute(put).getStatusLine().getStatusCode();
         put.releaseConnection();
         return status;
+    }
+    
+    private CloseableHttpResponse httpRequest(HttpUriRequest request) throws IOException {
+        request.setHeader(CONTENT_TYPE, "application/json");
+        HttpEntityEnclosingRequest req = (HttpEntityEnclosingRequest) request;
+        CloseableHttpResponse response = httpClient.execute(request);
+        return response;
+    }
+    
+    private CloseableHttpResponse orchestrationAH(ServiceRequestForm serviceRequestForm) {
+        try {
+            HttpPost post = new HttpPost("http://0.0.0.0:8440/orchestrator/orchestration");
+            post.setEntity(new StringEntity(gson.toJson(serviceRequestForm)));
+            CloseableHttpResponse response = httpRequest(post);
+            post.releaseConnection();
+            return response;
+        } catch (IOException ex) {}
+        return null;
+    }
+    
+    private OrchestrationResponse orchestration(ServiceRequestForm serviceRequestForm) {
+  
+        CloseableHttpResponse response = orchestrationAH(serviceRequestForm);
+        
+        if (response.getEntity() == null) return new OrchestrationResponse();
+        
+        try {
+            return gson.fromJson(
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    response.getEntity().getContent())),
+                    OrchestrationResponse.class);
+        } catch (IOException ex) {
+            //LOG.warn("IOException: "+ex.getLocalizedMessage());
+            return new OrchestrationResponse();
+        } catch (UnsupportedOperationException ex) {
+            //LOG.warn("UnsupportedOperationException: "+ex.getLocalizedMessage());
+            return new OrchestrationResponse();
+        }
     }
     
     
@@ -236,18 +391,49 @@ public class FiwareResource implements Observer{
         if (orderBy != null) jQueryParams.addProperty("orderBy", orderBy);
         if (options!= null) jQueryParams.addProperty("options", options);
         
-        ArrayList<JsonObject> entities = new ArrayList<>();
+        ArrayList<JsonObject> entities = null;
         
-        //System.out.println("Request All entities");
-        try {
-            entities = fiwareClient.listEntities(jQueryParams);
-            //System.out.println(gson.toJson(entities));
-        } catch (Exception ex) {
-            System.out.println("Exception: "+ex.getLocalizedMessage());
+        //System.out.println("Request All entities: "+pretyGson.toJson(jQueryParams));
+        while(entities == null) {
+            try {
+                entities = fiwareClient.listEntities(jQueryParams);
+                //System.out.println(gson.toJson(entities));
+            } catch (Exception ex) {
+                System.out.println("Exception: "+ex.getLocalizedMessage());
+                if (ex.getLocalizedMessage().equals("Socket closed")) {
+                    
+                } else {
+                    entities = new ArrayList<>();
+                }
+                
+            }
         }
         
+        // Check Arrowhead Services
+            ServiceRequestForm srf = gson.fromJson("{\"requesterSystem\":{\"systemName\":\"demo_Temperature_Consumer\",\"address\":\"0.0.0.0\",\"port\":8888,\"authenticationInfo\":\"null\"},\"requestedService\":{\"serviceDefinition\":\""+type+"\",\"interfaces\":[\"SenML\"],\"serviceMetadata\":{\"unit\":\"celsius\"}},\"orchestrationFlags\":{\"onlyPreferred\":false,\"overrideStore\":true,\"externalServiceRequest\":false,\"enableInterCloud\":true,\"enableQoS\":false,\"matchmaking\":false,\"metadataSearch\":true,\"triggerInterCloud\":false,\"pingProviders\":false},\"preferredProviders\":[],\"requestedQoS\":{},\"commands\":{}}", ServiceRequestForm.class);
+            OrchestrationResponse or = orchestration(srf);
+            
+            for (OrchestrationService os: or.getAllServices()) {
+                JsonObject newEntity = new JsonObject();
+                newEntity.addProperty("id", os.getProvider().getSystemName());
+                newEntity.addProperty("type", type);
+                newEntity.addProperty("arrowheadSystem", true);
+                entities.add(newEntity);
+                try {
+                    // Save entity on the list
+                    addArrowheadEntity(new ArrowheadEntity(
+                            os.getProvider().getSystemName(),
+                            os.getServiceURL().toString())
+                    );
+
+                } catch (MalformedURLException ex) {}
+            }
+            
+            System.out.println(pretyGson.toJson(or));
         
-        //System.out.println("GET entities - Transparent request/response");
+        System.out.println("GET entities - Transparent request/response");
+        System.out.println(pretyGson.toJson(entities));
+        
         return pretyGson.toJson(entities);
     }
     
@@ -262,7 +448,12 @@ public class FiwareResource implements Observer{
         String contentType = headers.getHeaderString("Content-type"); 
         JsonObject jQueryParams = new JsonObject();
         if (options != null) jQueryParams.addProperty("options", options);
-        
+        try {
+            // Register Entity in Arrowhead
+            registerEntry(fiware2ArrowheadEntry(new JsonParser().parse(content).getAsJsonObject()));
+        } catch (IOException ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
         try {
             return Response.status(fiwareClient.createEntity(jQueryParams,contentType, content)).build();
         } catch (Exception ex) {
@@ -390,11 +581,24 @@ public class FiwareResource implements Observer{
     public Response removeEntity(
             @PathParam("entityId") String entityId,
             @QueryParam("type") String type) {
-        //System.out.println("removeEntity");
+        System.out.println("removeEntity");
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
-                
+        
+        
         try {
+            // Remove from Arrowhead
+            JsonObject entity = new JsonObject();
+            entity.addProperty("id", entityId);
+            entity.addProperty("type", type);
+            System.out.println("unregister AH: "+pretyGson.toJson(entity));
+            unregisterEntry(fiware2ArrowheadEntry(entity));
+        } catch (IOException ex) {
+            System.out.println("Exception: "+ex.getLocalizedMessage());
+        }
+        
+        try {
+                        
             return Response.status(fiwareClient.removeEntity(entityId, jQueryParams)).build();
         } catch (Exception ex) {
             System.out.println("Exception: "+ex.getLocalizedMessage());
@@ -478,7 +682,16 @@ public class FiwareResource implements Observer{
             @PathParam("entityId") String entityId,
             @PathParam("attrName") String attrName,
             @QueryParam("type") String type) {
-        //System.out.println("getAttributeValue");
+                
+        ArrowheadEntity ae;
+        if ((ae = findArrowheadEntity(entityId)) != null) {
+            System.out.println("URL: "+ae.getURL());
+            SenML senML = requestServiceSenML(ae.getURL());
+            System.out.println("senML: "+pretyGson.toJson(senML));
+            
+            return ""+requestServiceSenML(ae.getURL()).getLastest().getValue().doubleValue();
+        }
+        
         JsonObject jQueryParams = new JsonObject();
         if (type != null) jQueryParams.addProperty("type", type);
         try {
